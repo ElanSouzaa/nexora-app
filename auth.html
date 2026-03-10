@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html data-theme="dark" lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nexora — Criar Conta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ─── VARIABLES & THEMES ──────────────────────────────── */
+:root{
+  --bg:#060606;--bg2:#0E0E0E;--card:#111111;--card2:#161616;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#FFFFFF;--text2:#AAAAAA;--text3:#666666;
+  --lime:#C8FF00;--lime-dk:#A8D400;--lime-glow:rgba(200,255,0,0.15);
+  --lime-border:rgba(200,255,0,0.28);--lime-text:#C8FF00;
+  --shadow:rgba(0,0,0,0.5);--red:#F44336;--green:#4CAF50;
+  --input-bg:#0D0D0D;--input-border:rgba(255,255,255,0.1);
+  --font-t:'Space Grotesk','Wise Sans',sans-serif;
+  --font-b:'Inter',sans-serif;
+  --tr:0.28s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="light"]{
+  --bg:#F6F6F0;--bg2:#EEEEEA;--card:#FFFFFF;--card2:#F4F4F0;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --text:#111111;--text2:#555555;--text3:#999999;
+  --lime:#C8FF00;--lime-dk:#96CC00;--lime-glow:rgba(150,204,0,0.12);
+  --lime-border:rgba(130,185,0,0.3);--lime-text:#4A7000;
+  --shadow:rgba(0,0,0,0.1);
+  --input-bg:#FAFAF6;--input-border:rgba(0,0,0,0.12);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:var(--font-b);font-size:16px;
+  min-height:100vh;overflow-x:hidden;
+  transition:background .35s ease,color .35s ease;
+}
+/* ─── NAVBAR ─────────────────────────────────────────── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  background:rgba(6,6,6,0.8);border-bottom:1px solid var(--border);
+  padding:0 24px;
+}
+[data-theme="light"] .nav{background:rgba(246,246,240,0.85)}
+.nav-inner{
+  max-width:1400px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  height:64px;
+}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-icon{width:32px;height:32px}
+.logo-text{font-family:var(--font-t);font-size:20px;font-weight:700;
+  color:var(--text);letter-spacing:-.02em}
+.logo-text span{color:var(--lime)}
+.nav-controls{display:flex;align-items:center;gap:8px}
+/* Theme + Lang buttons */
+.ctrl-group{
+  display:flex;align-items:center;gap:4px;
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:10px;padding:4px;
+}
+.ctrl-btn{
+  background:transparent;border:none;cursor:pointer;
+  color:var(--text2);font-family:var(--font-b);font-size:12px;font-weight:600;
+  padding:5px 10px;border-radius:7px;
+  transition:all var(--tr);white-space:nowrap;
+}
+.ctrl-btn:hover{color:var(--text);background:var(--border)}
+.ctrl-btn.active{
+  background:var(--lime);color:#060606;
+}
+/* ─── MAIN LAYOUT ────────────────────────────────────── */
+.auth-main{
+  min-height:100vh;display:grid;
+  grid-template-columns:1fr 1fr;
+}
+.auth-left{
+  background:var(--bg2);border-right:1px solid var(--border);
+  padding:120px 60px 60px;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.auth-left::before{
+  content:'';position:absolute;top:-100px;left:-100px;
+  width:500px;height:500px;
+  background:radial-gradient(ellipse,rgba(200,255,0,0.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+/* Grid bg */
+.auth-left::after{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);
+  background-size:50px 50px;pointer-events:none;
+}
+.auth-right{
+  display:flex;align-items:center;justify-content:center;
+  padding:100px 60px 60px;background:var(--bg);
+}
+[data-theme="light"] .auth-right{background:var(--bg2)}
+/* ─── LEFT CONTENT ───────────────────────────────────── */
+.left-content{position:relative;z-index:1}
+.left-logo{margin-bottom:40px}
+.left-title{
+  font-family:var(--font-t);font-size:clamp(28px,3vw,42px);
+  font-weight:800;line-height:1.1;letter-spacing:-.03em;
+  margin-bottom:16px;
+}
+.left-title .hl{color:var(--lime-text)}
+.left-sub{font-size:16px;color:var(--text2);line-height:1.7;margin-bottom:40px;max-width:380px}
+.left-feats{display:flex;flex-direction:column;gap:14px;margin-bottom:44px}
+.left-feat{
+  display:flex;align-items:center;gap:12px;
+  font-size:14px;color:var(--text2);
+}
+.feat-check{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--lime-glow);border:1px solid var(--lime-border);
+  color:var(--lime-text);display:flex;align-items:center;justify-content:center;
+  font-size:11px;flex-shrink:0;
+}
+.left-social{
+  display:flex;align-items:center;gap:12px;
+  padding:16px 20px;background:var(--card);
+  border:1px solid var(--border);border-radius:14px;max-width:320px;
+}
+.social-avatars{display:flex}
+.s-av{
+  width:32px;height:32px;border-radius:50%;
+  border:2px solid var(--bg2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;margin-left:-8px;
+}
+.s-av:first-child{margin-left:0}
+.social-text{font-size:13px}
+.social-text strong{font-size:16px;font-weight:700;display:block;line-height:1}
+.social-text span{color:var(--text2)}
+/* ─── RIGHT FORM ─────────────────────────────────────── */
+.auth-box{width:100%;max-width:420px}
+.auth-view{display:none}
+.auth-view.active{display:block;animation:fade-in .35s ease}
+@keyframes fade-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.form-header{margin-bottom:32px}
+.form-title{
+  font-family:var(--font-t);font-size:28px;font-weight:800;
+  letter-spacing:-.03em;margin-bottom:6px;
+}
+.form-subtitle{font-size:14px;color:var(--text2)}
+/* ─── FORM ELEMENTS ──────────────────────────────────── */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-group{margin-bottom:16px;position:relative}
+.form-group.full{grid-column:span 2}
+label{
+  display:block;font-size:12px;font-weight:600;
+  color:var(--text2);letter-spacing:.04em;text-transform:uppercase;
+  margin-bottom:6px;
+}
+.form-input{
+  width:100%;background:var(--input-bg);
+  border:1.5px solid var(--input-border);
+  color:var(--text);font-family:var(--font-b);font-size:15px;
+  padding:12px 16px;border-radius:10px;
+  outline:none;transition:all var(--tr);
+}
+.form-input::placeholder{color:var(--text3)}
+.form-input:focus{
+  border-color:var(--lime);
+  box-shadow:0 0 0 3px var(--lime-glow);
+}
+.form-input.error{border-color:var(--red)}
+.form-input.success{border-color:var(--green)}
+.err-msg{
+  font-size:11px;color:var(--red);margin-top:4px;
+  display:none;
+}
+.err-msg.show{display:block}
+.input-wrap{position:relative}
+.eye-btn{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  color:var(--text3);font-size:18px;padding:4px;
+  transition:color var(--tr);
+}
+.eye-btn:hover{color:var(--text2)}
+/* Password strength */
+.pass-strength{
+  display:flex;gap:4px;margin-top:6px;
+}
+.strength-bar{
+  height:3px;flex:1;border-radius:2px;
+  background:var(--border2);transition:background .3s ease;
+}
+.strength-bar.active-w{background:#F44336}
+.strength-bar.active-f{background:#FF9800}
+.strength-bar.active-g{background:#4CAF50}
+.pass-label{font-size:11px;color:var(--text3);margin-top:2px}
+/* Checkbox */
+.checkbox-wrap{
+  display:flex;align-items:flex-start;gap:10px;
+  margin-bottom:20px;
+}
+.checkbox-wrap input[type="checkbox"]{
+  width:18px;height:18px;flex-shrink:0;
+  accent-color:var(--lime);cursor:pointer;margin-top:1px;
+}
+.checkbox-label{font-size:13px;color:var(--text2);line-height:1.5;cursor:pointer}
+.checkbox-label a{color:var(--lime-text);text-decoration:underline}
+/* Buttons */
+.btn-primary{
+  width:100%;background:var(--lime);border:none;
+  color:#060606;font-family:var(--font-b);
+  font-size:15px;font-weight:700;
+  padding:14px;border-radius:10px;cursor:pointer;
+  transition:all var(--tr);letter-spacing:-.01em;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  position:relative;overflow:hidden;
+}
+.btn-primary:hover{background:#D4FF26;transform:translateY(-1px);box-shadow:0 8px 30px rgba(200,255,0,.35)}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-loading{display:none;width:18px;height:18px;border-radius:50%;
+  border:2.5px solid rgba(6,6,6,.3);border-top-color:#060606;
+  animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.switch-link{
+  text-align:center;margin-top:20px;
+  font-size:14px;color:var(--text2);
+}
+.switch-link a{
+  color:var(--lime-text);font-weight:600;
+  text-decoration:none;cursor:pointer;
+}
+.switch-link a:hover{text-decoration:underline}
+.form-divider{
+  display:flex;align-items:center;gap:12px;margin:20px 0;
+  font-size:12px;color:var(--text3);
+}
+.form-divider::before,.form-divider::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+.forgot-link{
+  display:block;text-align:right;font-size:12px;
+  color:var(--text3);text-decoration:none;margin-bottom:16px;
+  transition:color var(--tr);
+}
+.forgot-link:hover{color:var(--text2)}
+/* ─── SUCCESS MESSAGE ────────────────────────────────── */
+.success-box{
+  text-align:center;padding:40px 20px;
+}
+.success-icon{
+  width:64px;height:64px;border-radius:50%;
+  background:rgba(76,175,80,.1);border:2px solid rgba(76,175,80,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;margin:0 auto 20px;
+  animation:pop-in .4s cubic-bezier(.175,.885,.32,1.275);
+}
+@keyframes pop-in{from{transform:scale(0)}to{transform:scale(1)}}
+.success-title{font-family:var(--font-t);font-size:22px;font-weight:700;margin-bottom:8px}
+.success-sub{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:28px}
+/* ─── RESPONSIVE ─────────────────────────────────────── */
+@media(max-width:900px){
+  .auth-main{grid-template-columns:1fr}
+  .auth-left{display:none}
+  .auth-right{padding:100px 24px 40px;min-height:100vh}
+}
+@media(max-width:480px){
+  .form-row{grid-template-columns:1fr}
+  .auth-right{padding:90px 20px 40px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <svg class="logo-icon" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="9" fill="#C8FF00"/>
+        <path d="M7 23V9L14 18 21 9V23" stroke="#060606" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="25" cy="9" r="2.5" fill="#060606"/>
+      </svg>
+      <span class="logo-text">Nexora<span>.</span></span>
+    </a>
+
+    <div class="nav-controls">
+      <!-- Theme -->
+      <div class="ctrl-group" id="themeGroup">
+        <button class="ctrl-btn active" data-theme-val="dark" onclick="setTheme('dark')" title="Escuro">🌙</button>
+        <button class="ctrl-btn" data-theme-val="light" onclick="setTheme('light')" title="Claro">☀️</button>
+        <button class="ctrl-btn" data-theme-val="system" onclick="setTheme('system')" title="Sistema">💻</button>
+      </div>
+      <!-- Language -->
+      <div class="ctrl-group" id="langGroup">
+        <button class="ctrl-btn active" data-lang-val="pt-BR" onclick="setLang('pt-BR')">PT</button>
+        <button class="ctrl-btn" data-lang-val="en" onclick="setLang('en')">EN</button>
+        <button class="ctrl-btn" data-lang-val="zh" onclick="setLang('zh')">中</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ MAIN ══ -->
+<main class="auth-main">
+
+  <!-- LEFT PANEL -->
+  <div class="auth-left">
+    <div class="left-content">
+      <div class="left-logo">
+        <svg width="40" height="40" viewBox="0 0 36 36" fill="none">
+          <rect width="36" height="36" rx="10" fill="#C8FF00"/>
+          <path d="M8 26V10L16 20.5L24 10V26" stroke="#060606" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="28" cy="10" r="3" fill="#060606"/>
+        </svg>
+      </div>
+
+      <h1 class="left-title">
+        <span data-i18n="left_title_1">Sua central</span><br/>
+        <span class="hl" data-i18n="left_title_2">financeira completa</span>
+      </h1>
+      <p class="left-sub" data-i18n="left_sub">
+        Conecte todas as suas contas, monitore investimentos e receba alertas inteligentes direto no seu WhatsApp.
+      </p>
+
+      <div class="left-feats">
+        <div class="left-feat">
+          <div class="feat-check">✓</div>
+          <span data-i18n="feat_1">Monitoramento 24/7 com Agentes de IA</span>
+        </div>
+        <div class="left-feat">
+          <div class="feat-check">✓</div>
+          <span data-i18n="feat_2">Alertas em tempo real no WhatsApp</span>
+        </div>
+        <div class="left-feat">
+          <div class="feat-check">✓</div>
+          <span data-i18n="feat_3">Mais de 30 bancos integrados via Open Finance</span>
+        </div>
+        <div class="left-feat">
+          <div class="feat-check">✓</div>
+          <span data-i18n="feat_4">Dashboard completo: contas, cartões, investimentos</span>
+        </div>
+      </div>
+
+      <div class="left-social">
+        <div class="social-avatars">
+          <div class="s-av" style="background:linear-gradient(135deg,#C8FF00,#74D400);color:#060606">A</div>
+          <div class="s-av" style="background:linear-gradient(135deg,#2196F3,#00BCD4);color:#fff">R</div>
+          <div class="s-av" style="background:linear-gradient(135deg,#9C27B0,#E91E63);color:#fff">M</div>
+          <div class="s-av" style="background:linear-gradient(135deg,#FF9800,#F44336);color:#fff">J</div>
+        </div>
+        <div class="social-text">
+          <strong>+47.000</strong>
+          <span data-i18n="users_label">usuários ativos</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="auth-right">
+    <div class="auth-box">
+
+      <!-- ── SIGNUP VIEW ── -->
+      <div id="view-signup" class="auth-view active">
+        <div class="form-header">
+          <h2 class="form-title" data-i18n="signup_heading">Crie sua conta</h2>
+          <p class="form-subtitle" data-i18n="signup_subheading">Comece grátis. Sem cartão de crédito.</p>
+        </div>
+
+        <form id="signup-form" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label data-i18n="field_firstname">Nome</label>
+              <input type="text" class="form-input" id="s-fname" name="fname" autocomplete="given-name" required/>
+              <span class="err-msg" id="err-fname" data-i18n="err_required">Campo obrigatório</span>
+            </div>
+            <div class="form-group">
+              <label data-i18n="field_lastname">Sobrenome</label>
+              <input type="text" class="form-input" id="s-lname" name="lname" autocomplete="family-name" required/>
+              <span class="err-msg" id="err-lname" data-i18n="err_required">Campo obrigatório</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label data-i18n="field_email">E-mail</label>
+            <input type="email" class="form-input" id="s-email" name="email" autocomplete="email" required/>
+            <span class="err-msg" id="err-email" data-i18n="err_email">E-mail inválido</span>
+          </div>
+
+          <div class="form-group">
+            <label data-i18n="field_phone">Telefone</label>
+            <input type="tel" class="form-input" id="s-phone" name="phone" placeholder="(11) 9 9999-9999" autocomplete="tel" required/>
+            <span class="err-msg" id="err-phone" data-i18n="err_phone">Telefone inválido</span>
+          </div>
+
+          <div class="form-group">
+            <label data-i18n="field_password">Senha</label>
+            <div class="input-wrap">
+              <input type="password" class="form-input" id="s-pass" name="password" style="padding-right:44px" required/>
+              <button type="button" class="eye-btn" id="eye1" onclick="toggleEye('s-pass','eye1')">👁</button>
+            </div>
+            <div class="pass-strength" id="pass-strength">
+              <div class="strength-bar" id="sb1"></div>
+              <div class="strength-bar" id="sb2"></div>
+              <div class="strength-bar" id="sb3"></div>
+              <div class="strength-bar" id="sb4"></div>
+            </div>
+            <span class="pass-label" id="pass-label"></span>
+            <span class="err-msg" id="err-pass" data-i18n="err_password_len">Mínimo 8 caracteres</span>
+          </div>
+
+          <div class="form-group">
+            <label data-i18n="field_confirm">Confirmar Senha</label>
+            <div class="input-wrap">
+              <input type="password" class="form-input" id="s-confirm" name="confirm" style="padding-right:44px" required/>
+              <button type="button" class="eye-btn" id="eye2" onclick="toggleEye('s-confirm','eye2')">👁</button>
+            </div>
+            <span class="err-msg" id="err-confirm" data-i18n="err_password_match">As senhas não coincidem</span>
+          </div>
+
+          <div class="checkbox-wrap">
+            <input type="checkbox" id="terms" required/>
+            <label class="checkbox-label" for="terms" data-i18n="terms_text">
+              Li e aceito os <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a>
+            </label>
+          </div>
+
+          <button type="submit" class="btn-primary" id="btn-signup">
+            <span class="btn-loading" id="loading-signup"></span>
+            <span data-i18n="btn_signup">Criar conta grátis →</span>
+          </button>
+        </form>
+
+        <div class="switch-link">
+          <span data-i18n="have_account">Já tem uma conta?</span>
+          <a onclick="showLogin()" data-i18n="link_login"> Entrar</a>
+        </div>
+      </div>
+
+      <!-- ── LOGIN VIEW ── -->
+      <div id="view-login" class="auth-view">
+        <div class="form-header">
+          <h2 class="form-title" data-i18n="login_heading">Bem-vindo de volta</h2>
+          <p class="form-subtitle" data-i18n="login_subheading">Entre na sua conta Nexora</p>
+        </div>
+
+        <form id="login-form" novalidate>
+          <div class="form-group">
+            <label data-i18n="field_email">E-mail</label>
+            <input type="email" class="form-input" id="l-email" name="email" autocomplete="email" required/>
+            <span class="err-msg" id="err-lemail"></span>
+          </div>
+
+          <div class="form-group">
+            <label data-i18n="field_password">Senha</label>
+            <div class="input-wrap">
+              <input type="password" class="form-input" id="l-pass" name="password" style="padding-right:44px" required/>
+              <button type="button" class="eye-btn" id="eye3" onclick="toggleEye('l-pass','eye3')">👁</button>
+            </div>
+            <span class="err-msg" id="err-lpass"></span>
+          </div>
+
+          <a href="#" class="forgot-link" data-i18n="forgot">Esqueci minha senha</a>
+
+          <button type="submit" class="btn-primary" id="btn-login">
+            <span class="btn-loading" id="loading-login"></span>
+            <span data-i18n="btn_login">Entrar →</span>
+          </button>
+        </form>
+
+        <div class="switch-link">
+          <span data-i18n="no_account">Não tem uma conta?</span>
+          <a onclick="showSignup()" data-i18n="link_signup"> Criar conta grátis</a>
+        </div>
+      </div>
+
+      <!-- ── SUCCESS VIEW ── -->
+      <div id="view-success" class="auth-view">
+        <div class="success-box">
+          <div class="success-icon">✓</div>
+          <h2 class="success-title" data-i18n="success_title">Conta criada!</h2>
+          <p class="success-sub" data-i18n="success_sub">Sua conta foi criada com sucesso. Faça login para acessar seu dashboard financeiro.</p>
+          <button class="btn-primary" onclick="showLogin()">
+            <span data-i18n="btn_login">Entrar →</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script>
+// ════════════════════════════════════════════════════
+// TRANSLATIONS
+// ════════════════════════════════════════════════════
+const T = {
+  'pt-BR':{
+    left_title_1:'Sua central',left_title_2:'financeira completa',
+    left_sub:'Conecte todas as suas contas, monitore investimentos e receba alertas inteligentes direto no seu WhatsApp.',
+    feat_1:'Monitoramento 24/7 com Agentes de IA',
+    feat_2:'Alertas em tempo real no WhatsApp',
+    feat_3:'Mais de 30 bancos integrados via Open Finance',
+    feat_4:'Dashboard completo: contas, cartões, investimentos',
+    users_label:'usuários ativos',
+    signup_heading:'Crie sua conta',signup_subheading:'Comece grátis. Sem cartão de crédito.',
+    field_firstname:'Nome',field_lastname:'Sobrenome',
+    field_email:'E-mail',field_phone:'Telefone',
+    field_password:'Senha',field_confirm:'Confirmar Senha',
+    btn_signup:'Criar conta grátis →',terms_text:'Li e aceito os Termos de Uso e a Política de Privacidade',
+    have_account:'Já tem uma conta?',link_login:'Entrar',
+    login_heading:'Bem-vindo de volta',login_subheading:'Entre na sua conta Nexora',
+    btn_login:'Entrar →',no_account:'Não tem uma conta?',link_signup:'Criar conta grátis',
+    forgot:'Esqueci minha senha',
+    success_title:'Conta criada!',success_sub:'Sua conta foi criada com sucesso. Faça login para acessar seu dashboard financeiro.',
+    err_required:'Campo obrigatório',err_email:'E-mail inválido',
+    err_password_len:'Mínimo 8 caracteres',err_password_match:'As senhas não coincidem',
+    err_phone:'Telefone inválido',err_invalid_login:'E-mail ou senha incorretos',
+  },
+  'en':{
+    left_title_1:'Your complete',left_title_2:'financial hub',
+    left_sub:'Connect all your accounts, monitor investments and receive smart alerts directly on your WhatsApp.',
+    feat_1:'24/7 AI Agent monitoring',feat_2:'Real-time WhatsApp alerts',
+    feat_3:'Over 30 banks integrated via Open Finance',feat_4:'Full dashboard: accounts, cards, investments',
+    users_label:'active users',
+    signup_heading:'Create your account',signup_subheading:'Start free. No credit card required.',
+    field_firstname:'First Name',field_lastname:'Last Name',
+    field_email:'Email',field_phone:'Phone',
+    field_password:'Password',field_confirm:'Confirm Password',
+    btn_signup:'Create free account →',terms_text:'I agree to the Terms of Use and Privacy Policy',
+    have_account:'Already have an account?',link_login:'Sign in',
+    login_heading:'Welcome back',login_subheading:'Sign in to your Nexora account',
+    btn_login:'Sign in →',no_account:"Don't have an account?",link_signup:'Create free account',
+    forgot:'Forgot my password',
+    success_title:'Account created!',success_sub:'Your account was successfully created. Sign in to access your financial dashboard.',
+    err_required:'Required field',err_email:'Invalid email',
+    err_password_len:'Minimum 8 characters',err_password_match:"Passwords don't match",
+    err_phone:'Invalid phone',err_invalid_login:'Incorrect email or password',
+  },
+  'zh':{
+    left_title_1:'您的',left_title_2:'完整财务中心',
+    left_sub:'连接所有账户，监控投资，通过WhatsApp接收智能提醒。',
+    feat_1:'AI智能体全天候监控',feat_2:'WhatsApp实时提醒',
+    feat_3:'超过30家银行集成',feat_4:'完整仪表板：账户、卡片、投资',
+    users_label:'活跃用户',
+    signup_heading:'创建您的账户',signup_subheading:'免费开始。无需信用卡。',
+    field_firstname:'名',field_lastname:'姓',
+    field_email:'电子邮件',field_phone:'电话',
+    field_password:'密码',field_confirm:'确认密码',
+    btn_signup:'免费创建账户 →',terms_text:'我同意使用条款和隐私政策',
+    have_account:'已有账户？',link_login:'登录',
+    login_heading:'欢迎回来',login_subheading:'登录您的Nexora账户',
+    btn_login:'登录 →',no_account:'没有账户？',link_signup:'免费创建账户',
+    forgot:'忘记密码',
+    success_title:'账户已创建！',success_sub:'您的账户已成功创建。请登录访问您的财务仪表板。',
+    err_required:'必填字段',err_email:'无效的电子邮件',
+    err_password_len:'最少8个字符',err_password_match:'密码不匹配',
+    err_phone:'无效的电话号码',err_invalid_login:'邮箱或密码不正确',
+  }
+};
+
+// ════════════════════════════════════════════════════
+// THEME SYSTEM
+// ════════════════════════════════════════════════════
+const mq = window.matchMedia('(prefers-color-scheme: light)');
+
+function applyTheme(val){
+  const html = document.documentElement;
+  if(val==='system') html.dataset.theme = mq.matches?'light':'dark';
+  else html.dataset.theme = val;
+  document.querySelectorAll('[data-theme-val]').forEach(b=>{
+    b.classList.toggle('active', b.dataset.themeVal===val);
+  });
+}
+function setTheme(val){
+  localStorage.setItem('nx-theme', val);
+  applyTheme(val);
+}
+mq.addEventListener('change',()=>{
+  if(localStorage.getItem('nx-theme')==='system') applyTheme('system');
+});
+
+// ════════════════════════════════════════════════════
+// I18N
+// ════════════════════════════════════════════════════
+let currentLang = 'pt-BR';
+
+function applyLang(lang){
+  currentLang = lang;
+  const t = T[lang] || T['pt-BR'];
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k = el.dataset.i18n;
+    if(t[k] !== undefined){
+      if(el.tagName==='INPUT') el.placeholder = t[k];
+      else el.textContent = t[k];
+    }
+  });
+  document.querySelectorAll('[data-lang-val]').forEach(b=>{
+    b.classList.toggle('active', b.dataset.langVal===lang);
+  });
+}
+function setLang(lang){
+  localStorage.setItem('nx-lang', lang);
+  applyLang(lang);
+}
+
+// ════════════════════════════════════════════════════
+// VIEW SWITCHING
+// ════════════════════════════════════════════════════
+function showSignup(){
+  document.querySelectorAll('.auth-view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-signup').classList.add('active');
+}
+function showLogin(){
+  document.querySelectorAll('.auth-view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-login').classList.add('active');
+  // Pre-fill email if known
+  const user = getUser();
+  if(user) document.getElementById('l-email').value = user.email;
+}
+function showSuccess(){
+  document.querySelectorAll('.auth-view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-success').classList.add('active');
+}
+
+// ════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════
+function toggleEye(inputId, btnId){
+  const inp = document.getElementById(inputId);
+  const visible = inp.type==='text';
+  inp.type = visible ? 'password' : 'text';
+  document.getElementById(btnId).textContent = visible ? '👁' : '🙈';
+}
+
+function showErr(id, msg){ const e=document.getElementById(id); if(e){e.textContent=msg;e.classList.add('show')} }
+function hideErr(id){ const e=document.getElementById(id); if(e){e.classList.remove('show')} }
+function setInputState(id, state){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.classList.remove('error','success');
+  if(state) el.classList.add(state);
+}
+
+function validateEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+function validatePhone(v){ return v.replace(/\D/g,'').length >= 10; }
+
+// Phone mask
+document.getElementById('s-phone').addEventListener('input', function(){
+  let v = this.value.replace(/\D/g,'');
+  if(v.length>11) v=v.slice(0,11);
+  if(v.length<=2) this.value=v.length?'('+v:v;
+  else if(v.length<=7) this.value='('+v.slice(0,2)+') '+v.slice(2);
+  else if(v.length<=11) this.value='('+v.slice(0,2)+') '+v.slice(2,7)+'-'+v.slice(7);
+});
+
+// Password strength
+document.getElementById('s-pass').addEventListener('input', function(){
+  const v = this.value;
+  let score = 0;
+  if(v.length>=8) score++;
+  if(/[A-Z]/.test(v)) score++;
+  if(/[0-9]/.test(v)) score++;
+  if(/[^A-Za-z0-9]/.test(v)) score++;
+  const t = T[currentLang];
+  const labels = {
+    'pt-BR':['','Fraca','Média','Boa','Forte'],
+    'en':['','Weak','Fair','Good','Strong'],
+    'zh':['','弱','一般','良好','强']
+  };
+  const colors = ['','active-w','active-w','active-f','active-g'];
+  [1,2,3,4].forEach(i=>{
+    const bar = document.getElementById('sb'+i);
+    bar.className='strength-bar';
+    if(i<=score) bar.classList.add(colors[score]);
+  });
+  const lab = document.getElementById('pass-label');
+  if(lab) lab.textContent = v ? (labels[currentLang]||labels['pt-BR'])[score] : '';
+});
+
+// ════════════════════════════════════════════════════
+// USER STORAGE (LocalStorage demo)
+// ════════════════════════════════════════════════════
+// SUPABASE AUTH
+// ════════════════════════════════════════════════════
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const _sb = createClient(
+  'https://xdxcczywfincjcbvbecb.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeGNjenl3ZmluY2pjYnZiZWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNjA4MTAsImV4cCI6MjA4ODczNjgxMH0.Jhg9yNbMuWtzQ9GPaoJ6KL_nxzht1FLWEHpfDr-J3sE'
+);
+
+// Redirect if already logged in
+_sb.auth.getSession().then(({data:{session}})=>{
+  if(session) window.location.href='/dashboard.html';
+});
+
+// ════════════════════════════════════════════════════
+// SIGNUP FORM
+// ════════════════════════════════════════════════════
+document.getElementById('signup-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const t = T[currentLang];
+  let valid = true;
+
+  const fname = document.getElementById('s-fname').value.trim();
+  const lname = document.getElementById('s-lname').value.trim();
+  const email = document.getElementById('s-email').value.trim();
+  const phone = document.getElementById('s-phone').value;
+  const pass  = document.getElementById('s-pass').value;
+  const conf  = document.getElementById('s-confirm').value;
+  const terms = document.getElementById('terms').checked;
+
+  ['err-fname','err-lname','err-email','err-phone','err-pass','err-confirm'].forEach(id=>hideErr(id));
+  ['s-fname','s-lname','s-email','s-phone','s-pass','s-confirm'].forEach(id=>setInputState(id,null));
+
+  if(!fname){showErr('err-fname',t.err_required);setInputState('s-fname','error');valid=false}
+  if(!lname){showErr('err-lname',t.err_required);setInputState('s-lname','error');valid=false}
+  if(!validateEmail(email)){showErr('err-email',t.err_email);setInputState('s-email','error');valid=false}
+  if(!validatePhone(phone)){showErr('err-phone',t.err_phone);setInputState('s-phone','error');valid=false}
+  if(pass.length<8){showErr('err-pass',t.err_password_len);setInputState('s-pass','error');valid=false}
+  if(pass!==conf){showErr('err-confirm',t.err_password_match);setInputState('s-confirm','error');valid=false}
+  if(!terms){valid=false}
+  if(!valid) return;
+
+  const btn = document.getElementById('btn-signup');
+  btn.disabled=true;
+  document.getElementById('loading-signup').style.display='block';
+
+  const { error } = await _sb.auth.signUp({
+    email, password: pass,
+    options: { data: { nome: fname, sobrenome: lname, telefone: phone } }
+  });
+
+  btn.disabled=false;
+  document.getElementById('loading-signup').style.display='none';
+
+  if(error){
+    showErr('err-email', error.message);
+    setInputState('s-email','error');
+  } else {
+    showSuccess();
+  }
+});
+
+// ════════════════════════════════════════════════════
+// LOGIN FORM
+// ════════════════════════════════════════════════════
+document.getElementById('login-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const t = T[currentLang];
+  const email = document.getElementById('l-email').value.trim();
+  const pass  = document.getElementById('l-pass').value;
+
+  hideErr('err-lemail'); hideErr('err-lpass');
+  setInputState('l-email',null); setInputState('l-pass',null);
+
+  if(!validateEmail(email)){
+    showErr('err-lemail',t.err_email);
+    setInputState('l-email','error');return;
+  }
+  if(!pass){
+    showErr('err-lpass',t.err_required);
+    setInputState('l-pass','error');return;
+  }
+
+  const btn = document.getElementById('btn-login');
+  btn.disabled=true;
+  document.getElementById('loading-login').style.display='block';
+
+  const { error } = await _sb.auth.signInWithPassword({ email, password: pass });
+
+  btn.disabled=false;
+  document.getElementById('loading-login').style.display='none';
+
+  if(error){
+    showErr('err-lemail', t.err_invalid_login || 'E-mail ou senha incorretos');
+    setInputState('l-email','error');
+  } else {
+    window.location.href='/dashboard.html';
+  }
+});
+
+// ════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════
+(function init(){
+  const savedTheme = localStorage.getItem('nx-theme') || 'dark';
+  const savedLang  = localStorage.getItem('nx-lang')  || 'pt-BR';
+  applyTheme(savedTheme);
+  applyLang(savedLang);
+})();
+</script>
+</body>
+</html>
