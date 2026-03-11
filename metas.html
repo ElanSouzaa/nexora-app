@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Metas · Nexora</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --lime:        #C8FF00;
+      --lime-dark:   #A8D400;
+      --lime-dim:    rgba(200,255,0,0.12);
+      --lime-glow:   rgba(200,255,0,0.22);
+      --lime-border: rgba(200,255,0,0.28);
+      --black:       #060606;
+      --dark:        #0C0C0C;
+      --surface:     #101010;
+      --surface2:    #141414;
+      --card:        #161616;
+      --card2:       #1A1A1A;
+      --border:      rgba(255,255,255,0.07);
+      --border2:     rgba(255,255,255,0.04);
+      --white:       #FFFFFF;
+      --gray:        #666;
+      --lgray:       #999;
+      --danger:      #FF4D4D;
+      --danger-dim:  rgba(255,77,77,0.12);
+      --danger-brd:  rgba(255,77,77,0.28);
+      --success:     #00D37F;
+      --success-dim: rgba(0,211,127,0.12);
+      --success-brd: rgba(0,211,127,0.28);
+      --warning:     #FFB020;
+      --warning-dim: rgba(255,176,32,0.12);
+      --warning-brd: rgba(255,176,32,0.28);
+      --info:        #4DA6FF;
+      --info-dim:    rgba(77,166,255,0.12);
+      --info-brd:    rgba(77,166,255,0.28);
+      --font-title:  'Space Grotesk', sans-serif;
+      --font-body:   'Inter', sans-serif;
+      --sidebar-w:   260px;
+      --topbar-h:    68px;
+      --radius:      14px;
+      --radius-sm:   9px;
+      --tr:          0.28s cubic-bezier(0.4,0,0.2,1);
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--black); color: var(--white); font-family: var(--font-body); font-size: 14px; line-height: 1.55; overflow-x: hidden; min-height: 100vh; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--card2); border-radius: 4px; }
+
+    .app { display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar { width: var(--sidebar-w); min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 100; overflow-y: auto; }
+    .sidebar::before { content:''; position:absolute; top:0; left:0; right:0; height:180px; background:radial-gradient(ellipse at 50% -20%, rgba(200,255,0,0.08) 0%, transparent 70%); pointer-events:none; }
+    .sb-logo { display:flex; align-items:center; gap:10px; padding:22px 20px 18px; border-bottom:1px solid var(--border); }
+    .sb-logo-icon { width:34px; height:34px; border-radius:9px; background:var(--lime); color:#000; font-family:var(--font-title); font-weight:800; font-size:18px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .sb-logo-text { font-family:var(--font-title); font-weight:700; font-size:16px; }
+    .sb-logo-badge { margin-left:auto; font-size:9px; font-weight:700; letter-spacing:.06em; background:var(--lime-dim); color:var(--lime); border:1px solid var(--lime-border); padding:2px 7px; border-radius:20px; }
+    .sb-nav { padding:14px 12px; flex:1; display:flex; flex-direction:column; gap:2px; }
+    .sb-section-label { font-size:10px; font-weight:600; letter-spacing:.1em; color:var(--gray); text-transform:uppercase; padding:8px 8px 4px; }
+    .sb-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:var(--radius-sm); color:var(--lgray); font-size:13.5px; font-weight:500; text-decoration:none; transition:all var(--tr); }
+    .sb-item svg { width:17px; height:17px; flex-shrink:0; }
+    .sb-item:hover { background:rgba(255,255,255,0.05); color:var(--white); }
+    .sb-item.active { background:var(--lime-dim); color:var(--lime); border:1px solid var(--lime-border); }
+    .badge { margin-left:auto; font-size:10px; font-weight:700; background:var(--danger); color:#fff; padding:1px 6px; border-radius:20px; min-width:20px; text-align:center; }
+    .sb-footer { padding:14px 16px; border-top:1px solid var(--border); }
+    .sb-user { display:flex; align-items:center; gap:10px; }
+    .sb-avatar { width:34px; height:34px; border-radius:50%; background:var(--lime-dim); border:1.5px solid var(--lime-border); color:var(--lime); font-weight:700; font-size:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .sb-user-name { font-size:13px; font-weight:600; }
+    .sb-user-plan { font-size:11px; color:var(--lime); }
+
+    /* MAIN */
+    .main-wrapper { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; min-height:100vh; }
+    .topbar { height:var(--topbar-h); background:var(--surface); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 28px; gap:14px; position:sticky; top:0; z-index:50; }
+    .topbar-title { font-family:var(--font-title); font-weight:700; font-size:18px; }
+    .topbar-sub { font-size:12.5px; color:var(--lgray); margin-left:2px; }
+    .topbar-actions { margin-left:auto; display:flex; align-items:center; gap:10px; }
+    .btn { display:inline-flex; align-items:center; gap:7px; padding:8px 16px; border-radius:var(--radius-sm); font-size:13px; font-weight:600; font-family:var(--font-body); cursor:pointer; border:none; transition:all var(--tr); text-decoration:none; }
+    .btn svg { width:15px; height:15px; }
+    .btn-lime { background:var(--lime); color:#000; }
+    .btn-lime:hover { background:var(--lime-dark); transform:translateY(-1px); }
+    .btn-ghost { background:transparent; color:var(--lgray); border:1px solid var(--border); }
+    .btn-ghost:hover { background:rgba(255,255,255,0.04); color:var(--white); }
+
+    .page-content { padding:28px; flex:1; display:flex; flex-direction:column; gap:22px; }
+
+    /* STATS */
+    .stats-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+    .stat-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; position:relative; overflow:hidden; }
+    .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+    .stat-card.lime::before { background:var(--lime); }
+    .stat-card.green::before { background:var(--success); }
+    .stat-card.blue::before { background:var(--info); }
+    .stat-card.orange::before { background:var(--warning); }
+    .stat-label { font-size:11.5px; color:var(--lgray); font-weight:500; margin-bottom:8px; text-transform:uppercase; letter-spacing:.05em; }
+    .stat-value { font-family:var(--font-title); font-weight:700; font-size:22px; }
+    .stat-delta { display:inline-flex; align-items:center; gap:4px; font-size:11.5px; font-weight:600; margin-top:5px; padding:2px 7px; border-radius:20px; }
+    .stat-delta.up { background:var(--success-dim); color:var(--success); }
+    .stat-delta.warn { background:var(--warning-dim); color:var(--warning); }
+    .stat-icon { position:absolute; top:16px; right:16px; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; opacity:.6; }
+    .stat-icon svg { width:18px; height:18px; }
+    .stat-icon.lime { background:var(--lime-dim); color:var(--lime); }
+    .stat-icon.green { background:var(--success-dim); color:var(--success); }
+    .stat-icon.blue { background:var(--info-dim); color:var(--info); }
+    .stat-icon.orange { background:var(--warning-dim); color:var(--warning); }
+
+    /* TABS */
+    .view-tabs { display:flex; gap:4px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:4px; width:fit-content; }
+    .vtab { padding:7px 18px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; color:var(--lgray); transition:all var(--tr); border:none; background:transparent; }
+    .vtab.active { background:var(--lime); color:#000; }
+    .vtab:not(.active):hover { background:rgba(255,255,255,0.05); color:var(--white); }
+
+    /* GOALS GRID */
+    .goals-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+    .goal-card {
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:20px 22px;
+      display:flex; flex-direction:column; gap:14px;
+      cursor:pointer;
+      transition:border-color var(--tr), transform var(--tr);
+      position:relative;
+      overflow:hidden;
+    }
+    .goal-card:hover { border-color:rgba(255,255,255,0.12); transform:translateY(-2px); }
+    .goal-card.completed { border-color:var(--success-brd); }
+    .goal-card.completed::after { content:'✓ Concluída'; position:absolute; top:14px; right:14px; font-size:11px; font-weight:700; background:var(--success-dim); color:var(--success); border:1px solid var(--success-brd); padding:3px 9px; border-radius:20px; }
+    .goal-card.at-risk { border-color:var(--warning-brd); }
+    .goal-card.at-risk::after { content:'⚠ Em risco'; position:absolute; top:14px; right:14px; font-size:11px; font-weight:700; background:var(--warning-dim); color:var(--warning); border:1px solid var(--warning-brd); padding:3px 9px; border-radius:20px; }
+
+    .goal-icon-row { display:flex; align-items:center; gap:12px; }
+    .goal-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+    .goal-name { font-family:var(--font-title); font-weight:700; font-size:15px; }
+    .goal-deadline { font-size:11.5px; color:var(--lgray); margin-top:2px; }
+
+    .goal-amounts { display:flex; justify-content:space-between; align-items:flex-end; }
+    .goal-current { font-family:var(--font-title); font-size:20px; font-weight:700; }
+    .goal-target { font-size:12px; color:var(--lgray); }
+    .goal-target span { color:var(--white); font-weight:600; }
+
+    .goal-progress-bar {
+      height: 7px; background: var(--border2); border-radius: 10px; overflow: hidden;
+    }
+    .goal-progress-fill {
+      height: 100%; border-radius: 10px;
+      transition: width 1s ease;
+    }
+
+    .goal-meta { display:flex; justify-content:space-between; align-items:center; }
+    .goal-pct { font-family:var(--font-title); font-weight:700; font-size:13px; }
+    .goal-monthly { font-size:11.5px; color:var(--lgray); }
+    .goal-monthly span { color:var(--white); font-weight:500; }
+
+    .goal-actions { display:flex; gap:8px; opacity:0; transition:opacity var(--tr); }
+    .goal-card:hover .goal-actions { opacity:1; }
+    .ga-btn { flex:1; padding:7px; border-radius:7px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--lgray); transition:all var(--tr); }
+    .ga-btn.primary { background:var(--lime-dim); color:var(--lime); border-color:var(--lime-border); }
+    .ga-btn:hover { background:rgba(255,255,255,0.06); color:var(--white); }
+    .ga-btn.primary:hover { background:rgba(200,255,0,0.2); }
+
+    /* ADD GOAL CARD */
+    .goal-card.add-card {
+      border:1.5px dashed rgba(255,255,255,0.1);
+      background:transparent;
+      display:flex; align-items:center; justify-content:center;
+      min-height:200px;
+      flex-direction:column; gap:12px;
+    }
+    .goal-card.add-card:hover { border-color:var(--lime-border); background:var(--lime-dim); }
+    .goal-card.add-card:hover .add-icon { background:var(--lime); color:#000; }
+    .goal-card.add-card:hover .add-text { color:var(--lime); }
+    .add-icon { width:44px; height:44px; border-radius:12px; background:var(--surface2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; transition:all var(--tr); }
+    .add-icon svg { width:20px; height:20px; color:var(--lgray); transition:color var(--tr); }
+    .add-text { font-size:13px; font-weight:600; color:var(--lgray); transition:color var(--tr); }
+
+    /* TIMELINE */
+    .timeline-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:22px; }
+    .timeline-title { font-family:var(--font-title); font-weight:600; font-size:15px; margin-bottom:20px; }
+    .timeline { display:flex; flex-direction:column; gap:0; }
+    .tl-item { display:flex; gap:16px; padding-bottom:20px; position:relative; }
+    .tl-item:last-child { padding-bottom:0; }
+    .tl-item:not(:last-child)::before {
+      content:''; position:absolute; left:17px; top:34px; bottom:0;
+      width:1px; background:var(--border);
+    }
+    .tl-dot {
+      width:35px; height:35px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:14px; flex-shrink:0; border:1.5px solid;
+    }
+    .tl-dot.done { background:var(--success-dim); border-color:var(--success-brd); }
+    .tl-dot.active { background:var(--lime-dim); border-color:var(--lime-border); box-shadow:0 0 0 3px rgba(200,255,0,0.12); }
+    .tl-dot.future { background:var(--surface2); border-color:var(--border); }
+    .tl-content { flex:1; padding-top:5px; }
+    .tl-title { font-weight:600; font-size:13.5px; }
+    .tl-date { font-size:11.5px; color:var(--lgray); margin-top:2px; }
+    .tl-amount { font-family:var(--font-title); font-weight:700; font-size:14px; margin-top:4px; }
+    .tl-amount.green { color:var(--success); }
+    .tl-amount.lime { color:var(--lime); }
+
+    /* TWO COL */
+    .two-col { display:grid; grid-template-columns:1fr 320px; gap:18px; }
+
+    /* MODAL BACKDROP */
+    .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px); z-index:200; display:none; align-items:center; justify-content:center; }
+    .modal-backdrop.open { display:flex; }
+    .modal { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:28px; width:420px; max-width:96vw; }
+    .modal-title { font-family:var(--font-title); font-weight:700; font-size:17px; margin-bottom:6px; }
+    .modal-sub { font-size:13px; color:var(--lgray); margin-bottom:20px; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .form-group { display:flex; flex-direction:column; gap:6px; }
+    .form-group label { font-size:12px; font-weight:600; color:var(--lgray); text-transform:uppercase; letter-spacing:.06em; }
+    .form-group input, .form-group select {
+      background:var(--surface2); border:1px solid var(--border);
+      border-radius:var(--radius-sm); padding:10px 13px;
+      color:var(--white); font-size:13.5px; font-family:var(--font-body);
+      outline:none; transition:border-color var(--tr);
+    }
+    .form-group input:focus, .form-group select:focus { border-color:var(--lime-border); }
+    .form-group select option { background:var(--card); }
+    .modal-footer { display:flex; gap:10px; margin-top:22px; }
+    .modal-footer .btn { flex:1; justify-content:center; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">N</div>
+      <div><div class="sb-logo-text">Nexora</div></div>
+      <span class="sb-logo-badge">PRO</span>
+    </div>
+    <nav class="sb-nav">
+      <span class="sb-section-label">Principal</span>
+      <a class="sb-item" href="dashboard.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Visão Geral
+      </a>
+      <a class="sb-item" href="transacoes.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+        Transações <span class="badge">32</span>
+      </a>
+      <a class="sb-item" href="contas.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        Contas
+      </a>
+      <a class="sb-item" href="cartoes.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path stroke-linecap="round" d="M2 10h20"/></svg>
+        Cartões
+      </a>
+      <span class="sb-section-label" style="margin-top:8px">IA & Insights</span>
+      <a class="sb-item" href="chat-ia.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        Chat IA
+      </a>
+      <a class="sb-item" href="alertas.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        Alertas <span class="badge">5</span>
+      </a>
+      <span class="sb-section-label" style="margin-top:8px">Financeiro</span>
+      <a class="sb-item" href="relatorios.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Relatórios
+      </a>
+      <a class="sb-item active" href="metas.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+        Metas
+      </a>
+      <a class="sb-item" href="investimentos.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        Investimentos
+      </a>
+      <span class="sb-section-label" style="margin-top:8px">Sistema</span>
+      <a class="sb-item" href="configuracoes.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Configurações
+      </a>
+    </nav>
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar" id="sbAvatar">ES</div>
+        <div><div class="sb-user-name" id="sbUserName">Elan Souzaa</div><div class="sb-user-plan">Plano Pro ✦</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title">Metas</div>
+        <div class="topbar-sub">Objetivos financeiros</div>
+      </div>
+      <div class="topbar-actions">
+        <div class="view-tabs">
+          <button class="vtab active" onclick="setView(this,'cards')">Cards</button>
+          <button class="vtab" onclick="setView(this,'timeline')">Timeline</button>
+        </div>
+        <button class="btn btn-lime" onclick="openModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Nova Meta
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+
+      <!-- STATS -->
+      <div class="stats-strip">
+        <div class="stat-card lime">
+          <div class="stat-icon lime"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138z"/></svg></div>
+          <div class="stat-label">Metas Ativas</div>
+          <div class="stat-value" style="color:var(--lime)">7</div>
+          <div class="stat-delta up">2 concluídas em 2026</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon green"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+          <div class="stat-label">Total Guardado</div>
+          <div class="stat-value" style="color:var(--success)">R$ 68.450</div>
+          <div class="stat-delta up">↑ R$ 3.200 este mês</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon blue"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg></div>
+          <div class="stat-label">Progresso Médio</div>
+          <div class="stat-value" style="color:var(--info)">67%</div>
+          <div class="stat-delta up">↑ 5% este mês</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-icon orange"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path stroke-linecap="round" d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+          <div class="stat-label">Próximo Prazo</div>
+          <div class="stat-value" style="color:var(--warning)">47 dias</div>
+          <div class="stat-delta warn">Reserva Emergência</div>
+        </div>
+      </div>
+
+      <!-- GOALS GRID (view=cards) -->
+      <div id="viewCards">
+        <div class="goals-grid">
+
+          <!-- Goal 1: Reserva de Emergência - at risk -->
+          <div class="goal-card at-risk">
+            <div class="goal-icon-row">
+              <div class="goal-icon" style="background:var(--warning-dim)">🛡️</div>
+              <div>
+                <div class="goal-name">Reserva de Emergência</div>
+                <div class="goal-deadline">📅 Prazo: Abr 2026 · 47 dias</div>
+              </div>
+            </div>
+            <div class="goal-amounts">
+              <div>
+                <div class="goal-current" style="color:var(--warning)">R$ 18.700</div>
+                <div class="goal-target">de <span>R$ 30.000</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="goal-progress-bar">
+                <div class="goal-progress-fill" style="width:62.3%;background:var(--warning)"></div>
+              </div>
+              <div class="goal-meta" style="margin-top:7px">
+                <div class="goal-pct" style="color:var(--warning)">62,3%</div>
+                <div class="goal-monthly">Depósito: <span>R$ 2.000/mês</span></div>
+              </div>
+            </div>
+            <div class="goal-actions">
+              <button class="ga-btn primary" onclick="addDeposit('Reserva de Emergência')">+ Depositar</button>
+              <button class="ga-btn" onclick="editGoal('Reserva de Emergência')">Editar</button>
+            </div>
+          </div>
+
+          <!-- Goal 2: Viagem Europa -->
+          <div class="goal-card">
+            <div class="goal-icon-row">
+              <div class="goal-icon" style="background:var(--info-dim)">✈️</div>
+              <div>
+                <div class="goal-name">Viagem para Europa</div>
+                <div class="goal-deadline">📅 Prazo: Jul 2026 · 4 meses</div>
+              </div>
+            </div>
+            <div class="goal-amounts">
+              <div>
+                <div class="goal-current" style="color:var(--info)">R$ 9.800</div>
+                <div class="goal-target">de <span>R$ 15.000</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="goal-progress-bar">
+                <div class="goal-progress-fill" style="width:65.3%;background:var(--info)"></div>
+              </div>
+              <div class="goal-meta" style="margin-top:7px">
+                <div class="goal-pct" style="color:var(--info)">65,3%</div>
+                <div class="goal-monthly">Depósito: <span>R$ 1.300/mês</span></div>
+              </div>
+            </div>
+            <div class="goal-actions">
+              <button class="ga-btn primary" onclick="addDeposit('Viagem Europa')">+ Depositar</button>
+              <button class="ga-btn" onclick="editGoal('Viagem Europa')">Editar</button>
+            </div>
+          </div>
+
+          <!-- Goal 3: Entrada Apartamento -->
+          <div class="goal-card">
+            <div class="goal-icon-row">
+              <div class="goal-icon" style="background:var(--lime-dim)">🏠</div>
+              <div>
+                <div class="goal-name">Entrada Apartamento</div>
+                <div class="goal-deadline">📅 Prazo: Dez 2027 · 21 meses</div>
+              </div>
+            </div>
+            <div class="goal-amounts">
+              <div>
+                <div class="goal-current" style="color:var(--lime)">R$ 28.000</div>
+                <div class="goal-target">de <span>R$ 80.000</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="goal-progress-bar">
+                <div class="goal-progress-fill" style="width:35%;background:var(--lime)"></div>
+              </div>
+              <div class="goal-meta" style="margin-top:7px">
+                <div class="goal-pct" style="color:var(--lime)">35%</div>
+                <div class="goal-monthly">Depósito: <span>R$ 2.500/mês</span></div>
+              </div>
+            </div>
+            <div class="goal-actions">
+              <button class="ga-btn primary" onclick="addDeposit('Entrada Apartamento')">+ Depositar</button>
+              <button class="ga-btn" onclick="editGoal('Entrada Apartamento')">Editar</button>
+            </div>
+          </div>
+
+          <!-- Goal 4: Notebook Novo - completed -->
+          <div class="goal-card completed">
+            <div class="goal-icon-row">
+              <div class="goal-icon" style="background:var(--success-dim)">💻</div>
+              <div>
+                <div class="goal-name">Notebook Novo</div>
+                <div class="goal-deadline">✅ Concluída em Jan 2026</div>
+              </div>
+            </div>
+            <div class="goal-amounts">
+              <div>
+                <div class="goal-current" style="color:var(--success)">R$ 7.500</div>
+                <div class="goal-target">de <span>R$ 7.500</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="goal-progress-bar">
+                <div class="goal-progress-fill" style="width:100%;background:var(--success)"></div>
+              </div>
+              <div class="goal-meta" style="margin-top:7px">
+                <div class="goal-pct" style="color:var(--success)">100%</div>
+                <div class="goal-monthly">Concluída 2 meses antes!</div>
+              </div>
+            </div>
+            <div class="goal-actions" style="opacity:1">
+              <button class="ga-btn" onclick="archiveGoal('Notebook')">Arquivar</button>
+            </div>
+          </div>
+
+          <!-- Goal 5: Carro Elétrico -->
+          <div class="goal-card">
+            <div class="goal-icon-row">
+              <div class="goal-icon" style="background:rgba(168,85,247,0.15)">🚗</div>
+              <div>
+                <div class="goal-name">Carro Elétrico</div>
+                <div class="goal-deadline">📅 Prazo: Jun 2028 · 39 meses</div>
+              </div>
+            </div>
+            <div class="goal-amounts">
+              <div>
+                <div class="goal-current" style="color:#c084fc">R$ 4.950</div>
+                <div class="goal-target">de <span>R$ 35.000</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="goal-progress-bar">
+                <div class="goal-progress-fill" style="width:14.1%;background:#c084fc"></div>
+              </div>
+              <div class="goal-meta" style="margin-top:7px">
+                <div class="goal-pct" style="color:#c084fc">14,1%</div>
+                <div class="goal-monthly">Depósito: <span>R$ 800/mês</span></div>
+              </div>
+            </div>
+            <div class="goal-actions">
+              <button class="ga-btn primary" onclick="addDeposit('Carro Elétrico')">+ Depositar</button>
+              <button class="ga-btn" onclick="editGoal('Carro Elétrico')">Editar</button>
+            </div>
+          </div>
+
+          <!-- Add new goal -->
+          <div class="goal-card add-card" onclick="openModal()">
+            <div class="add-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            </div>
+            <div class="add-text">Nova Meta</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TIMELINE VIEW (hidden by default) -->
+      <div id="viewTimeline" style="display:none">
+        <div class="two-col">
+          <div class="timeline-card">
+            <div class="timeline-title">Linha do Tempo das Metas</div>
+            <div class="timeline">
+              <div class="tl-item">
+                <div class="tl-dot done">✓</div>
+                <div class="tl-content">
+                  <div class="tl-title">Notebook Novo — Concluída!</div>
+                  <div class="tl-date">Janeiro 2026</div>
+                  <div class="tl-amount green">R$ 7.500 atingido</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot active">🛡</div>
+                <div class="tl-content">
+                  <div class="tl-title">Reserva de Emergência — Em andamento (62%)</div>
+                  <div class="tl-date">Prazo: Abril 2026 · Faltam R$ 11.300</div>
+                  <div class="tl-amount" style="color:var(--warning)">R$ 18.700 / R$ 30.000</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot active">✈</div>
+                <div class="tl-content">
+                  <div class="tl-title">Viagem Europa — Em andamento (65%)</div>
+                  <div class="tl-date">Prazo: Julho 2026 · Faltam R$ 5.200</div>
+                  <div class="tl-amount lime">R$ 9.800 / R$ 15.000</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot future">🏠</div>
+                <div class="tl-content">
+                  <div class="tl-title">Entrada Apartamento — Em andamento (35%)</div>
+                  <div class="tl-date">Prazo: Dezembro 2027 · Faltam R$ 52.000</div>
+                  <div class="tl-amount lime">R$ 28.000 / R$ 80.000</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot future">🚗</div>
+                <div class="tl-content">
+                  <div class="tl-title">Carro Elétrico — Em andamento (14%)</div>
+                  <div class="tl-date">Prazo: Junho 2028 · Faltam R$ 30.050</div>
+                  <div class="tl-amount" style="color:#c084fc">R$ 4.950 / R$ 35.000</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary panel -->
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div class="timeline-card">
+              <div class="timeline-title" style="font-size:13.5px; margin-bottom:14px;">Contribuição Mensal</div>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border2);">
+                  <div style="font-size:13px;">🛡️ Reserva Emergência</div>
+                  <div style="font-weight:700; font-size:13.5px; color:var(--warning)">R$ 2.000</div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border2);">
+                  <div style="font-size:13px;">✈️ Viagem Europa</div>
+                  <div style="font-weight:700; font-size:13.5px; color:var(--info)">R$ 1.300</div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border2);">
+                  <div style="font-size:13px;">🏠 Entrada Apto</div>
+                  <div style="font-weight:700; font-size:13.5px; color:var(--lime)">R$ 2.500</div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0;">
+                  <div style="font-size:13px;">🚗 Carro Elétrico</div>
+                  <div style="font-weight:700; font-size:13.5px; color:#c084fc">R$ 800</div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0 0; border-top:1px solid var(--border);">
+                  <div style="font-size:13px; font-weight:600;">Total / mês</div>
+                  <div style="font-family:var(--font-title); font-weight:700; font-size:16px; color:var(--lime)">R$ 6.600</div>
+                </div>
+              </div>
+            </div>
+            <div class="timeline-card" style="background:linear-gradient(135deg,rgba(200,255,0,0.06) 0%,rgba(200,255,0,0.01) 100%);">
+              <div style="font-size:12px; color:var(--lime); font-weight:700; margin-bottom:6px;">💡 IA Sugere</div>
+              <div style="font-size:12.5px; color:var(--lgray); line-height:1.6;">Aumentar o aporte na Reserva para <strong style="color:#fff">R$ 2.500/mês</strong> garante a meta antes do prazo em Abr/26 com margem de segurança.</div>
+              <a href="chat-ia.html" style="display:inline-flex; align-items:center; gap:5px; margin-top:10px; font-size:12px; color:var(--lime); text-decoration:none; font-weight:600;">Analisar →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- NEW GOAL MODAL -->
+<div class="modal-backdrop" id="goalModal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-title">Nova Meta Financeira</div>
+    <div class="modal-sub">Defina seu objetivo e acompanhe o progresso</div>
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <div class="form-group">
+        <label>Nome da Meta</label>
+        <input type="text" placeholder="Ex: Viagem para o Japão" id="goalName"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Valor Alvo (R$)</label>
+          <input type="number" placeholder="Ex: 20000" id="goalTarget"/>
+        </div>
+        <div class="form-group">
+          <label>Já Guardado (R$)</label>
+          <input type="number" placeholder="Ex: 5000" id="goalSaved"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Prazo</label>
+          <input type="month" id="goalDeadline"/>
+        </div>
+        <div class="form-group">
+          <label>Aporte Mensal (R$)</label>
+          <input type="number" placeholder="Ex: 1000" id="goalMonthly"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Categoria</label>
+        <select id="goalCategory">
+          <option>🛡️ Emergência</option>
+          <option>✈️ Viagem</option>
+          <option>🏠 Imóvel</option>
+          <option>🚗 Veículo</option>
+          <option>💻 Tecnologia</option>
+          <option>📚 Educação</option>
+          <option>💰 Investimento</option>
+          <option>🎯 Outro</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-lime" onclick="saveGoal()">Criar Meta →</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const sb = createClient(
+  'https://xdxcczywfincjcbvbecb.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeGNjenl3ZmluY2pjYnZiZWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4NjAyMzEsImV4cCI6MjA1NjQzNjIzMX0.m-3PIU4lcOiOhEYv8GBe7EAZSFzBPHH6tH7a3OWS2nw'
+);
+(async () => {
+  const { data:{ session } } = await sb.auth.getSession();
+  if(!session){ window.location.href='auth.html?mode=login'; return; }
+  const meta = JSON.parse(localStorage.getItem('nx-user-meta') || '{}');
+  const name = meta.first_name ? `${meta.first_name} ${meta.last_name||''}`.trim() : (session.user.email||'').split('@')[0];
+  const initials = name.split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('sbUserName').textContent = name;
+  document.getElementById('sbAvatar').textContent = initials;
+})();
+
+function setView(el, view) {
+  document.querySelectorAll('.vtab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('viewCards').style.display = view === 'cards' ? 'block' : 'none';
+  document.getElementById('viewTimeline').style.display = view === 'timeline' ? 'block' : 'none';
+}
+function openModal() {
+  document.getElementById('goalModal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('goalModal').classList.remove('open');
+}
+function closeModalOutside(e) {
+  if(e.target === document.getElementById('goalModal')) closeModal();
+}
+function saveGoal() {
+  const name = document.getElementById('goalName').value.trim();
+  if(!name) { document.getElementById('goalName').focus(); return; }
+  closeModal();
+  toast(`Meta "${name}" criada com sucesso!`, 'lime');
+}
+function addDeposit(name) {
+  toast(`Depósito registrado em "${name}"!`, 'green');
+}
+function editGoal(name) {
+  toast(`Editando meta "${name}"...`, 'blue');
+}
+function archiveGoal(name) {
+  toast(`Meta "${name}" arquivada.`, 'gray');
+}
+function toast(msg, color) {
+  const colors = { lime:'rgba(200,255,0,0.3)', green:'rgba(0,211,127,0.3)', blue:'rgba(77,166,255,0.3)', gray:'rgba(255,255,255,0.1)' };
+  const icons = { lime:'✦', green:'✓', blue:'ℹ', gray:'•' };
+  const fg = { lime:'#C8FF00', green:'#00D37F', blue:'#4DA6FF', gray:'#999' };
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:28px;right:28px;z-index:9999;background:#161616;border:1px solid ${colors[color]};color:#fff;padding:13px 20px;border-radius:12px;font-family:Inter,sans-serif;font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);`;
+  t.innerHTML = `<span style="color:${fg[color]};font-size:16px">${icons[color]}</span> ${msg}`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+window.setView = setView;
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.closeModalOutside = closeModalOutside;
+window.saveGoal = saveGoal;
+window.addDeposit = addDeposit;
+window.editGoal = editGoal;
+window.archiveGoal = archiveGoal;
+</script>
+</body>
+</html>
