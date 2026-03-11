@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Chat IA · Nexora</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --lime:        #C8FF00;
+      --lime-dark:   #A8D400;
+      --lime-dim:    rgba(200,255,0,0.12);
+      --lime-glow:   rgba(200,255,0,0.22);
+      --lime-border: rgba(200,255,0,0.28);
+      --black:       #060606;
+      --dark:        #0C0C0C;
+      --surface:     #101010;
+      --surface2:    #141414;
+      --card:        #161616;
+      --card2:       #1A1A1A;
+      --border:      rgba(255,255,255,0.07);
+      --border2:     rgba(255,255,255,0.04);
+      --white:       #FFFFFF;
+      --gray:        #666;
+      --lgray:       #999;
+      --danger:      #FF4D4D;
+      --success:     #00D37F;
+      --warning:     #FFB020;
+      --info:        #4DA6FF;
+      --font-title:  'Space Grotesk', sans-serif;
+      --font-body:   'Inter', sans-serif;
+      --sidebar-w:   260px;
+      --topbar-h:    68px;
+      --radius:      14px;
+      --radius-sm:   9px;
+      --radius-xs:   6px;
+      --tr:          0.28s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.55;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--card2); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--lime-dark); }
+
+    /* ══════════════════════════════════════════════════════════
+       APP LAYOUT
+    ══════════════════════════════════════════════════════════ */
+    .app { display: flex; min-height: 100vh; }
+
+    /* ══════════════════════════════════════════════════════════
+       SIDEBAR
+    ══════════════════════════════════════════════════════════ */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 100;
+      overflow: hidden;
+    }
+    .sidebar::before {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -60px;
+      width: 220px; height: 220px;
+      background: var(--lime-glow);
+      filter: blur(80px);
+      pointer-events: none;
+      border-radius: 50%;
+    }
+    .sb-logo {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 22px 22px 18px;
+      border-bottom: 1px solid var(--border2);
+      position: relative;
+    }
+    .sb-logo-icon {
+      width: 36px; height: 36px;
+      background: var(--lime);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-title);
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--black);
+      flex-shrink: 0;
+    }
+    .sb-logo-text {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--white);
+      letter-spacing: -0.3px;
+    }
+    .sb-logo-badge {
+      margin-left: auto;
+      background: var(--lime-dim);
+      color: var(--lime);
+      border: 1px solid var(--lime-border);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+    .sb-nav {
+      flex: 1;
+      padding: 14px 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .sb-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gray);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 10px 10px 4px;
+    }
+    .sb-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      color: var(--lgray);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: background var(--tr), color var(--tr);
+      position: relative;
+    }
+    .sb-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+    .sb-item:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+    .sb-item.active {
+      background: var(--lime-dim);
+      color: var(--lime);
+      border: 1px solid var(--lime-border);
+    }
+    .sb-item.active svg { color: var(--lime); }
+    .badge {
+      margin-left: auto;
+      background: var(--lime);
+      color: var(--black);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 20px;
+      min-width: 18px;
+      text-align: center;
+    }
+    .sb-footer {
+      padding: 14px 12px;
+      border-top: 1px solid var(--border2);
+    }
+    .sb-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background var(--tr);
+    }
+    .sb-user:hover { background: rgba(255,255,255,0.05); }
+    .sb-avatar {
+      width: 32px; height: 32px;
+      background: var(--lime);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--black);
+      flex-shrink: 0;
+    }
+    .sb-user-name { font-size: 13px; font-weight: 600; color: var(--white); }
+    .sb-user-plan { font-size: 11px; color: var(--lime); margin-top: 1px; }
+
+    /* ══════════════════════════════════════════════════════════
+       MAIN WRAPPER
+    ══════════════════════════════════════════════════════════ */
+    .main-wrapper {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       TOPBAR
+    ══════════════════════════════════════════════════════════ */
+    .topbar {
+      height: var(--topbar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-title {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--white);
+    }
+    .topbar-sub {
+      font-size: 12.5px;
+      color: var(--lgray);
+      margin-left: 2px;
+    }
+    .topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all var(--tr);
+      text-decoration: none;
+    }
+    .btn-lime {
+      background: var(--lime);
+      color: var(--black);
+    }
+    .btn-lime:hover { background: var(--lime-dark); transform: translateY(-1px); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--lgray);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+    .model-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--lgray);
+    }
+    .model-badge .dot {
+      width: 7px; height: 7px;
+      background: var(--lime);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.85); }
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       CHAT LAYOUT (3 columns: history | main | context)
+    ══════════════════════════════════════════════════════════ */
+    .chat-layout {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - var(--topbar-h));
+      overflow: hidden;
+    }
+
+    /* ── Left: Conversation history ── */
+    .chat-history {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .chat-history-header {
+      padding: 16px 16px 10px;
+      border-bottom: 1px solid var(--border2);
+    }
+    .chat-history-header h3 {
+      font-family: var(--font-title);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--lgray);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 10px;
+    }
+    .btn-new-chat {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 8px 12px;
+      background: var(--lime-dim);
+      color: var(--lime);
+      border: 1px solid var(--lime-border);
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--tr);
+    }
+    .btn-new-chat:hover { background: rgba(200,255,0,0.2); }
+    .btn-new-chat svg { width: 14px; height: 14px; }
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+    }
+    .history-group-label {
+      font-size: 10px;
+      color: var(--gray);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 8px 8px 4px;
+    }
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: var(--radius-xs);
+      cursor: pointer;
+      transition: background var(--tr);
+      color: var(--lgray);
+    }
+    .history-item:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+    .history-item.active { background: var(--lime-dim); color: var(--lime); }
+    .history-item svg { width: 13px; height: 13px; flex-shrink: 0; opacity: 0.7; }
+    .history-item-title {
+      font-size: 12.5px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+    }
+    .history-item-time {
+      font-size: 10px;
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
+
+    /* ── Center: Main chat ── */
+    .chat-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--dark);
+    }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Welcome state */
+    .chat-welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      text-align: center;
+      padding: 40px;
+    }
+    .welcome-icon {
+      width: 72px; height: 72px;
+      background: var(--lime-dim);
+      border: 2px solid var(--lime-border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .welcome-icon svg { width: 32px; height: 32px; color: var(--lime); }
+    .welcome-title {
+      font-family: var(--font-title);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+    .welcome-title span { color: var(--lime); }
+    .welcome-sub {
+      color: var(--lgray);
+      font-size: 14px;
+      max-width: 420px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+    .suggestions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      max-width: 520px;
+      width: 100%;
+    }
+    .suggestion-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all var(--tr);
+      text-align: left;
+    }
+    .suggestion-card:hover {
+      border-color: var(--lime-border);
+      background: var(--lime-dim);
+    }
+    .suggestion-card:hover .sc-icon { color: var(--lime); }
+    .sc-icon { color: var(--lgray); margin-bottom: 8px; }
+    .sc-icon svg { width: 18px; height: 18px; }
+    .sc-text {
+      font-size: 12.5px;
+      color: var(--lgray);
+      line-height: 1.5;
+    }
+    .suggestion-card:hover .sc-text { color: var(--white); }
+
+    /* Messages */
+    .msg-row {
+      display: flex;
+      gap: 14px;
+      animation: fadeUp 0.3s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .msg-row.user-row { flex-direction: row-reverse; }
+    .msg-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .msg-avatar.ai-av {
+      background: var(--lime);
+      color: var(--black);
+      font-family: var(--font-title);
+    }
+    .msg-avatar.user-av {
+      background: var(--card2);
+      color: var(--white);
+      border: 1px solid var(--border);
+    }
+    .msg-body { max-width: 70%; }
+    .user-row .msg-body { align-items: flex-end; }
+    .msg-meta {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 5px;
+    }
+    .user-row .msg-meta { flex-direction: row-reverse; }
+    .msg-sender {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--white);
+    }
+    .msg-time {
+      font-size: 11px;
+      color: var(--gray);
+    }
+    .msg-bubble {
+      padding: 13px 16px;
+      border-radius: 14px;
+      font-size: 13.5px;
+      line-height: 1.65;
+      position: relative;
+    }
+    .ai-bubble {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-top-left-radius: 4px;
+      color: var(--white);
+    }
+    .user-bubble {
+      background: var(--lime);
+      color: var(--black);
+      border-top-right-radius: 4px;
+      font-weight: 500;
+    }
+    .msg-bubble .msg-actions {
+      display: none;
+      gap: 6px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border2);
+    }
+    .msg-row:hover .msg-actions { display: flex; }
+    .msg-act-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--lgray);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all var(--tr);
+    }
+    .msg-act-btn svg { width: 11px; height: 11px; }
+    .msg-act-btn:hover { color: var(--white); border-color: rgba(255,255,255,0.2); }
+
+    /* Insight cards dentro da mensagem */
+    .insight-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .insight-mini {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xs);
+      padding: 10px 12px;
+    }
+    .insight-mini-label { font-size: 10.5px; color: var(--lgray); margin-bottom: 3px; }
+    .insight-mini-value { font-size: 15px; font-weight: 700; font-family: var(--font-title); }
+    .insight-mini-value.up { color: var(--success); }
+    .insight-mini-value.down { color: var(--danger); }
+    .insight-mini-value.lime { color: var(--lime); }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .typing-dots {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      border-top-left-radius: 4px;
+      padding: 13px 18px;
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+    .typing-dots span {
+      width: 7px; height: 7px;
+      background: var(--lgray);
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    /* Input area */
+    .chat-input-area {
+      padding: 16px 32px 24px;
+      background: var(--dark);
+      border-top: 1px solid var(--border2);
+    }
+    .quick-chips {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .chip {
+      padding: 5px 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 11.5px;
+      color: var(--lgray);
+      cursor: pointer;
+      transition: all var(--tr);
+      white-space: nowrap;
+    }
+    .chip:hover { border-color: var(--lime-border); color: var(--lime); background: var(--lime-dim); }
+    .input-box {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      transition: border-color var(--tr);
+    }
+    .input-box:focus-within { border-color: var(--lime-border); }
+    .chat-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      resize: none;
+      max-height: 160px;
+      min-height: 22px;
+      line-height: 1.5;
+    }
+    .chat-input::placeholder { color: var(--gray); }
+    .input-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .input-btn {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--lgray);
+      cursor: pointer;
+      transition: all var(--tr);
+    }
+    .input-btn svg { width: 15px; height: 15px; }
+    .input-btn:hover { background: rgba(255,255,255,0.07); color: var(--white); }
+    .input-send {
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--lime);
+      border: none;
+      border-radius: 9px;
+      color: var(--black);
+      cursor: pointer;
+      transition: all var(--tr);
+    }
+    .input-send svg { width: 16px; height: 16px; }
+    .input-send:hover { background: var(--lime-dark); transform: scale(1.05); }
+    .input-footer {
+      text-align: center;
+      font-size: 11px;
+      color: var(--gray);
+      margin-top: 8px;
+    }
+
+    /* ── Right: Context panel ── */
+    .chat-context {
+      width: 260px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .ctx-section {
+      padding: 18px 16px;
+      border-bottom: 1px solid var(--border2);
+    }
+    .ctx-section:last-child { border-bottom: none; }
+    .ctx-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ctx-title svg { width: 13px; height: 13px; }
+
+    /* Saldo resumo */
+    .ctx-balance-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+    }
+    .ctx-bal-label { font-size: 11px; color: var(--lgray); margin-bottom: 4px; }
+    .ctx-bal-value {
+      font-family: var(--font-title);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .ctx-bal-value span { font-size: 13px; color: var(--lgray); font-weight: 400; }
+    .ctx-bal-meta {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .ctx-bal-mini { font-size: 11px; color: var(--lgray); }
+    .ctx-bal-mini strong { display: block; font-size: 12.5px; font-weight: 600; }
+    .ctx-bal-mini strong.up { color: var(--success); }
+    .ctx-bal-mini strong.down { color: var(--danger); }
+
+    /* Topic pills */
+    .topic-list { display: flex; flex-direction: column; gap: 6px; }
+    .topic-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xs);
+      cursor: pointer;
+      transition: all var(--tr);
+    }
+    .topic-item:hover { border-color: var(--lime-border); background: var(--lime-dim); }
+    .topic-item:hover .topic-icon { color: var(--lime); }
+    .topic-item:hover .topic-text { color: var(--white); }
+    .topic-icon { color: var(--lgray); }
+    .topic-icon svg { width: 14px; height: 14px; }
+    .topic-text { font-size: 12px; color: var(--lgray); font-weight: 500; }
+
+    /* Recent alerts */
+    .ctx-alert-item {
+      display: flex;
+      gap: 9px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border2);
+    }
+    .ctx-alert-item:last-child { border-bottom: none; }
+    .ctx-alert-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+    .ctx-alert-dot.red { background: var(--danger); }
+    .ctx-alert-dot.yellow { background: var(--warning); }
+    .ctx-alert-dot.green { background: var(--success); }
+    .ctx-alert-text { font-size: 11.5px; color: var(--lgray); line-height: 1.5; }
+    .ctx-alert-text strong { color: var(--white); font-weight: 600; }
+
+    /* Usage */
+    .usage-bar-wrap { margin-top: 6px; }
+    .usage-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--lgray);
+      margin-bottom: 5px;
+    }
+    .usage-bar-label span { color: var(--lime); font-weight: 600; }
+    .usage-bar {
+      height: 4px;
+      background: var(--card2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .usage-bar-fill {
+      height: 100%;
+      background: var(--lime);
+      border-radius: 2px;
+      transition: width 1s ease;
+    }
+
+    /* formatted AI message */
+    .ai-bubble ul { padding-left: 18px; margin: 6px 0; }
+    .ai-bubble li { margin: 3px 0; }
+    .ai-bubble strong { color: var(--lime); }
+    .ai-bubble .tag {
+      display: inline-block;
+      background: var(--lime-dim);
+      color: var(--lime);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+    .ai-bubble hr { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+
+    /* ── Responsive ── */
+    @media (max-width: 1200px) {
+      .chat-context { display: none; }
+    }
+    @media (max-width: 900px) {
+      .chat-history { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">N</div>
+      <div>
+        <div class="sb-logo-text">Nexora</div>
+      </div>
+      <span class="sb-logo-badge">PRO</span>
+    </div>
+
+    <nav class="sb-nav">
+      <span class="sb-section-label">Principal</span>
+
+      <a class="sb-item" href="dashboard.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        Visão Geral
+      </a>
+
+      <a class="sb-item" href="transacoes.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/>
+        </svg>
+        Transações
+        <span class="badge">32</span>
+      </a>
+
+      <a class="sb-item" href="contas.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+        </svg>
+        Contas
+      </a>
+
+      <a class="sb-item" href="cartoes.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="5" width="20" height="14" rx="2"/>
+          <path stroke-linecap="round" d="M2 10h20"/>
+        </svg>
+        Cartões
+      </a>
+
+      <span class="sb-section-label" style="margin-top:8px">IA & Insights</span>
+
+      <a class="sb-item active" href="chat-ia.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+        </svg>
+        Chat IA
+      </a>
+
+      <a class="sb-item" href="alertas.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+        </svg>
+        Alertas
+        <span class="badge">5</span>
+      </a>
+
+      <span class="sb-section-label" style="margin-top:8px">Financeiro</span>
+
+      <a class="sb-item" href="relatorios.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        Relatórios
+      </a>
+
+      <a class="sb-item" href="metas.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+        </svg>
+        Metas
+      </a>
+
+      <a class="sb-item" href="investimentos.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+        </svg>
+        Investimentos
+      </a>
+
+      <span class="sb-section-label" style="margin-top:8px">Sistema</span>
+
+      <a class="sb-item" href="configuracoes.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        Configurações
+      </a>
+    </nav>
+
+    <div class="sb-footer">
+      <div class="sb-user" id="sbUser">
+        <div class="sb-avatar" id="sbAvatar">ES</div>
+        <div class="sb-user-info">
+          <div class="sb-user-name" id="sbUserName">Elan Souzaa</div>
+          <div class="sb-user-plan">Plano Pro ✦</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN WRAPPER ═══ -->
+  <div class="main-wrapper">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div>
+        <div class="topbar-title">Chat IA</div>
+        <div class="topbar-sub">Assistente financeiro inteligente</div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;margin-left:24px;">
+        <div class="model-badge">
+          <div class="dot"></div>
+          Nexora AI · GPT-4o
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="clearChat()" title="Limpar conversa">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+          </svg>
+          Limpar
+        </button>
+        <button class="btn btn-lime" onclick="newChat()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+          </svg>
+          Nova conversa
+        </button>
+      </div>
+    </header>
+
+    <!-- CHAT LAYOUT -->
+    <div class="chat-layout">
+
+      <!-- ── History Panel ── -->
+      <div class="chat-history">
+        <div class="chat-history-header">
+          <h3>Histórico</h3>
+          <button class="btn-new-chat" onclick="newChat()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            Nova conversa
+          </button>
+        </div>
+        <div class="history-list">
+          <div class="history-group-label">Hoje</div>
+          <div class="history-item active" onclick="loadConversation(0)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            <span class="history-item-title">Análise gastos de março</span>
+            <span class="history-item-time">10min</span>
+          </div>
+
+          <div class="history-group-label">Ontem</div>
+          <div class="history-item" onclick="loadConversation(1)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            <span class="history-item-title">Meta reserva emergência</span>
+            <span class="history-item-time">Ontem</span>
+          </div>
+          <div class="history-item" onclick="loadConversation(2)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            <span class="history-item-title">Portfólio de investimentos</span>
+            <span class="history-item-time">Ontem</span>
+          </div>
+
+          <div class="history-group-label">Esta semana</div>
+          <div class="history-item" onclick="loadConversation(3)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            <span class="history-item-title">Reduzir gastos com alimentação</span>
+            <span class="history-item-time">Seg</span>
+          </div>
+          <div class="history-item" onclick="loadConversation(4)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            <span class="history-item-title">Limite do cartão Nubank</span>
+            <span class="history-item-time">Dom</span>
+          </div>
+          <div class="history-item" onclick="loadConversation(5)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            <span class="history-item-title">Comparativo fevereiro x março</span>
+            <span class="history-item-time">Sáb</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Main Chat ── -->
+      <div class="chat-main" id="chatMain">
+
+        <!-- Messages container -->
+        <div class="chat-messages" id="chatMessages">
+
+          <!-- Welcome placeholder (shown when no messages) -->
+          <div class="chat-welcome" id="chatWelcome">
+            <div class="welcome-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+              </svg>
+            </div>
+            <div class="welcome-title">Olá, eu sou a <span>Nexora AI</span></div>
+            <div class="welcome-sub">Seu assistente financeiro inteligente. Pergunte sobre seus gastos, receba insights personalizados e planeje seu futuro financeiro.</div>
+            <div class="suggestions-grid">
+              <div class="suggestion-card" onclick="sendSuggestion('Qual é o resumo dos meus gastos em março?')">
+                <div class="sc-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                  </svg>
+                </div>
+                <div class="sc-text">Resumo dos meus gastos em março</div>
+              </div>
+              <div class="suggestion-card" onclick="sendSuggestion('Onde estou gastando mais dinheiro?')">
+                <div class="sc-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35"/>
+                  </svg>
+                </div>
+                <div class="sc-text">Onde estou gastando mais dinheiro?</div>
+              </div>
+              <div class="suggestion-card" onclick="sendSuggestion('Como posso economizar mais este mês?')">
+                <div class="sc-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <div class="sc-text">Como posso economizar mais este mês?</div>
+              </div>
+              <div class="suggestion-card" onclick="sendSuggestion('Quais são meus maiores gastos recorrentes?')">
+                <div class="sc-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                  </svg>
+                </div>
+                <div class="sc-text">Quais são meus maiores gastos recorrentes?</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pre-loaded conversation (hidden by default, shown on loadConversation(0)) -->
+          <div id="convContainer" style="display:none; flex-direction:column; gap:20px;"></div>
+
+        </div>
+
+        <!-- Input area -->
+        <div class="chat-input-area">
+          <div class="quick-chips" id="quickChips">
+            <div class="chip" onclick="sendSuggestion('Mostre meu saldo atual')">💰 Saldo atual</div>
+            <div class="chip" onclick="sendSuggestion('Analise meus gastos com alimentação')">🍔 Gastos com alimentação</div>
+            <div class="chip" onclick="sendSuggestion('Qual cartão devo pagar primeiro?')">💳 Cartão prioritário</div>
+            <div class="chip" onclick="sendSuggestion('Gerei quanto em investimentos esse mês?')">📈 Rendimentos</div>
+            <div class="chip" onclick="sendSuggestion('Tenho alguma conta vencendo essa semana?')">📅 Contas a vencer</div>
+          </div>
+          <div class="input-box">
+            <textarea
+              id="chatInput"
+              class="chat-input"
+              placeholder="Pergunte algo sobre suas finanças..."
+              rows="1"
+              onkeydown="handleKey(event)"
+              oninput="autoResize(this)"
+            ></textarea>
+            <div class="input-actions">
+              <button class="input-btn" title="Anexar arquivo">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                </svg>
+              </button>
+              <button class="input-btn" title="Comando de voz">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                </svg>
+              </button>
+              <button class="input-send" id="sendBtn" onclick="sendMessage()" title="Enviar">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="input-footer">Nexora AI pode cometer erros. Verifique informações financeiras importantes.</div>
+        </div>
+
+      </div>
+
+      <!-- ── Context Panel ── -->
+      <div class="chat-context">
+
+        <div class="ctx-section">
+          <div class="ctx-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+            Resumo Financeiro
+          </div>
+          <div class="ctx-balance-card">
+            <div class="ctx-bal-label">Saldo consolidado</div>
+            <div class="ctx-bal-value"><span>R$</span> 24.831<span>,42</span></div>
+            <div class="ctx-bal-meta">
+              <div class="ctx-bal-mini">
+                Receita mensal
+                <strong class="up">+R$ 8.200</strong>
+              </div>
+              <div class="ctx-bal-mini">
+                Gasto mensal
+                <strong class="down">−R$ 4.731</strong>
+              </div>
+              <div class="ctx-bal-mini">
+                Taxa de poupança
+                <strong style="color:var(--lime)">42%</strong>
+              </div>
+              <div class="ctx-bal-mini">
+                Fatura aberta
+                <strong class="down">R$ 1.847</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ctx-section">
+          <div class="ctx-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            Tópicos Rápidos
+          </div>
+          <div class="topic-list">
+            <div class="topic-item" onclick="sendSuggestion('Como está meu fluxo de caixa?')">
+              <div class="topic-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/>
+                </svg>
+              </div>
+              <span class="topic-text">Fluxo de caixa</span>
+            </div>
+            <div class="topic-item" onclick="sendSuggestion('Me dê dicas para quitar meu cartão de crédito')">
+              <div class="topic-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="5" width="20" height="14" rx="2"/><path stroke-linecap="round" d="M2 10h20"/>
+                </svg>
+              </div>
+              <span class="topic-text">Quitar cartão</span>
+            </div>
+            <div class="topic-item" onclick="sendSuggestion('Como está meu progresso nas metas financeiras?')">
+              <div class="topic-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <span class="topic-text">Progresso das metas</span>
+            </div>
+            <div class="topic-item" onclick="sendSuggestion('Qual é a melhor estratégia para investir R$1000?')">
+              <div class="topic-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                </svg>
+              </div>
+              <span class="topic-text">Investir R$ 1.000</span>
+            </div>
+            <div class="topic-item" onclick="sendSuggestion('Analise meus gastos por categoria')">
+              <div class="topic-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
+                </svg>
+              </div>
+              <span class="topic-text">Gastos por categoria</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ctx-section">
+          <div class="ctx-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+            Alertas Recentes
+          </div>
+          <div>
+            <div class="ctx-alert-item">
+              <div class="ctx-alert-dot red"></div>
+              <div class="ctx-alert-text"><strong>Limite próximo</strong> — Nubank em 87% do limite</div>
+            </div>
+            <div class="ctx-alert-item">
+              <div class="ctx-alert-dot yellow"></div>
+              <div class="ctx-alert-text"><strong>Meta em risco</strong> — Reserva emergência abaixo do ideal</div>
+            </div>
+            <div class="ctx-alert-item">
+              <div class="ctx-alert-dot green"></div>
+              <div class="ctx-alert-text"><strong>Salário recebido</strong> — R$ 8.200 creditado hoje</div>
+            </div>
+            <div class="ctx-alert-item">
+              <div class="ctx-alert-dot yellow"></div>
+              <div class="ctx-alert-text"><strong>Conta a vencer</strong> — IPTU parcela em 3 dias</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ctx-section">
+          <div class="ctx-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+            </svg>
+            Uso da IA — Março
+          </div>
+          <div class="usage-bar-wrap">
+            <div class="usage-bar-label">
+              Mensagens usadas
+              <span>47 / 200</span>
+            </div>
+            <div class="usage-bar">
+              <div class="usage-bar-fill" style="width:23.5%"></div>
+            </div>
+          </div>
+          <div style="margin-top:8px; font-size:11px; color:var(--lgray);">153 mensagens restantes no plano Pro</div>
+        </div>
+
+      </div>
+    </div><!-- end chat-layout -->
+
+  </div><!-- end main-wrapper -->
+</div><!-- end app -->
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const _sb = createClient(
+  'https://xdxcczywfincjcbvbecb.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeGNjenl3ZmluY2pjYnZiZWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3MTgwNjMsImV4cCI6MjA1NzI5NDA2M30.kMbTpRoTAXNqMCgpDVHKoWqTPqYtTLMWm8rFqFLjmN0'
+);
+(async function(){
+  const { data:{ session } } = await _sb.auth.getSession();
+  if(!session){ window.location.href='auth.html'; return; }
+  const u = session.user;
+  const name = u.user_metadata?.full_name || u.email.split('@')[0];
+  const initials = name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  document.getElementById('sbUserName').textContent = name;
+  document.getElementById('sbAvatar').textContent = initials;
+})();
+</script>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   CHAT ENGINE
+═══════════════════════════════════════════════════ */
+const CHAT_DELAY = 1200; // ms simulated AI response
+let messageCount = 0;
+let isTyping = false;
+
+// Pre-built conversation data for loadConversation(0)
+const conv0 = [
+  { role:'user', text:'Qual é o resumo dos meus gastos em março?', time:'10:14' },
+  { role:'ai', html:`
+    <p>Claro! Aqui está o resumo completo dos seus gastos em <strong>março de 2026</strong>:</p>
+    <div class="insight-grid">
+      <div class="insight-mini"><div class="insight-mini-label">Total gasto</div><div class="insight-mini-value down">R$ 4.731</div></div>
+      <div class="insight-mini"><div class="insight-mini-label">Vs. fevereiro</div><div class="insight-mini-value up">−8.3%</div></div>
+      <div class="insight-mini"><div class="insight-mini-label">Categoria líder</div><div class="insight-mini-value lime">Alimentação</div></div>
+      <div class="insight-mini"><div class="insight-mini-label">Transações</div><div class="insight-mini-value">32</div></div>
+    </div>
+    <hr/>
+    <p><strong>Principais categorias:</strong></p>
+    <ul>
+      <li>🍔 Alimentação — <strong>R$ 1.240</strong> (26.2%)</li>
+      <li>🏠 Moradia — <strong>R$ 980</strong> (20.7%)</li>
+      <li>🚗 Transporte — <strong>R$ 620</strong> (13.1%)</li>
+      <li>💊 Saúde — <strong>R$ 430</strong> (9.1%)</li>
+      <li>🎮 Lazer — <strong>R$ 380</strong> (8%)</li>
+    </ul>
+    <hr/>
+    <p>Você gastou <strong>R$ 430 menos</strong> que em fevereiro. Ótimo progresso! Alimentação ainda é seu maior gasto — quer que eu sugira formas de reduzir?</p>
+  `, time:'10:14' },
+  { role:'user', text:'Sim, me dê dicas para reduzir gastos com alimentação', time:'10:15' },
+  { role:'ai', html:`
+    <p>Ótimo! Analisando seu histórico, identifiquei alguns padrões. Aqui estão as <strong>5 melhores estratégias</strong> para você:</p>
+    <ul>
+      <li><span class="tag">🏪 Planejamento</span> Você realizou <strong>18 compras avulsas</strong> em apps de entrega (iFood, Rappi). Reduzir para 4x/semana economizaria ~R$ 320/mês.</li>
+      <li><span class="tag">🛒 Mercado</span> Concentre compras em 1 dia da semana com lista prévia — evita compras por impulso, que custam em média <strong>23% a mais</strong>.</li>
+      <li><span class="tag">🍳 Cozinhar em casa</span> Seu gasto médio em restaurantes é R$ 62/refeição vs. R$ 18 em casa. Substituindo 3 saídas/semana, você economiza ~R$ 176/mês.</li>
+      <li><span class="tag">📦 Atacado</span> Itens não perecíveis (café, arroz, feijão) comprados no atacado custam até 35% menos. Você gasta ~R$ 180/mês nesses itens.</li>
+      <li><span class="tag">🎯 Meta</span> Com essas mudanças, você pode reduzir de <strong>R$ 1.240 → R$ 740</strong> em alimentação, economizando <strong>R$ 500/mês</strong>.</li>
+    </ul>
+  `, time:'10:16' },
+];
+
+function formatTime(t){ return t || now(); }
+function now(){
+  const d = new Date();
+  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+}
+
+function buildUserMsg(text, time){
+  return `
+    <div class="msg-row user-row">
+      <div class="msg-avatar user-av" id="currentUserAv">ES</div>
+      <div class="msg-body">
+        <div class="msg-meta">
+          <span class="msg-sender">Você</span>
+          <span class="msg-time">${time}</span>
+        </div>
+        <div class="msg-bubble user-bubble">${text}</div>
+      </div>
+    </div>`;
+}
+
+function buildAIMsg(html, time){
+  return `
+    <div class="msg-row">
+      <div class="msg-avatar ai-av">N</div>
+      <div class="msg-body">
+        <div class="msg-meta">
+          <span class="msg-sender">Nexora AI</span>
+          <span class="msg-time">${time}</span>
+        </div>
+        <div class="msg-bubble ai-bubble">
+          ${html}
+          <div class="msg-actions">
+            <button class="msg-act-btn" onclick="copyMsg(this)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+              Copiar
+            </button>
+            <button class="msg-act-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              Regenerar
+            </button>
+            <button class="msg-act-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+              </svg>
+              Útil
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function showTyping(){
+  const c = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.id = 'typingIndicator';
+  div.className = 'typing-indicator';
+  div.innerHTML = `
+    <div class="msg-avatar ai-av">N</div>
+    <div class="typing-dots"><span></span><span></span><span></span></div>`;
+  c.appendChild(div);
+  scrollToBottom();
+}
+function hideTyping(){
+  const t = document.getElementById('typingIndicator');
+  if(t) t.remove();
+}
+
+function scrollToBottom(){
+  const c = document.getElementById('chatMessages');
+  setTimeout(()=>{ c.scrollTop = c.scrollHeight; }, 50);
+}
+
+function hideWelcome(){
+  document.getElementById('chatWelcome').style.display = 'none';
+  document.getElementById('chatMessages').style.display = 'flex';
+  const cc = document.getElementById('convContainer');
+  cc.style.display = 'flex';
+}
+
+function appendMsg(html){
+  const cc = document.getElementById('convContainer');
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  const node = div.firstElementChild;
+  cc.appendChild(node);
+  scrollToBottom();
+}
+
+/* AI Response bank — cycling mock responses */
+const aiResponses = [
+  `<p>Entendido! Com base nos seus dados financeiros de março, aqui está minha análise:</p>
+   <div class="insight-grid">
+     <div class="insight-mini"><div class="insight-mini-label">Saldo atual</div><div class="insight-mini-value lime">R$ 24.831</div></div>
+     <div class="insight-mini"><div class="insight-mini-label">Economia do mês</div><div class="insight-mini-value up">+R$ 3.469</div></div>
+   </div>
+   <hr/>
+   <p>Sua saúde financeira está <strong>boa</strong>, com taxa de poupança de 42%. Continue assim! Quer uma análise mais detalhada por categoria?</p>`,
+
+  `<p>Ótima pergunta! Veja o que encontrei nos seus dados:</p>
+   <ul>
+     <li>Seu <strong>maior gasto</strong> nos últimos 30 dias foi em <span class="tag">Alimentação</span> — R$ 1.240</li>
+     <li>Você tem <strong>3 assinaturas recorrentes</strong> que somam R$ 187/mês</li>
+     <li>Transporte caiu <strong>12%</strong> vs. mês passado — provável uso de mais transporte público</li>
+   </ul>
+   <p>Deseja que eu crie um plano de redução de gastos personalizado?</p>`,
+
+  `<p>Com base no seu histórico, tenho <strong>3 recomendações importantes</strong> para você este mês:</p>
+   <ul>
+     <li>💡 <strong>Pague o Nubank primeiro</strong> — está em 87% do limite, o que afeta seu score de crédito</li>
+     <li>📊 <strong>Revise suas assinaturas</strong> — identificei 2 serviços que você não usa há mais de 45 dias</li>
+     <li>🎯 <strong>Aumente a reserva</strong> — você está com apenas 2.3 meses de cobertura (ideal: 6 meses)</li>
+   </ul>
+   <p>Quer detalhes sobre algum desses pontos?</p>`,
+
+  `<p>Analisando seu fluxo de caixa de março:</p>
+   <div class="insight-grid">
+     <div class="insight-mini"><div class="insight-mini-label">Receita</div><div class="insight-mini-value up">R$ 8.200</div></div>
+     <div class="insight-mini"><div class="insight-mini-label">Despesas</div><div class="insight-mini-value down">R$ 4.731</div></div>
+     <div class="insight-mini"><div class="insight-mini-label">Saldo líquido</div><div class="insight-mini-value lime">R$ 3.469</div></div>
+     <div class="insight-mini"><div class="insight-mini-label">Projeção abril</div><div class="insight-mini-value up">R$ 3.780</div></div>
+   </div>
+   <p>Seu fluxo está <strong>positivo e crescendo</strong>. A projeção para abril é otimista dado o padrão dos últimos 3 meses.</p>`,
+];
+let aiIdx = 0;
+
+function getAIResponse(){ return aiResponses[aiIdx++ % aiResponses.length]; }
+
+async function sendMessage(){
+  if(isTyping) return;
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+
+  input.value = '';
+  autoResize(input);
+  hideWelcome();
+
+  appendMsg(buildUserMsg(text, now()));
+
+  isTyping = true;
+  showTyping();
+
+  await new Promise(r => setTimeout(r, CHAT_DELAY));
+
+  hideTyping();
+  appendMsg(buildAIMsg(getAIResponse(), now()));
+  isTyping = false;
+  messageCount++;
+
+  // Update usage
+  const fill = document.querySelector('.usage-bar-fill');
+  if(fill){
+    const pct = Math.min(100, ((47 + messageCount) / 200) * 100);
+    fill.style.width = pct + '%';
+  }
+  document.querySelector('.usage-bar-label span').textContent = `${47+messageCount} / 200`;
+}
+
+window.sendSuggestion = function(text){
+  document.getElementById('chatInput').value = text;
+  sendMessage();
+};
+
+window.sendMessage = sendMessage;
+
+window.loadConversation = function(idx){
+  if(idx !== 0) return;
+  hideWelcome();
+  const cc = document.getElementById('convContainer');
+  cc.innerHTML = '';
+  conv0.forEach(m => {
+    if(m.role === 'user') cc.innerHTML += buildUserMsg(m.text, m.time);
+    else cc.innerHTML += buildAIMsg(m.html, m.time);
+  });
+  // Update active
+  document.querySelectorAll('.history-item').forEach((el,i)=>{
+    el.classList.toggle('active', i===0);
+  });
+  scrollToBottom();
+};
+
+window.newChat = function(){
+  document.getElementById('convContainer').innerHTML = '';
+  document.getElementById('convContainer').style.display = 'none';
+  document.getElementById('chatWelcome').style.display = '';
+  document.getElementById('chatInput').value = '';
+  document.querySelectorAll('.history-item').forEach(el=>el.classList.remove('active'));
+};
+
+window.clearChat = function(){
+  document.getElementById('convContainer').innerHTML = '';
+  if(document.getElementById('convContainer').style.display !== 'none'){
+    document.getElementById('chatWelcome').style.display = '';
+    document.getElementById('convContainer').style.display = 'none';
+  }
+};
+
+window.copyMsg = function(btn){
+  const bubble = btn.closest('.ai-bubble');
+  const text = bubble.innerText.replace(/Copiar|Regenerar|Útil/g,'').trim();
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent = '✓ Copiado';
+    setTimeout(()=>{ btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg> Copiar`; }, 2000);
+  });
+};
+
+window.handleKey = function(e){
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendMessage();
+  }
+};
+
+window.autoResize = function(el){
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+};
+
+// Auto-load first conversation on page load
+document.addEventListener('DOMContentLoaded', ()=>{
+  loadConversation(0);
+});
+</script>
+</body>
+</html>
