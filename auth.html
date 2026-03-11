@@ -621,9 +621,6 @@ function showSignup(){
 function showLogin(){
   document.querySelectorAll('.auth-view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-login').classList.add('active');
-  // Pre-fill email if known
-  const user = getUser();
-  if(user) document.getElementById('l-email').value = user.email;
 }
 function showSuccess(){
   document.querySelectorAll('.auth-view').forEach(v=>v.classList.remove('active'));
@@ -791,12 +788,12 @@ document.getElementById('login-form').addEventListener('submit', async function(
 // INIT
 // ════════════════════════════════════════════════════
 (function init(){
-  // Abre tela de login diretamente se vier com ?mode=login
-  if(new URLSearchParams(window.location.search).get("mode")==="login") showLogin();
   const savedTheme = localStorage.getItem('nx-theme') || 'dark';
   const savedLang  = localStorage.getItem('nx-lang')  || 'pt-BR';
   applyTheme(savedTheme);
   applyLang(savedLang);
+  // Abre tela de login diretamente se vier com ?mode=login
+  if(new URLSearchParams(window.location.search).get("mode")==="login") showLogin();
 })();
 </script>
 </body>
