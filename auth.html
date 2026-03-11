@@ -496,7 +496,7 @@ label{
   </div>
 </main>
 
-<script>
+<script type="module">
 // ════════════════════════════════════════════════════
 // TRANSLATIONS
 // ════════════════════════════════════════════════════
@@ -783,6 +783,16 @@ document.getElementById('login-form').addEventListener('submit', async function(
     window.location.href='/dashboard.html';
   }
 });
+
+// ════════════════════════════════════════════════════
+// EXPOSE TO WINDOW (required for inline onclick in module scripts)
+// ════════════════════════════════════════════════════
+window.setTheme   = setTheme;
+window.setLang    = setLang;
+window.showLogin  = showLogin;
+window.showSignup = showSignup;
+window.showSuccess = showSuccess;
+window.toggleEye  = toggleEye;
 
 // ════════════════════════════════════════════════════
 // INIT

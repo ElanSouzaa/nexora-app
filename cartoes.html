@@ -777,7 +777,7 @@ const _sb = createClient(
 );
 (async function(){
   const { data:{ session } } = await _sb.auth.getSession();
-  if(!session){ window.location.href='auth.html'; return; }
+  if(!session){ window.location.href='auth.html?mode=login'; return; }
   const u = session.user;
   const name = u.user_metadata?.full_name || u.email.split('@')[0];
   const initials = name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();

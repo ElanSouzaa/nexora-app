@@ -1234,7 +1234,7 @@ const _sb = createClient(
 );
 (async function() {
   const { data: { session } } = await _sb.auth.getSession();
-  if (!session) { window.location.href = 'auth.html'; return; }
+  if (!session) { window.location.href = 'auth.html?mode=login'; return; }
   const u = session.user;
   const meta = u.user_metadata || {};
   const nome = (meta.nome || u.email.split('@')[0]);

@@ -1855,7 +1855,7 @@ const _sb = createClient(
 // Protect route — redirect if not logged in
 (async function loadUser() {
   const { data: { session } } = await _sb.auth.getSession();
-  if (!session) { window.location.href = '/auth.html'; return; }
+  if (!session) { window.location.href = 'auth.html?mode=login'; return; }
 
   const user = session.user;
   const meta = user.user_metadata || {};
