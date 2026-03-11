@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Alertas · Nexora</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --lime:        #C8FF00;
+      --lime-dark:   #A8D400;
+      --lime-dim:    rgba(200,255,0,0.12);
+      --lime-glow:   rgba(200,255,0,0.22);
+      --lime-border: rgba(200,255,0,0.28);
+      --black:       #060606;
+      --dark:        #0C0C0C;
+      --surface:     #101010;
+      --surface2:    #141414;
+      --card:        #161616;
+      --card2:       #1A1A1A;
+      --border:      rgba(255,255,255,0.07);
+      --border2:     rgba(255,255,255,0.04);
+      --white:       #FFFFFF;
+      --gray:        #666;
+      --lgray:       #999;
+      --danger:      #FF4D4D;
+      --danger-dim:  rgba(255,77,77,0.12);
+      --danger-brd:  rgba(255,77,77,0.28);
+      --success:     #00D37F;
+      --success-dim: rgba(0,211,127,0.12);
+      --success-brd: rgba(0,211,127,0.28);
+      --warning:     #FFB020;
+      --warning-dim: rgba(255,176,32,0.12);
+      --warning-brd: rgba(255,176,32,0.28);
+      --info:        #4DA6FF;
+      --info-dim:    rgba(77,166,255,0.12);
+      --info-brd:    rgba(77,166,255,0.28);
+      --font-title:  'Space Grotesk', sans-serif;
+      --font-body:   'Inter', sans-serif;
+      --sidebar-w:   260px;
+      --topbar-h:    68px;
+      --radius:      14px;
+      --radius-sm:   9px;
+      --radius-xs:   6px;
+      --tr:          0.28s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.55;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--card2); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--lime-dark); }
+
+    /* ══════════════════════════════════════════════════════════
+       APP LAYOUT
+    ══════════════════════════════════════════════════════════ */
+    .app { display: flex; min-height: 100vh; }
+
+    /* ══════════════════════════════════════════════════════════
+       SIDEBAR
+    ══════════════════════════════════════════════════════════ */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 100;
+      overflow: hidden;
+    }
+    .sidebar::before {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -60px;
+      width: 220px; height: 220px;
+      background: var(--lime-glow);
+      filter: blur(80px);
+      pointer-events: none;
+      border-radius: 50%;
+    }
+    .sb-logo {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 22px 22px 18px;
+      border-bottom: 1px solid var(--border2);
+      position: relative;
+    }
+    .sb-logo-icon {
+      width: 36px; height: 36px;
+      background: var(--lime);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-title);
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--black);
+      flex-shrink: 0;
+    }
+    .sb-logo-text {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--white);
+      letter-spacing: -0.3px;
+    }
+    .sb-logo-badge {
+      margin-left: auto;
+      background: var(--lime-dim);
+      color: var(--lime);
+      border: 1px solid var(--lime-border);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+    .sb-nav {
+      flex: 1;
+      padding: 14px 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .sb-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gray);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 10px 10px 4px;
+    }
+    .sb-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      color: var(--lgray);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: background var(--tr), color var(--tr);
+      position: relative;
+    }
+    .sb-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+    .sb-item:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+    .sb-item.active {
+      background: var(--lime-dim);
+      color: var(--lime);
+      border: 1px solid var(--lime-border);
+    }
+    .sb-item.active svg { color: var(--lime); }
+    .badge {
+      margin-left: auto;
+      background: var(--lime);
+      color: var(--black);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 20px;
+      min-width: 18px;
+      text-align: center;
+    }
+    .sb-footer {
+      padding: 14px 12px;
+      border-top: 1px solid var(--border2);
+    }
+    .sb-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background var(--tr);
+    }
+    .sb-user:hover { background: rgba(255,255,255,0.05); }
+    .sb-avatar {
+      width: 32px; height: 32px;
+      background: var(--lime);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--black);
+      flex-shrink: 0;
+    }
+    .sb-user-name { font-size: 13px; font-weight: 600; color: var(--white); }
+    .sb-user-plan { font-size: 11px; color: var(--lime); margin-top: 1px; }
+
+    /* ══════════════════════════════════════════════════════════
+       MAIN
+    ══════════════════════════════════════════════════════════ */
+    .main-wrapper {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .topbar {
+      height: var(--topbar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-title {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--white);
+    }
+    .topbar-sub { font-size: 12.5px; color: var(--lgray); margin-left: 2px; }
+    .topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all var(--tr);
+      text-decoration: none;
+    }
+    .btn-lime { background: var(--lime); color: var(--black); }
+    .btn-lime:hover { background: var(--lime-dark); transform: translateY(-1px); }
+    .btn-ghost { background: transparent; color: var(--lgray); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+
+    .page-content { padding: 28px; }
+
+    /* ══════════════════════════════════════════════════════════
+       STATS STRIP
+    ══════════════════════════════════════════════════════════ */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 26px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: border-color var(--tr);
+    }
+    .stat-card:hover { border-color: rgba(255,255,255,0.14); }
+    .stat-icon {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .stat-icon svg { width: 20px; height: 20px; }
+    .stat-icon.red { background: var(--danger-dim); color: var(--danger); border: 1px solid var(--danger-brd); }
+    .stat-icon.yellow { background: var(--warning-dim); color: var(--warning); border: 1px solid var(--warning-brd); }
+    .stat-icon.green { background: var(--success-dim); color: var(--success); border: 1px solid var(--success-brd); }
+    .stat-icon.lime { background: var(--lime-dim); color: var(--lime); border: 1px solid var(--lime-border); }
+    .stat-info { flex: 1; min-width: 0; }
+    .stat-val {
+      font-family: var(--font-title);
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .stat-val.red { color: var(--danger); }
+    .stat-val.yellow { color: var(--warning); }
+    .stat-val.green { color: var(--success); }
+    .stat-val.lime { color: var(--lime); }
+    .stat-label { font-size: 12px; color: var(--lgray); margin-top: 3px; }
+
+    /* ══════════════════════════════════════════════════════════
+       TWO-COLUMN LAYOUT
+    ══════════════════════════════════════════════════════════ */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 20px;
+    }
+
+    /* Section headers */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--white);
+    }
+    .section-sub { font-size: 12px; color: var(--lgray); margin-top: 2px; }
+
+    /* Filter tabs */
+    .filter-tabs {
+      display: flex;
+      gap: 6px;
+    }
+    .ftab {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      color: var(--lgray);
+      background: transparent;
+      transition: all var(--tr);
+    }
+    .ftab:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+    .ftab.active {
+      background: var(--lime-dim);
+      color: var(--lime);
+      border-color: var(--lime-border);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       ALERT CARDS
+    ══════════════════════════════════════════════════════════ */
+    .alerts-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .alert-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: all var(--tr);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .alert-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      border-radius: 0 2px 2px 0;
+    }
+    .alert-card.crit::before { background: var(--danger); }
+    .alert-card.warn::before { background: var(--warning); }
+    .alert-card.info::before { background: var(--info); }
+    .alert-card.ok::before { background: var(--success); }
+
+    .alert-card:hover { border-color: rgba(255,255,255,0.14); background: var(--card2); }
+    .alert-card.read { opacity: 0.6; }
+    .alert-card.dismissed { display: none; }
+
+    .alert-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .alert-icon svg { width: 18px; height: 18px; }
+    .alert-icon.crit { background: var(--danger-dim); color: var(--danger); border: 1px solid var(--danger-brd); }
+    .alert-icon.warn { background: var(--warning-dim); color: var(--warning); border: 1px solid var(--warning-brd); }
+    .alert-icon.info { background: var(--info-dim); color: var(--info); border: 1px solid var(--info-brd); }
+    .alert-icon.ok { background: var(--success-dim); color: var(--success); border: 1px solid var(--success-brd); }
+
+    .alert-body { flex: 1; min-width: 0; }
+    .alert-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+    .alert-title {
+      font-weight: 600;
+      font-size: 13.5px;
+      color: var(--white);
+      flex: 1;
+    }
+    .alert-time { font-size: 11px; color: var(--gray); flex-shrink: 0; margin-top: 1px; }
+    .alert-desc { font-size: 12.5px; color: var(--lgray); line-height: 1.5; }
+    .alert-tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .alert-tag {
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .alert-tag.crit { background: var(--danger-dim); color: var(--danger); }
+    .alert-tag.warn { background: var(--warning-dim); color: var(--warning); }
+    .alert-tag.info { background: var(--info-dim); color: var(--info); }
+    .alert-tag.ok { background: var(--success-dim); color: var(--success); }
+    .alert-tag.gray { background: rgba(255,255,255,0.06); color: var(--lgray); }
+
+    .alert-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .alert-btn {
+      padding: 5px 11px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--card2);
+      color: var(--lgray);
+      transition: all var(--tr);
+    }
+    .alert-btn.primary {
+      background: var(--lime-dim);
+      color: var(--lime);
+      border-color: var(--lime-border);
+    }
+    .alert-btn:hover { color: var(--white); border-color: rgba(255,255,255,0.2); }
+    .alert-btn.primary:hover { background: rgba(200,255,0,0.2); }
+
+    .unread-dot {
+      width: 8px; height: 8px;
+      background: var(--lime);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       RIGHT PANEL: REGRAS
+    ══════════════════════════════════════════════════════════ */
+    .rules-panel {}
+    .rule-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      transition: border-color var(--tr);
+    }
+    .rule-card:hover { border-color: rgba(255,255,255,0.14); }
+    .rule-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .rule-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--lime-dim);
+      color: var(--lime);
+      border: 1px solid var(--lime-border);
+    }
+    .rule-icon svg { width: 14px; height: 14px; }
+    .rule-name {
+      flex: 1;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+    }
+    .toggle {
+      width: 38px; height: 20px;
+      background: var(--card2);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      position: relative;
+      transition: background var(--tr);
+      flex-shrink: 0;
+    }
+    .toggle.on { background: var(--lime); border-color: var(--lime); }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 14px; height: 14px;
+      background: var(--white);
+      border-radius: 50%;
+      top: 2px; left: 2px;
+      transition: transform var(--tr);
+    }
+    .toggle.on::after { transform: translateX(18px); }
+    .rule-desc { font-size: 11.5px; color: var(--lgray); line-height: 1.5; }
+    .rule-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--gray);
+    }
+    .rule-trigger-count {
+      background: var(--card2);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 10.5px;
+      color: var(--lgray);
+    }
+
+    /* Nova regra card */
+    .new-rule-card {
+      background: transparent;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      color: var(--lgray);
+      font-size: 13px;
+      font-weight: 500;
+      transition: all var(--tr);
+    }
+    .new-rule-card:hover {
+      border-color: var(--lime-border);
+      color: var(--lime);
+      background: var(--lime-dim);
+    }
+    .new-rule-card svg { width: 16px; height: 16px; }
+
+    /* Notification channels */
+    .channels-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .channel-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .channel-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .channel-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--white);
+    }
+    .channel-label svg { width: 14px; height: 14px; color: var(--lgray); }
+    .channel-status { font-size: 10.5px; color: var(--success); }
+    .channel-status.off { color: var(--gray); }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">N</div>
+      <div><div class="sb-logo-text">Nexora</div></div>
+      <span class="sb-logo-badge">PRO</span>
+    </div>
+    <nav class="sb-nav">
+      <span class="sb-section-label">Principal</span>
+      <a class="sb-item" href="dashboard.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Visão Geral
+      </a>
+      <a class="sb-item" href="transacoes.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+        Transações
+        <span class="badge">32</span>
+      </a>
+      <a class="sb-item" href="contas.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        Contas
+      </a>
+      <a class="sb-item" href="cartoes.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path stroke-linecap="round" d="M2 10h20"/></svg>
+        Cartões
+      </a>
+      <span class="sb-section-label" style="margin-top:8px">IA & Insights</span>
+      <a class="sb-item" href="chat-ia.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        Chat IA
+      </a>
+      <a class="sb-item active" href="alertas.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        Alertas
+        <span class="badge">5</span>
+      </a>
+      <span class="sb-section-label" style="margin-top:8px">Financeiro</span>
+      <a class="sb-item" href="relatorios.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Relatórios
+      </a>
+      <a class="sb-item" href="metas.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+        Metas
+      </a>
+      <a class="sb-item" href="investimentos.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        Investimentos
+      </a>
+      <span class="sb-section-label" style="margin-top:8px">Sistema</span>
+      <a class="sb-item" href="configuracoes.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Configurações
+      </a>
+    </nav>
+    <div class="sb-footer">
+      <div class="sb-user" id="sbUser">
+        <div class="sb-avatar" id="sbAvatar">ES</div>
+        <div class="sb-user-info">
+          <div class="sb-user-name" id="sbUserName">Elan Souzaa</div>
+          <div class="sb-user-plan">Plano Pro ✦</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN WRAPPER ═══ -->
+  <div class="main-wrapper">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div>
+        <div class="topbar-title">Alertas</div>
+        <div class="topbar-sub">Notificações e regras automáticas</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="markAllRead()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Marcar todos como lidos
+        </button>
+        <button class="btn btn-lime" onclick="openNewRule()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Nova regra
+        </button>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <!-- Stats strip -->
+      <div class="stats-strip">
+        <div class="stat-card">
+          <div class="stat-icon red">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-val red" id="critCount">2</div>
+            <div class="stat-label">Críticos</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon yellow">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-val yellow" id="warnCount">3</div>
+            <div class="stat-label">Avisos</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-val green">7</div>
+            <div class="stat-label">Informativos</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon lime">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-val lime">8</div>
+            <div class="stat-label">Regras ativas</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two column layout -->
+      <div class="two-col">
+
+        <!-- ── Left: Alerts list ── -->
+        <div>
+          <div class="section-header">
+            <div>
+              <div class="section-title">Notificações recentes</div>
+              <div class="section-sub">Últimas 24 horas · 12 alertas</div>
+            </div>
+            <div class="filter-tabs">
+              <button class="ftab active" onclick="filterAlerts('all', this)">Todos</button>
+              <button class="ftab" onclick="filterAlerts('crit', this)">Críticos</button>
+              <button class="ftab" onclick="filterAlerts('warn', this)">Avisos</button>
+              <button class="ftab" onclick="filterAlerts('info', this)">Info</button>
+              <button class="ftab" onclick="filterAlerts('ok', this)">Positivos</button>
+            </div>
+          </div>
+
+          <div class="alerts-list" id="alertsList">
+
+            <div class="alert-card crit" data-type="crit">
+              <div class="unread-dot"></div>
+              <div class="alert-icon crit">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path stroke-linecap="round" d="M2 10h20"/></svg>
+              </div>
+              <div class="alert-body">
+                <div class="alert-top">
+                  <div class="alert-title">Cartão Nubank em 87% do limite</div>
+                  <div class="alert-time">Agora há pouco</div>
+                </div>
+                <div class="alert-desc">Seu cartão Nubank Ultravioleta está com R$ 7.395 utilizados de R$ 8.500 de limite. Fatura fecha em 8 dias.</div>
+                <div class="alert-tags">
+                  <span class="alert-tag crit">Crítico</span>
+                  <span class="alert-tag gray">Cartão</span>
+                  <span class="alert-tag gray">Nubank</span>
+                </div>
+                <div class="alert-actions">
+                  <button class="alert-btn primary" onclick="window.location.href='cartoes.html'">Ver cartão</button>
+                  <button class="alert-btn" onclick="dismissAlert(this)">Dispensar</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert-card crit" data-type="crit">
+              <div class="unread-dot"></div>
+              <div class="alert-icon crit">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <div class="alert-body">
+                <div class="alert-top">
+                  <div class="alert-title">Gasto com lazer acima do orçamento</div>
+                  <div class="alert-time">2h atrás</div>
+                </div>
+                <div class="alert-desc">Você gastou R$ 620 em lazer este mês (orçamento: R$ 400). Já ultrapassou o limite em 55%. Considere revisar gastos no iFood e streaming.</div>
+                <div class="alert-tags">
+                  <span class="alert-tag crit">Crítico</span>
+                  <span class="alert-tag gray">Orçamento</span>
+                  <span class="alert-tag gray">Lazer</span>
+                </div>
+                <div class="alert-actions">
+                  <button class="alert-btn primary" onclick="window.location.href='relatorios.html'">Ver relatório</button>
+                  <button class="alert-btn" onclick="dismissAlert(this)">Dispensar</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert-card warn" data-type="warn">
+              <div class="unread-dot"></div>
+              <div class="alert-icon warn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              </div>
+              <div class="alert-body">
+                <div class="alert-top">
+                  <div class="alert-title">IPTU 2026 — Parcela vence em 3 dias</div>
+                  <div class="alert-time">5h atrás</div>
+                </div>
+                <div class="alert-desc">Parcela 03/10 do IPTU no valor de R$ 284,60 vence em 14/03/2026 (quinta-feira). Saldo disponível suficiente na conta Nubank.</div>
+                <div class="alert-tags">
+                  <span class="alert-tag warn">Aviso</span>
+                  <span class="alert-tag gray">Conta a pagar</span>
+                  <span class="alert-tag gray">IPTU</span>
+                </div>
+                <div class="alert-actions">
+                  <button class="alert-btn primary">Agendar pagamento</button>
+                  <button class="alert-btn" onclick="dismissAlert(this)">Dispensar</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert-card warn" data-type="warn">
+              <div class="alert-icon warn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+              </div>
+              <div class="alert-body">
+                <div class="alert-top">
+                  <div class="alert-title">Meta "Reserva emergência" abaixo do ideal</div>
+                  <div class="alert-time">8h atrás</div>
+                </div>
+                <div class="alert-desc">Sua reserva de emergência está em R$ 14.400 (2.3 meses de cobertura). A meta recomendada é de 6 meses (≈ R$ 37.200). Progresso: 38.7%.</div>
+                <div class="alert-tags">
+                  <span class="alert-tag warn">Aviso</span>
+                  <span class="alert-tag gray">Meta</span>
+                  <span class="alert-tag gray">Reserva</span>
+                </div>
+                <div class="alert-actions">
+                  <button class="alert-btn primary" onclick="window.location.href='metas.html'">Ver meta</button>
+                  <button class="alert-btn" onclick="dismissAlert(this)">Dispensar</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert-card warn" data-type="warn">
+              <div class="alert-icon warn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+              </div>
+              <div class="alert-body">
+                <div class="alert-top">
+                  <div class="alert-title">2 assinaturas sem uso há mais de 30 dias</div>
+                  <div class="alert-time">12h atrás</div>
+                </div>
+                <div class="alert-desc">Paramount+ (R$ 34,90/mês) e Adobe Creative (R$ 89,00/mês) não tiveram acesso registrado nos últimos 30 dias. Total desperdiçado: R$ 123,90/mês.</div>
+                <div class="alert-tags">
+                  <span class="alert-tag warn">Aviso</span>
+                  <span class="alert-tag gray">Assinaturas</span>
+                </div>
+                <div class="alert-actions">
+                  <button class="alert-btn primary">Revisar assinaturas</button>
+                  <button class="alert-btn" onclick="dismissAlert(this)">Dispensar</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert-card info" data-type="info">
+              <div class="alert-icon info">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <div class="alert-body">
+                <div class="alert-top">
+                  <div class="alert-title">CDB vence em 15 dias</div>
+                  <div class="alert-time">Ontem · 18:30</div>
+                </div>
+                <div class="alert-desc">Seu CDB Banco Inter (R$ 5.000 + juros ~R$ 820) vence em 26/03/2026. Você pode renovar automaticamente ou resgatar para reinvestir.</div>
+                <div class="alert-tags">
+                  <span class="alert-tag info">Informativo</span>
+                  <span class="alert-tag gray">Investimento</span>
+                  <span class="alert-tag gray">Vencimento</span>
+                </div>
+                <div class="alert-actions">
+                  <button class="alert-btn primary" onclick="window.location.href='investimentos.html'">Ver investimento</button>
+                  <button class="alert-btn" onclick="dismissAlert(this)">Dispensar</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert-card ok" data-type="ok">
+              <div class="alert-icon ok">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <div class="alert-body">
+                <div class="alert-top">
+                  <div class="alert-title">Salário recebido · R$ 8.200,00</div>
+                  <div class="alert-time">Hoje · 09:12</div>
+                </div>
+                <div class="alert-desc">Crédito de R$ 8.200,00 identificado na conta Nubank Conta (****4421). Remetente: EMPRESA LTDA. Saldo atualizado para R$ 24.831,42.</div>
+                <div class="alert-tags">
+                  <span class="alert-tag ok">Positivo</span>
+                  <span class="alert-tag gray">Receita</span>
+                  <span class="alert-tag gray">Salário</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert-card ok" data-type="ok">
+              <div class="alert-icon ok">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+              </div>
+              <div class="alert-body">
+                <div class="alert-top">
+                  <div class="alert-title">Gastos 8.3% menores que fevereiro</div>
+                  <div class="alert-time">Ontem · 23:59</div>
+                </div>
+                <div class="alert-desc">Você fechou março com R$ 4.731 em despesas totais, contra R$ 5.160 em fevereiro. Redução de R$ 429. Continue assim!</div>
+                <div class="alert-tags">
+                  <span class="alert-tag ok">Positivo</span>
+                  <span class="alert-tag gray">Relatório mensal</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── Right: Regras ── -->
+        <div class="rules-panel">
+          <div class="section-header">
+            <div>
+              <div class="section-title">Regras automáticas</div>
+              <div class="section-sub">8 regras · 6 ativas</div>
+            </div>
+          </div>
+
+          <div class="rule-card">
+            <div class="rule-header">
+              <div class="rule-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path stroke-linecap="round" d="M2 10h20"/></svg>
+              </div>
+              <span class="rule-name">Limite do cartão &gt; 80%</span>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="rule-desc">Alerta crítico quando o limite utilizado de qualquer cartão ultrapassar 80%.</div>
+            <div class="rule-meta">
+              <span>Acionado 2x este mês</span>
+              <span class="rule-trigger-count">2 disparos</span>
+            </div>
+          </div>
+
+          <div class="rule-card">
+            <div class="rule-header">
+              <div class="rule-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <span class="rule-name">Orçamento de categoria excedido</span>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="rule-desc">Aviso quando qualquer categoria ultrapassar o orçamento mensal definido.</div>
+            <div class="rule-meta">
+              <span>Acionado 3x este mês</span>
+              <span class="rule-trigger-count">3 disparos</span>
+            </div>
+          </div>
+
+          <div class="rule-card">
+            <div class="rule-header">
+              <div class="rule-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              </div>
+              <span class="rule-name">Conta vencendo em 3 dias</span>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="rule-desc">Lembrete antecipado para contas e pagamentos com prazo próximo.</div>
+            <div class="rule-meta">
+              <span>Acionado 5x este mês</span>
+              <span class="rule-trigger-count">5 disparos</span>
+            </div>
+          </div>
+
+          <div class="rule-card">
+            <div class="rule-header">
+              <div class="rule-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <span class="rule-name">Receita creditada</span>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="rule-desc">Notificação imediata ao receber qualquer crédito acima de R$ 500,00.</div>
+            <div class="rule-meta">
+              <span>Acionado 1x este mês</span>
+              <span class="rule-trigger-count">1 disparo</span>
+            </div>
+          </div>
+
+          <div class="rule-card">
+            <div class="rule-header">
+              <div class="rule-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              </div>
+              <span class="rule-name">Assinatura sem uso (30 dias)</span>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="rule-desc">Detecta serviços por assinatura que não foram acessados nos últimos 30 dias.</div>
+            <div class="rule-meta">
+              <span>Acionado 2x este mês</span>
+              <span class="rule-trigger-count">2 disparos</span>
+            </div>
+          </div>
+
+          <div class="rule-card">
+            <div class="rule-header">
+              <div class="rule-icon" style="background:rgba(255,255,255,0.05);color:var(--gray);border-color:var(--border)">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+              </div>
+              <span class="rule-name">Investimento vencendo</span>
+              <div class="toggle" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="rule-desc">Alerta quando CDBs, LCIs ou outros investimentos estiverem próximos do vencimento.</div>
+            <div class="rule-meta">
+              <span>Pausado</span>
+              <span class="rule-trigger-count">0 disparos</span>
+            </div>
+          </div>
+
+          <div class="new-rule-card" onclick="openNewRule()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Adicionar nova regra
+          </div>
+
+          <!-- Canais de notificação -->
+          <div style="margin-top:22px">
+            <div class="section-header" style="margin-bottom:12px">
+              <div>
+                <div class="section-title" style="font-size:14px">Canais de notificação</div>
+              </div>
+            </div>
+            <div class="channels-grid">
+              <div class="channel-item">
+                <div class="channel-top">
+                  <div class="channel-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    E-mail
+                  </div>
+                  <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+                </div>
+                <div class="channel-status">Ativo</div>
+              </div>
+              <div class="channel-item">
+                <div class="channel-top">
+                  <div class="channel-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    Push
+                  </div>
+                  <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+                </div>
+                <div class="channel-status">Ativo</div>
+              </div>
+              <div class="channel-item">
+                <div class="channel-top">
+                  <div class="channel-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                    WhatsApp
+                  </div>
+                  <div class="toggle" onclick="this.classList.toggle('on')"></div>
+                </div>
+                <div class="channel-status off">Inativo</div>
+              </div>
+              <div class="channel-item">
+                <div class="channel-top">
+                  <div class="channel-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                    In-app
+                  </div>
+                  <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+                </div>
+                <div class="channel-status">Ativo</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- end page-content -->
+  </div><!-- end main-wrapper -->
+</div><!-- end app -->
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const _sb = createClient(
+  'https://xdxcczywfincjcbvbecb.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeGNjenl3ZmluY2pjYnZiZWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3MTgwNjMsImV4cCI6MjA1NzI5NDA2M30.kMbTpRoTAXNqMCgpDVHKoWqTPqYtTLMWm8rFqFLjmN0'
+);
+(async function(){
+  const { data:{ session } } = await _sb.auth.getSession();
+  if(!session){ window.location.href='auth.html'; return; }
+  const u = session.user;
+  const name = u.user_metadata?.full_name || u.email.split('@')[0];
+  const initials = name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  document.getElementById('sbUserName').textContent = name;
+  document.getElementById('sbAvatar').textContent = initials;
+})();
+</script>
+
+<script>
+window.dismissAlert = function(btn){
+  const card = btn.closest('.alert-card');
+  card.style.transition = 'opacity 0.3s, transform 0.3s';
+  card.style.opacity = '0';
+  card.style.transform = 'translateX(20px)';
+  setTimeout(()=>{ card.classList.add('dismissed'); updateCounts(); }, 300);
+};
+
+window.markAllRead = function(){
+  document.querySelectorAll('.unread-dot').forEach(d=>d.remove());
+};
+
+window.filterAlerts = function(type, btn){
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.alert-card:not(.dismissed)').forEach(c=>{
+    c.style.display = (type==='all' || c.dataset.type===type) ? '' : 'none';
+  });
+};
+
+window.openNewRule = function(){
+  alert('Modal de criação de nova regra — será implementado na versão completa!');
+};
+
+function updateCounts(){
+  const crits = document.querySelectorAll('.alert-card.crit:not(.dismissed)').length;
+  const warns = document.querySelectorAll('.alert-card.warn:not(.dismissed)').length;
+  document.getElementById('critCount').textContent = crits;
+  document.getElementById('warnCount').textContent = warns;
+}
+</script>
+</body>
+</html>
