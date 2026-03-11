@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexora — Cartões</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --lime:        #C8FF00;
+  --lime-dark:   #A8D400;
+  --lime-dim:    rgba(200,255,0,0.12);
+  --lime-glow:   rgba(200,255,0,0.22);
+  --lime-border: rgba(200,255,0,0.28);
+  --black:       #060606;
+  --dark:        #0C0C0C;
+  --surface:     #101010;
+  --surface2:    #141414;
+  --card:        #161616;
+  --card2:       #1A1A1A;
+  --border:      rgba(255,255,255,0.07);
+  --border2:     rgba(255,255,255,0.04);
+  --white:       #FFFFFF;
+  --gray:        #666;
+  --lgray:       #999;
+  --mgray:       #444;
+  --red:         #FF4D4D;
+  --red-dim:     rgba(255,77,77,0.12);
+  --green:       #00E676;
+  --green-dim:   rgba(0,230,118,0.12);
+  --blue:        #448AFF;
+  --blue-dim:    rgba(68,138,255,0.12);
+  --orange:      #FF9100;
+  --orange-dim:  rgba(255,145,0,0.12);
+  --font-title:  'Space Grotesk', sans-serif;
+  --font-body:   'Inter', sans-serif;
+  --sidebar-w:   260px;
+  --topbar-h:    68px;
+  --radius:      14px;
+  --radius-sm:   9px;
+  --radius-xs:   6px;
+  --tr:          0.28s cubic-bezier(0.4,0,0.2,1);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.55;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--lime-dark); }
+a { text-decoration: none; color: inherit; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 100;
+  transition: transform var(--tr);
+  overflow: hidden;
+}
+.sidebar::before {
+  content: '';
+  position: absolute;
+  bottom: -60px; left: -60px;
+  width: 220px; height: 220px;
+  background: var(--lime-glow);
+  filter: blur(80px);
+  pointer-events: none;
+  border-radius: 50%;
+}
+.sb-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 20px 18px 18px;
+  border-bottom: 1px solid var(--border2);
+}
+.sb-logo-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: var(--lime);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-title);
+  font-weight: 800; font-size: 18px; color: var(--black);
+  flex-shrink: 0;
+}
+.sb-logo-text {
+  font-family: var(--font-title);
+  font-weight: 700; font-size: 17px; color: var(--white);
+}
+.sb-logo-badge {
+  margin-left: auto;
+  background: var(--lime-dim); color: var(--lime);
+  border: 1px solid var(--lime-border);
+  font-size: 9px; font-weight: 700;
+  padding: 2px 7px; border-radius: 20px;
+}
+.sb-nav {
+  flex: 1; overflow-y: auto;
+  padding: 14px 10px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.sb-section-label {
+  font-size: 9.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--mgray);
+  padding: 10px 8px 5px;
+}
+.sb-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: var(--radius-sm);
+  color: var(--lgray);
+  font-size: 13.5px; font-weight: 500;
+  transition: all var(--tr); cursor: pointer;
+  position: relative;
+}
+.sb-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+.sb-item:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+.sb-item.active {
+  background: var(--lime-dim);
+  color: var(--lime);
+}
+.sb-item.active svg { color: var(--lime); }
+.sb-item .badge {
+  margin-left: auto;
+  background: var(--lime-dim); color: var(--lime);
+  font-size: 10px; font-weight: 700;
+  padding: 1px 6px; border-radius: 20px;
+}
+.sb-footer {
+  padding: 14px 10px;
+  border-top: 1px solid var(--border2);
+}
+.sb-user {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  cursor: pointer;
+  transition: background var(--tr);
+}
+.sb-user:hover { background: var(--card2); }
+.sb-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--lime);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-title);
+  font-size: 12px; font-weight: 800; color: var(--black);
+  flex-shrink: 0;
+}
+.sb-user-name { font-size: 13px; font-weight: 600; color: var(--white); }
+.sb-user-plan { font-size: 11px; color: var(--lime); }
+
+/* ── MAIN ── */
+.main-wrapper {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: var(--topbar-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+  position: sticky; top: 0; z-index: 50;
+  gap: 16px;
+}
+.topbar-left { display: flex; align-items: center; gap: 14px; flex: 1; }
+.topbar-title {
+  font-family: var(--font-title);
+  font-weight: 700; font-size: 16px; color: var(--white);
+  white-space: nowrap;
+}
+.month-nav { display: flex; align-items: center; gap: 6px; }
+.month-btn {
+  width: 28px; height: 28px; border-radius: var(--radius-xs);
+  background: var(--card); border: 1px solid var(--border);
+  color: var(--lgray); cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--tr);
+}
+.month-btn:hover { border-color: var(--lime); color: var(--lime); }
+.month-label {
+  font-size: 13px; font-weight: 600; color: var(--white);
+  min-width: 120px; text-align: center;
+}
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+.topbar-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none; transition: all var(--tr);
+}
+.topbar-btn-primary { background: var(--lime); color: var(--black); }
+.topbar-btn-primary:hover { background: var(--lime-dark); }
+.topbar-btn-ghost {
+  background: transparent; color: var(--lgray);
+  border: 1px solid var(--border);
+}
+.topbar-btn-ghost:hover { border-color: var(--lime); color: var(--lime); }
+.topbar-icon-btn {
+  width: 36px; height: 36px; border-radius: var(--radius-sm);
+  background: var(--card); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all var(--tr); color: var(--lgray);
+}
+.topbar-icon-btn:hover { border-color: var(--lime); color: var(--lime); }
+.topbar-icon-btn svg { width: 17px; height: 17px; }
+
+/* ── CONTENT ── */
+.content { flex: 1; padding: 24px; }
+
+/* ── SUMMARY GRID ── */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.sum-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  position: relative; overflow: hidden;
+}
+.sum-card::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; background: var(--lime); opacity: 0.3;
+}
+.sum-card.highlight::after { opacity: 1; }
+.sum-card-label {
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--lgray); margin-bottom: 8px;
+}
+.sum-card-value {
+  font-family: var(--font-title);
+  font-size: 22px; font-weight: 700; color: var(--white);
+}
+.sum-card-sub { font-size: 12px; color: var(--gray); margin-top: 4px; }
+.sum-card-delta {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 600;
+  padding: 3px 8px; border-radius: 20px; margin-top: 6px;
+}
+.delta-down { background: var(--red-dim); color: var(--red); }
+.delta-up   { background: var(--green-dim); color: var(--green); }
+.due-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: var(--radius-xs);
+  background: var(--lime-dim); color: var(--lime);
+  border: 1px solid var(--lime-border);
+  font-size: 11px; font-weight: 600; margin-top: 6px;
+}
+
+/* ── CARDS GRID ── */
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: var(--font-title);
+  font-size: 15px; font-weight: 700; color: var(--white);
+}
+.section-hint { font-size: 12px; color: var(--gray); }
+.credit-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+/* ── CREDIT CARD VISUAL ── */
+.credit-card {
+  border-radius: 18px; padding: 22px;
+  position: relative; overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.22s, box-shadow 0.22s;
+  border: 2px solid transparent;
+  aspect-ratio: 1.586;
+}
+.credit-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
+.credit-card.selected {
+  border-color: var(--lime);
+  box-shadow: 0 0 0 1px var(--lime), 0 16px 40px rgba(0,0,0,0.5);
+}
+.credit-card::before {
+  content: '';
+  position: absolute; top: -30px; right: -30px;
+  width: 130px; height: 130px;
+  border-radius: 50%; background: rgba(255,255,255,0.07);
+}
+.credit-card::after {
+  content: '';
+  position: absolute; top: 20px; right: 20px;
+  width: 75px; height: 75px;
+  border-radius: 50%; background: rgba(255,255,255,0.04);
+}
+.cc-network {
+  position: absolute; top: 18px; right: 18px;
+  display: flex; gap: -4px;
+}
+.cc-circle { width: 28px; height: 28px; border-radius: 50%; opacity: 0.85; }
+.cc-circle:last-child { margin-left: -10px; }
+.cc-chip { font-size: 1.6rem; margin-bottom: 10px; }
+.cc-number {
+  font-family: var(--font-title);
+  font-size: 13px; letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.65); margin-bottom: 4px;
+}
+.cc-bottom {
+  position: absolute; bottom: 18px; left: 22px; right: 22px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+.cc-name {
+  font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.12em; color: rgba(255,255,255,0.55);
+}
+.cc-balance {
+  font-family: var(--font-title);
+  font-size: 15px; font-weight: 700;
+  color: rgba(255,255,255,0.9); margin-top: 3px;
+}
+.cc-balance-label { font-size: 9px; color: rgba(255,255,255,0.35); }
+.cc-valid { font-size: 11px; color: rgba(255,255,255,0.5); text-align: right; }
+.cc-valid span { display: block; font-size: 9px; color: rgba(255,255,255,0.3); margin-bottom: 2px; }
+.badge-pct {
+  display: inline-flex; align-items: center;
+  font-size: 9px; font-weight: 700;
+  padding: 2px 7px; border-radius: 20px; margin-top: 4px;
+}
+.badge-ok    { background: var(--green-dim); color: var(--green); }
+.badge-warn  { background: var(--orange-dim); color: var(--orange); }
+.badge-danger{ background: var(--red-dim); color: var(--red); }
+
+/* ── DETAIL PANEL ── */
+.detail-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--lime);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 24px;
+  display: none;
+  animation: fadeIn 0.25s ease;
+}
+.detail-panel.visible { display: block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+.detail-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.detail-header-left { display: flex; align-items: center; gap: 14px; }
+.detail-bank-icon {
+  width: 46px; height: 46px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+}
+.detail-name {
+  font-family: var(--font-title);
+  font-size: 16px; font-weight: 700; color: var(--white);
+}
+.detail-type { font-size: 12px; color: var(--lgray); margin-top: 2px; }
+.detail-metrics {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 12px;
+  margin-bottom: 18px;
+}
+.detail-metric {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px; text-align: center;
+}
+.detail-metric-label { font-size: 11px; color: var(--lgray); margin-bottom: 5px; }
+.detail-metric-val {
+  font-family: var(--font-title);
+  font-size: 16px; font-weight: 700;
+}
+
+/* ── LIMIT BAR ── */
+.limit-bar-wrap { margin-bottom: 20px; }
+.limit-bar-label {
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: var(--lgray); margin-bottom: 6px;
+}
+.limit-bar {
+  height: 8px; background: var(--surface2);
+  border-radius: 10px; overflow: hidden;
+}
+.limit-bar-fill {
+  height: 100%; border-radius: 10px;
+  transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  background: var(--lime);
+}
+.limit-bar-fill.warn   { background: var(--orange); }
+.limit-bar-fill.danger { background: var(--red); }
+
+/* ── FATURA SECTION ── */
+.fatura-section { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.fatura-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+}
+.fatura-box-title {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--lgray); margin-bottom: 14px;
+}
+.fatura-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 0; border-bottom: 1px solid var(--border2);
+}
+.fatura-item:last-child { border-bottom: none; }
+.fatura-item-left { display: flex; align-items: center; gap: 10px; }
+.fatura-emoji {
+  width: 32px; height: 32px;
+  background: var(--card); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.fatura-item-name { font-size: 13px; font-weight: 500; color: var(--white); }
+.fatura-item-meta { font-size: 11px; color: var(--gray); margin-top: 1px; }
+.fatura-item-val { font-size: 13px; font-weight: 600; color: var(--red); }
+.fatura-total-row {
+  display: flex; justify-content: space-between;
+  margin-top: 12px; padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+}
+.inst-badge {
+  font-size: 10px; color: var(--lgray);
+  background: var(--card2); border-radius: 4px;
+  padding: 1px 5px; margin-left: 5px;
+}
+.venc-box {
+  margin-top: 10px; padding: 14px;
+  background: var(--lime-dim); border-radius: var(--radius-sm);
+  border: 1px solid var(--lime-border);
+  text-align: center;
+}
+.venc-box-label { font-size: 11px; color: var(--lgray); margin-bottom: 4px; }
+.venc-box-val {
+  font-family: var(--font-title);
+  font-size: 18px; font-weight: 700; color: var(--lime);
+}
+.venc-box-sub { font-size: 11px; color: var(--gray); margin-top: 3px; }
+
+/* ── CHARTS ROW ── */
+.charts-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px; margin-bottom: 24px;
+}
+.chart-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.chart-box-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.chart-box-title { font-size: 14px; font-weight: 600; color: var(--white); }
+.chart-canvas-wrap { height: 200px; position: relative; }
+
+/* ── CATEGORY BARS ── */
+.cat-list { display: flex; flex-direction: column; gap: 13px; }
+.cat-row-label {
+  display: flex; justify-content: space-between;
+  font-size: 12px; margin-bottom: 5px;
+}
+.cat-row-name { color: var(--lgray); }
+.cat-row-val  { font-weight: 600; color: var(--white); }
+.cat-bar { height: 6px; background: var(--surface2); border-radius: 6px; overflow: hidden; }
+.cat-bar-fill {
+  height: 100%; border-radius: 6px;
+  transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── STATUS BADGE ── */
+.status-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600;
+}
+.status-active  { background: var(--green-dim); color: var(--green); }
+.status-blocked { background: var(--red-dim); color: var(--red); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) {
+  .summary-grid { grid-template-columns: repeat(2,1fr); }
+  .credit-cards-grid { grid-template-columns: repeat(2,1fr); }
+  .charts-row { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  :root { --sidebar-w: 0px; }
+  .sidebar { transform: translateX(-260px); width: 260px; }
+  .sidebar.open { transform: translateX(0); }
+  .summary-grid { grid-template-columns: 1fr 1fr; }
+  .credit-cards-grid { grid-template-columns: 1fr; }
+  .detail-metrics { grid-template-columns: repeat(2,1fr); }
+  .fatura-section { grid-template-columns: 1fr; }
+}
+  </style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">N</div>
+    <div>
+      <div class="sb-logo-text">Nexora</div>
+    </div>
+    <span class="sb-logo-badge">PRO</span>
+  </div>
+
+  <nav class="sb-nav">
+    <span class="sb-section-label">Principal</span>
+
+    <a class="sb-item" href="dashboard.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      Visão Geral
+    </a>
+
+    <a class="sb-item" href="transacoes.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/>
+      </svg>
+      Transações
+    </a>
+
+    <a class="sb-item" href="contas.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+      </svg>
+      Contas
+    </a>
+
+    <a class="sb-item active" href="cartoes.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="5" width="20" height="14" rx="2"/>
+        <path stroke-linecap="round" d="M2 10h20"/>
+      </svg>
+      Cartões
+    </a>
+
+    <span class="sb-section-label" style="margin-top:8px">IA & Insights</span>
+
+    <a class="sb-item" href="chat-ia.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+      </svg>
+      Chat IA
+    </a>
+
+    <a class="sb-item" href="alertas.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+      </svg>
+      Alertas
+    </a>
+
+    <span class="sb-section-label" style="margin-top:8px">Financeiro</span>
+
+    <a class="sb-item" href="relatorios.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+      </svg>
+      Relatórios
+    </a>
+
+    <a class="sb-item" href="metas.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+      </svg>
+      Metas
+    </a>
+
+    <a class="sb-item" href="investimentos.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+      </svg>
+      Investimentos
+    </a>
+
+    <span class="sb-section-label" style="margin-top:8px">Sistema</span>
+
+    <a class="sb-item" href="configuracoes.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>
+      Configurações
+    </a>
+  </nav>
+
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar" id="sbAvatar">ES</div>
+      <div class="sb-user-info">
+        <div class="sb-user-name" id="sbUserName">Carregando…</div>
+        <div class="sb-user-plan">Plano Pro ✦</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main-wrapper">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="topbar-icon-btn" onclick="document.getElementById('sidebar').classList.toggle('open')" style="display:none" id="menuBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+      <div class="topbar-title">💳 Cartões de Crédito</div>
+      <div class="month-nav">
+        <button class="month-btn" onclick="changeMonth(-1)">‹</button>
+        <div class="month-label" id="monthLabel">Março 2026</div>
+        <button class="month-btn" onclick="changeMonth(1)">›</button>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn topbar-btn-ghost" onclick="exportFatura()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="15" height="15">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        Exportar Fatura
+      </button>
+      <button class="topbar-btn topbar-btn-primary" onclick="alert('Em breve: adicionar novo cartão!')">
+        + Novo Cartão
+      </button>
+      <div class="topbar-icon-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+        </svg>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- SUMMARY -->
+    <div class="summary-grid">
+      <div class="sum-card highlight">
+        <div class="sum-card-label">Fatura Total</div>
+        <div class="sum-card-value" id="sumFaturaTotal">R$ 0</div>
+        <div class="sum-card-sub">todos os cartões</div>
+        <div class="sum-card-delta delta-down" id="sumFaturaDelta">↑ +8.4% vs anterior</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-card-label">Limite Disponível</div>
+        <div class="sum-card-value" id="sumLimiteDisp">R$ 0</div>
+        <div class="sum-card-sub" id="sumLimitePct">0% utilizado</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-card-label">Parcelas Futuras</div>
+        <div class="sum-card-value" id="sumParcelas">R$ 0</div>
+        <div class="sum-card-sub">próximos 3 meses</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-card-label">Próximo Vencimento</div>
+        <div class="sum-card-value" id="sumVencimento">— dias</div>
+        <div class="sum-card-sub" id="sumVencCard">—</div>
+        <div class="due-pill" id="sumDuePill">📅 em breve</div>
+      </div>
+    </div>
+
+    <!-- CARTÕES VISUAIS -->
+    <div class="section-header">
+      <div class="section-title">Meus Cartões</div>
+      <div class="section-hint">Clique para ver detalhes da fatura</div>
+    </div>
+    <div class="credit-cards-grid" id="cardsGrid"></div>
+
+    <!-- DETAIL PANEL -->
+    <div class="detail-panel" id="detailPanel">
+      <div class="detail-header">
+        <div class="detail-header-left">
+          <div class="detail-bank-icon" id="detailIcon"></div>
+          <div>
+            <div class="detail-name" id="detailName"></div>
+            <div class="detail-type" id="detailType"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="status-badge status-active">● Ativo</span>
+          <button class="topbar-btn topbar-btn-ghost" style="font-size:12px;padding:6px 12px" onclick="closeDetail()">✕ Fechar</button>
+        </div>
+      </div>
+      <div class="detail-metrics">
+        <div class="detail-metric">
+          <div class="detail-metric-label">Fatura Atual</div>
+          <div class="detail-metric-val" id="detailFatura" style="color:var(--red)">—</div>
+        </div>
+        <div class="detail-metric">
+          <div class="detail-metric-label">Limite Total</div>
+          <div class="detail-metric-val" id="detailLimite">—</div>
+        </div>
+        <div class="detail-metric">
+          <div class="detail-metric-label">Disponível</div>
+          <div class="detail-metric-val" id="detailDisp" style="color:var(--green)">—</div>
+        </div>
+        <div class="detail-metric">
+          <div class="detail-metric-label">Vencimento</div>
+          <div class="detail-metric-val" id="detailVenc" style="color:var(--lime)">—</div>
+        </div>
+      </div>
+      <div class="limit-bar-wrap">
+        <div class="limit-bar-label">
+          <span>Utilização do Limite</span>
+          <span id="detailPct" style="color:var(--white);font-weight:600">0%</span>
+        </div>
+        <div class="limit-bar"><div class="limit-bar-fill" id="detailBar" style="width:0%"></div></div>
+      </div>
+      <div class="fatura-section" id="faturaSection"></div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-row">
+      <div class="chart-box">
+        <div class="chart-box-header">
+          <div class="chart-box-title">Evolução da Fatura</div>
+          <span style="font-size:11px;color:var(--gray)">últimos 6 meses</span>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="chartEvolucao"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-box-header">
+          <div class="chart-box-title">Gastos por Categoria</div>
+          <span style="font-size:11px;color:var(--gray)" id="catCardLabel">Nubank</span>
+        </div>
+        <div class="cat-list" id="catList"></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main-wrapper -->
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const _sb = createClient(
+  'https://xdxcczywfincjcbvbecb.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeGNjenl3ZmluY2pjYnZiZWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNjA4MTAsImV4cCI6MjA4ODczNjgxMH0.Jhg9yNbMuWtzQ9GPaoJ6KL_nxzht1FLWEHpfDr-J3sE'
+);
+(async function(){
+  const { data:{ session } } = await _sb.auth.getSession();
+  if(!session){ window.location.href='auth.html'; return; }
+  const u = session.user;
+  const name = u.user_metadata?.full_name || u.email.split('@')[0];
+  const initials = name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  document.getElementById('sbUserName').textContent = name;
+  document.getElementById('sbAvatar').textContent = initials;
+})();
+</script>
+
+<script>
+/* ── DATA ── */
+const CARDS = [
+  {
+    id:'nubank', name:'Nubank Ultravioleta', bank:'Nubank', type:'Crédito Internacional',
+    network:'mastercard', last4:'4291', valid:'08/28',
+    color1:'#3A0078', color2:'#6B00D7',
+    limit:15000, fatura:4280.50, parcelas:1850.00, dueDay:10,
+    transactions:[
+      {emoji:'🛒',name:'Mercado Livre',cat:'Compras',val:489.90,date:'07 Mar',inst:'1/3'},
+      {emoji:'✈️',name:'Latam Airlines',cat:'Viagem',val:1200.00,date:'05 Mar',inst:'2/6'},
+      {emoji:'🍕',name:'iFood',cat:'Alimentação',val:89.50,date:'04 Mar'},
+      {emoji:'📱',name:'Apple Store',cat:'Tecnologia',val:599.00,date:'03 Mar'},
+      {emoji:'⛽',name:'Posto Shell',cat:'Transporte',val:210.00,date:'02 Mar'},
+      {emoji:'🎬',name:'Netflix',cat:'Streaming',val:55.90,date:'01 Mar'},
+    ],
+    cats:[
+      {name:'Compras',val:1200,max:2000,color:'#C8FF00'},
+      {name:'Viagem',val:1200,max:2000,color:'#7C3AED'},
+      {name:'Alimentação',val:680,max:2000,color:'#F59E0B'},
+      {name:'Tecnologia',val:599,max:2000,color:'#3B82F6'},
+      {name:'Transporte',val:350,max:2000,color:'#10B981'},
+    ]
+  },
+  {
+    id:'itau', name:'Itaú Personnalité', bank:'Itaú', type:'Crédito Platinum',
+    network:'visa', last4:'8847', valid:'11/27',
+    color1:'#B34400', color2:'#FF6B00',
+    limit:20000, fatura:6120.00, parcelas:3200.00, dueDay:15,
+    transactions:[
+      {emoji:'🏨',name:'Hotel Fasano',cat:'Hospedagem',val:2400.00,date:'08 Mar',inst:'1/2'},
+      {emoji:'🍷',name:'Restaurante Figueira',cat:'Alimentação',val:380.00,date:'06 Mar'},
+      {emoji:'👔',name:'Zara',cat:'Vestuário',val:620.00,date:'05 Mar'},
+      {emoji:'💊',name:'Drogasil',cat:'Saúde',val:156.00,date:'04 Mar'},
+      {emoji:'📚',name:'Amazon',cat:'Educação',val:320.00,date:'03 Mar'},
+      {emoji:'🎵',name:'Spotify',cat:'Streaming',val:21.90,date:'01 Mar'},
+    ],
+    cats:[
+      {name:'Hospedagem',val:2400,max:4000,color:'#FF6B00'},
+      {name:'Vestuário',val:620,max:4000,color:'#EF4444'},
+      {name:'Alimentação',val:380,max:4000,color:'#F59E0B'},
+      {name:'Educação',val:320,max:4000,color:'#3B82F6'},
+      {name:'Saúde',val:156,max:4000,color:'#10B981'},
+    ]
+  },
+  {
+    id:'c6', name:'C6 Carbon', bank:'C6 Bank', type:'Crédito Black',
+    network:'mastercard', last4:'3315', valid:'03/29',
+    color1:'#1a1a1a', color2:'#3a3a3a',
+    limit:8000, fatura:1940.20, parcelas:620.00, dueDay:20,
+    transactions:[
+      {emoji:'🎮',name:'Steam',cat:'Games',val:249.90,date:'08 Mar'},
+      {emoji:'🚕',name:'Uber',cat:'Transporte',val:87.40,date:'07 Mar'},
+      {emoji:'☕',name:'Starbucks',cat:'Alimentação',val:54.00,date:'06 Mar'},
+      {emoji:'📦',name:'Shopee',cat:'Compras',val:399.00,date:'05 Mar'},
+      {emoji:'🎧',name:'YouTube Premium',cat:'Streaming',val:27.90,date:'01 Mar'},
+    ],
+    cats:[
+      {name:'Compras',val:399,max:1000,color:'#F59E0B'},
+      {name:'Games',val:250,max:1000,color:'#8B5CF6'},
+      {name:'Transporte',val:215,max:1000,color:'#10B981'},
+      {name:'Alimentação',val:198,max:1000,color:'#EF4444'},
+      {name:'Streaming',val:100,max:1000,color:'#3B82F6'},
+    ]
+  }
+];
+
+const MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const now = new Date();
+let displayMonth = now.getMonth();
+let displayYear  = now.getFullYear();
+let selectedCard = null;
+
+function fmtBRL(v){ return 'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+function changeMonth(dir){
+  displayMonth += dir;
+  if(displayMonth < 0){ displayMonth=11; displayYear--; }
+  if(displayMonth > 11){ displayMonth=0; displayYear++; }
+  document.getElementById('monthLabel').textContent = MONTHS[displayMonth]+' '+displayYear;
+}
+
+function networkBadge(type){
+  if(type==='visa'){
+    return '<div class="cc-circle" style="background:#1A1F71"></div><div class="cc-circle" style="background:#F7B600"></div>';
+  }
+  return '<div class="cc-circle" style="background:#EB001B"></div><div class="cc-circle" style="background:#FF5F00"></div>';
+}
+
+/* ── RENDER CARDS ── */
+function renderCards(){
+  const grid = document.getElementById('cardsGrid');
+  grid.innerHTML = '';
+  CARDS.forEach(c=>{
+    const pct = c.fatura/c.limit;
+    const pctRound = Math.round(pct*100);
+    const badgeCls = pct>.8?'badge-danger':pct>.6?'badge-warn':'badge-ok';
+    const div = document.createElement('div');
+    div.className = 'credit-card'+(selectedCard===c.id?' selected':'');
+    div.style.background = `linear-gradient(135deg, ${c.color1} 0%, ${c.color2} 100%)`;
+    div.innerHTML = `
+      <div class="cc-network">${networkBadge(c.network)}</div>
+      <div class="cc-chip">💳</div>
+      <div class="cc-number">•••• •••• •••• ${c.last4}</div>
+      <div class="cc-bottom">
+        <div>
+          <div class="cc-name">${c.name}</div>
+          <div class="cc-balance">${fmtBRL(c.fatura)}</div>
+          <div class="cc-balance-label">fatura atual</div>
+          <div class="badge-pct ${badgeCls}">${pctRound}% do limite</div>
+        </div>
+        <div style="text-align:right">
+          <div class="cc-valid"><span>VÁLIDO ATÉ</span>${c.valid}</div>
+        </div>
+      </div>`;
+    div.addEventListener('click',()=>openDetail(c.id));
+    grid.appendChild(div);
+  });
+}
+
+/* ── OPEN DETAIL ── */
+function openDetail(id){
+  selectedCard = id;
+  renderCards();
+  const c = CARDS.find(x=>x.id===id);
+  const panel = document.getElementById('detailPanel');
+  panel.classList.add('visible');
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  const pct = Math.round(c.fatura/c.limit*100);
+  const avail = c.limit - c.fatura;
+  const daysLeft = c.dueDay - now.getDate();
+  const iconMap = {nubank:'💜',itau:'🟠',c6:'⬛'};
+
+  document.getElementById('detailIcon').textContent = iconMap[c.id]||'💳';
+  document.getElementById('detailIcon').style.background = c.color1+'44';
+  document.getElementById('detailName').textContent = c.name;
+  document.getElementById('detailType').textContent = c.type+' — final '+c.last4;
+  document.getElementById('detailFatura').textContent = fmtBRL(c.fatura);
+  document.getElementById('detailLimite').textContent = fmtBRL(c.limit);
+  document.getElementById('detailDisp').textContent = fmtBRL(avail);
+  document.getElementById('detailVenc').textContent = 'Dia '+c.dueDay;
+  document.getElementById('detailPct').textContent = pct+'%';
+
+  const bar = document.getElementById('detailBar');
+  bar.className = 'limit-bar-fill'+(pct>80?' danger':pct>60?' warn':'');
+  requestAnimationFrame(()=> requestAnimationFrame(()=>{ bar.style.width = pct+'%'; }));
+
+  document.getElementById('faturaSection').innerHTML = `
+    <div class="fatura-box">
+      <div class="fatura-box-title">🧾 Lançamentos do Mês</div>
+      ${c.transactions.map(t=>`
+        <div class="fatura-item">
+          <div class="fatura-item-left">
+            <div class="fatura-emoji">${t.emoji}</div>
+            <div>
+              <div class="fatura-item-name">${t.name}${t.inst?`<span class="inst-badge">${t.inst}</span>`:''}</div>
+              <div class="fatura-item-meta">${t.cat} · ${t.date}</div>
+            </div>
+          </div>
+          <div class="fatura-item-val">-${fmtBRL(t.val)}</div>
+        </div>`).join('')}
+      <div class="fatura-total-row">
+        <span style="color:var(--lgray)">Total Fatura</span>
+        <strong style="color:var(--red)">${fmtBRL(c.fatura)}</strong>
+      </div>
+    </div>
+    <div class="fatura-box">
+      <div class="fatura-box-title">📅 Parcelas Futuras</div>
+      <div class="fatura-item">
+        <span style="font-size:13px;color:var(--lgray)">Próximo mês</span>
+        <span style="font-size:13px;font-weight:600;color:var(--red)">${fmtBRL(c.parcelas*0.5)}</span>
+      </div>
+      <div class="fatura-item">
+        <span style="font-size:13px;color:var(--lgray)">Daqui 2 meses</span>
+        <span style="font-size:13px;font-weight:600;color:var(--red)">${fmtBRL(c.parcelas*0.3)}</span>
+      </div>
+      <div class="fatura-item">
+        <span style="font-size:13px;color:var(--lgray)">Daqui 3 meses</span>
+        <span style="font-size:13px;font-weight:600;color:var(--red)">${fmtBRL(c.parcelas*0.2)}</span>
+      </div>
+      <div class="venc-box">
+        <div class="venc-box-label">Vencimento da Fatura</div>
+        <div class="venc-box-val">Dia ${c.dueDay} do mês</div>
+        <div class="venc-box-sub">${daysLeft>0?daysLeft+' dias restantes':'Vence hoje!'}</div>
+      </div>
+    </div>`;
+
+  renderCatChart(c);
+}
+
+function closeDetail(){
+  selectedCard = null;
+  document.getElementById('detailPanel').classList.remove('visible');
+  renderCards();
+}
+window.closeDetail = closeDetail;
+
+/* ── CAT CHART ── */
+function renderCatChart(card){
+  document.getElementById('catCardLabel').textContent = card.name;
+  const list = document.getElementById('catList');
+  list.innerHTML = '';
+  card.cats.forEach(cat=>{
+    const pct = Math.round(cat.val/cat.max*100);
+    const div = document.createElement('div');
+    div.innerHTML = `
+      <div class="cat-row-label">
+        <span class="cat-row-name">${cat.name}</span>
+        <span class="cat-row-val">${fmtBRL(cat.val)}</span>
+      </div>
+      <div class="cat-bar">
+        <div class="cat-bar-fill" data-w="${pct}" style="width:0%;background:${cat.color}"></div>
+      </div>`;
+    list.appendChild(div);
+  });
+  requestAnimationFrame(()=> requestAnimationFrame(()=>{
+    list.querySelectorAll('.cat-bar-fill').forEach(el=>{ el.style.width = el.dataset.w+'%'; });
+  }));
+}
+
+/* ── EVOLUÇÃO CHART ── */
+function buildEvolChart(){
+  const ctx = document.getElementById('chartEvolucao').getContext('2d');
+  new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:['Out','Nov','Dez','Jan','Fev','Mar'],
+      datasets:[
+        {label:'Nubank',     data:[3100,4200,5800,3900,4100,4280],borderColor:'#7C3AED',backgroundColor:'rgba(124,58,237,.06)',tension:.4,pointRadius:3,fill:false},
+        {label:'Itaú',       data:[4500,5200,7100,5400,5800,6120],borderColor:'#FF6B00',backgroundColor:'rgba(255,107,0,.06)',tension:.4,pointRadius:3,fill:false},
+        {label:'C6 Bank',    data:[800,1200,2100,1700,1900,1940], borderColor:'#888',   backgroundColor:'rgba(136,136,136,.06)',tension:.4,pointRadius:3,fill:false},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ color:'#888', font:{ size:11 }, boxWidth:10 } } },
+      scales:{
+        x:{ grid:{ color:'rgba(255,255,255,.04)' }, ticks:{ color:'#555', font:{ size:11 } } },
+        y:{ grid:{ color:'rgba(255,255,255,.04)' }, ticks:{ color:'#555', font:{ size:11 }, callback:v=>'R$'+v.toLocaleString('pt-BR') } }
+      }
+    }
+  });
+}
+
+/* ── SUMMARY ── */
+function updateSummary(){
+  const faturaTotal   = CARDS.reduce((a,c)=>a+c.fatura,0);
+  const limiteTotal   = CARDS.reduce((a,c)=>a+c.limit,0);
+  const dispTotal     = CARDS.reduce((a,c)=>a+(c.limit-c.fatura),0);
+  const parcelasTotal = CARDS.reduce((a,c)=>a+c.parcelas,0);
+  const pctUsed       = Math.round(faturaTotal/limiteTotal*100);
+  document.getElementById('sumFaturaTotal').textContent = fmtBRL(faturaTotal);
+  document.getElementById('sumLimiteDisp').textContent  = fmtBRL(dispTotal);
+  document.getElementById('sumLimitePct').textContent   = pctUsed+'% do limite utilizado';
+  document.getElementById('sumParcelas').textContent    = fmtBRL(parcelasTotal);
+  const sorted = [...CARDS].sort((a,b)=>{
+    const da = ((a.dueDay - now.getDate()) + 31) % 31;
+    const db = ((b.dueDay - now.getDate()) + 31) % 31;
+    return da - db;
+  });
+  const next = sorted[0];
+  const dl = next.dueDay - now.getDate();
+  document.getElementById('sumVencimento').textContent = (dl>0?dl:0)+' dias';
+  document.getElementById('sumVencCard').textContent   = next.name;
+  document.getElementById('sumDuePill').textContent    = '📅 dia '+next.dueDay;
+}
+
+/* ── EXPORT ── */
+window.exportFatura = function(){
+  const rows = [['Cartão','Descrição','Categoria','Data','Valor (R$)']];
+  CARDS.forEach(c=>c.transactions.forEach(t=>rows.push([c.name,t.name,t.cat,t.date,t.val.toFixed(2)])));
+  const csv = rows.map(r=>r.join(';')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download = 'fatura_'+MONTHS[displayMonth].toLowerCase()+'_'+displayYear+'.csv';
+  a.click();
+};
+
+window.changeMonth = changeMonth;
+
+/* ── INIT ── */
+document.getElementById('monthLabel').textContent = MONTHS[displayMonth]+' '+displayYear;
+updateSummary();
+renderCards();
+buildEvolChart();
+renderCatChart(CARDS[0]);
+openDetail(CARDS[0].id);
+</script>
+</body>
+</html>

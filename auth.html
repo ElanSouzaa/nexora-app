@@ -791,6 +791,8 @@ document.getElementById('login-form').addEventListener('submit', async function(
 // INIT
 // ════════════════════════════════════════════════════
 (function init(){
+  // Abre tela de login diretamente se vier com ?mode=login
+  if(new URLSearchParams(window.location.search).get("mode")==="login") showLogin();
   const savedTheme = localStorage.getItem('nx-theme') || 'dark';
   const savedLang  = localStorage.getItem('nx-lang')  || 'pt-BR';
   applyTheme(savedTheme);
