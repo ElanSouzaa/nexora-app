@@ -140,21 +140,21 @@ body{display:flex;}
     <span class="sb-logo-text">Nexora</span>
   </div>
   <nav class="sb-nav">
-    <a href="dashboard/dashboard.html" class="sb-item"><span class="sb-icon">📊</span>Dashboard</a>
-    <a href="contas/contas.html" class="sb-item"><span class="sb-icon">🏦</span>Contas</a>
-    <a href="transacoes/transacoes.html" class="sb-item"><span class="sb-icon">↕️</span>Transações</a>
-    <a href="cartoes/cartoes.html" class="sb-item"><span class="sb-icon">💳</span>Cartões</a>
+    <a href="dashboard.html" class="sb-item"><span class="sb-icon">📊</span>Dashboard</a>
+    <a href="contas.html" class="sb-item"><span class="sb-icon">🏦</span>Contas</a>
+    <a href="transacoes.html" class="sb-item"><span class="sb-icon">↕️</span>Transações</a>
+    <a href="cartoes.html" class="sb-item"><span class="sb-icon">💳</span>Cartões</a>
     <div class="sb-divider"></div>
     <div class="sb-section">Análise</div>
-    <a href="metas/metas.html" class="sb-item active"><span class="sb-icon">🎯</span>Metas</a>
-    <a href="investimentos/investimentos.html" class="sb-item"><span class="sb-icon">📈</span>Investimentos</a>
-    <a href="relatorios/relatorios.html" class="sb-item"><span class="sb-icon">📋</span>Relatórios</a>
+    <a href="metas.html" class="sb-item active"><span class="sb-icon">🎯</span>Metas</a>
+    <a href="investimentos.html" class="sb-item"><span class="sb-icon">📈</span>Investimentos</a>
+    <a href="relatorios.html" class="sb-item"><span class="sb-icon">📋</span>Relatórios</a>
     <div class="sb-divider"></div>
     <div class="sb-section">Assistente</div>
-    <a href="chat-ia/chat-ia.html" class="sb-item"><span class="sb-icon">🤖</span>Chat IA</a>
-    <a href="alertas/alertas.html" class="sb-item"><span class="sb-icon">🔔</span>Alertas</a>
+    <a href="chat-ia.html" class="sb-item"><span class="sb-icon">🤖</span>Chat IA</a>
+    <a href="alertas.html" class="sb-item"><span class="sb-icon">🔔</span>Alertas</a>
     <div class="sb-divider"></div>
-    <a href="configuracoes/configuracoes.html" class="sb-item"><span class="sb-icon">⚙️</span>Configurações</a>
+    <a href="configuracoes.html" class="sb-item"><span class="sb-icon">⚙️</span>Configurações</a>
   </nav>
   <div class="sb-bottom">
     <div class="sb-avatar" id="sbAvatar">??</div>
@@ -330,10 +330,10 @@ async function loadGoals() {
 
 /* ── STATS ── */
 function renderStats() {
-  const ativas = allGoals.filter(g => +g.valor_atual < +g.valor_meta).length;
-  const concluidas = allGoals.filter(g => +g.valor_atual >= +g.valor_meta).length;
+  const ativas = allGoals.filter(g => +g.valor_atual < +g.valor_objetivo).length;
+  const concluidas = allGoals.filter(g => +g.valor_atual >= +g.valor_objetivo).length;
   const guardado = allGoals.reduce((s, g) => s + (+g.valor_atual || 0), 0);
-  const alvo = allGoals.reduce((s, g) => s + (+g.valor_meta || 0), 0);
+  const alvo = allGoals.reduce((s, g) => s + (+g.valor_objetivo || 0), 0);
 
   document.getElementById('statAtivas').textContent = ativas;
   document.getElementById('statGuardado').textContent = fmt(guardado);
@@ -363,8 +363,8 @@ function renderGoals() {
 
   // Sort: incomplete first, then completed
   const sorted = [...allGoals].sort((a, b) => {
-    const aDone = +a.valor_atual >= +a.valor_meta;
-    const bDone = +b.valor_atual >= +b.valor_meta;
+    const aDone = +a.valor_atual >= +a.valor_objetivo;
+    const bDone = +b.valor_atual >= +b.valor_objetivo;
     if (aDone && !bDone) return 1;
     if (!aDone && bDone) return -1;
     return 0;
@@ -372,7 +372,7 @@ function renderGoals() {
 
   sorted.forEach(g => {
     const atual = +g.valor_atual || 0;
-    const meta = +g.valor_meta || 1;
+    const meta = +g.valor_objetivo || 1;
     const pct = Math.min(Math.round(atual / meta * 100), 100);
     const done = atual >= meta;
     const prazo = g.prazo ? new Date(g.prazo + 'T00:00:00') : null;
@@ -397,7 +397,7 @@ function renderGoals() {
     div.className = `goal-card${done ? ' completed' : ''}`;
     div.innerHTML = `
       <div class="goal-header">
-        <div class="goal-emoji">${g.icone || '🎯'}</div>
+        <div class="goal-emoji">${g.emoji || '🎯'}</div>
         <div class="goal-info">
           <div class="goal-name">${esc(g.nome)}</div>
           <div class="goal-cat">${catLabel(g.categoria)}</div>
@@ -487,15 +487,15 @@ window.openEditById = function(id) {
   document.getElementById('modalTitle').textContent = 'Editar Meta';
   document.getElementById('fNome').value = g.nome || '';
   document.getElementById('fCategoria').value = g.categoria || 'outro';
-  document.getElementById('fValorMeta').value = g.valor_meta || '';
+  document.getElementById('fValorMeta').value = g.valor_objetivo || '';
   document.getElementById('fValorAtual').value = g.valor_atual || '';
   document.getElementById('fPrazo').value = g.prazo || '';
   document.getElementById('fAporte').value = g.aporte_mensal || '';
-  document.getElementById('fNotas').value = g.notas || '';
+  document.getElementById('fNotas').value = g.descricao || '';
   const opts = document.querySelectorAll('.emoji-opt');
   opts.forEach(x => {
     x.classList.remove('selected');
-    if (x.textContent === g.icone) x.classList.add('selected');
+    if (x.textContent === g.emoji) x.classList.add('selected');
   });
   if (!document.querySelector('.emoji-opt.selected')) opts[0].classList.add('selected');
   document.getElementById('modalOverlay').classList.add('open');
@@ -515,12 +515,12 @@ window.saveMeta = async function() {
   const fields = {
     nome,
     categoria: document.getElementById('fCategoria').value,
-    valor_meta: valorMeta,
+    valor_objetivo: valorMeta,
     valor_atual: parseFloat(document.getElementById('fValorAtual').value) || 0,
     prazo: document.getElementById('fPrazo').value || null,
     aporte_mensal: parseFloat(document.getElementById('fAporte').value) || null,
-    notas: document.getElementById('fNotas').value.trim() || null,
-    icone: sel ? sel.textContent : '🎯',
+    descricao: document.getElementById('fNotas').value.trim() || null,
+    emoji: sel ? sel.textContent : '🎯',
   };
 
   let err;
@@ -550,9 +550,9 @@ window.openDeposit = function(id) {
   const g = allGoals.find(x => x.id === id);
   if (!g) return;
   depositGoalId = id;
-  document.getElementById('depositGoalName').textContent = `${g.icone || '🎯'} ${g.nome}`;
+  document.getElementById('depositGoalName').textContent = `${g.emoji || '🎯'} ${g.nome}`;
   document.getElementById('depositGoalCurrent').textContent = fmt(+g.valor_atual || 0);
-  document.getElementById('depositGoalTarget').textContent = `de ${fmt(+g.valor_meta || 0)}`;
+  document.getElementById('depositGoalTarget').textContent = `de ${fmt(+g.valor_objetivo || 0)}`;
   document.getElementById('dValor').value = '';
   document.getElementById('dNotas').value = '';
   document.getElementById('depositOverlay').classList.add('open');

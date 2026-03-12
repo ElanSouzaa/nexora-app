@@ -700,7 +700,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           </div>
           <div class="stat-info">
-            <div class="stat-val green">7</div>
+            <div class="stat-val green" id="infoCount">–</div>
             <div class="stat-label">Informativos</div>
           </div>
         </div>
@@ -723,7 +723,7 @@
           <div class="section-header">
             <div>
               <div class="section-title">Notificações recentes</div>
-              <div class="section-sub">Últimas 24 horas · 12 alertas</div>
+              <div class="section-sub" id="alertsSubtitle">Carregando…</div>
             </div>
             <div class="filter-tabs">
               <button class="ftab active" onclick="filterAlerts('all', this)">Todos</button>
@@ -735,176 +735,7 @@
           </div>
 
           <div class="alerts-list" id="alertsList">
-
-            <div class="alert-card crit" data-type="crit">
-              <div class="unread-dot"></div>
-              <div class="alert-icon crit">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path stroke-linecap="round" d="M2 10h20"/></svg>
-              </div>
-              <div class="alert-body">
-                <div class="alert-top">
-                  <div class="alert-title">Cartão Nubank em 87% do limite</div>
-                  <div class="alert-time">Agora há pouco</div>
-                </div>
-                <div class="alert-desc">Seu cartão Nubank Ultravioleta está com R$ 7.395 utilizados de R$ 8.500 de limite. Fatura fecha em 8 dias.</div>
-                <div class="alert-tags">
-                  <span class="alert-tag crit">Crítico</span>
-                  <span class="alert-tag gray">Cartão</span>
-                  <span class="alert-tag gray">Nubank</span>
-                </div>
-                <div class="alert-actions">
-                  <button class="alert-btn primary" onclick="window.location.href='cartoes.html'">Ver cartão</button>
-                  <button class="alert-btn" onclick="dismissAlert(this)">Dispensar</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="alert-card crit" data-type="crit">
-              <div class="unread-dot"></div>
-              <div class="alert-icon crit">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              </div>
-              <div class="alert-body">
-                <div class="alert-top">
-                  <div class="alert-title">Gasto com lazer acima do orçamento</div>
-                  <div class="alert-time">2h atrás</div>
-                </div>
-                <div class="alert-desc">Você gastou R$ 620 em lazer este mês (orçamento: R$ 400). Já ultrapassou o limite em 55%. Considere revisar gastos no iFood e streaming.</div>
-                <div class="alert-tags">
-                  <span class="alert-tag crit">Crítico</span>
-                  <span class="alert-tag gray">Orçamento</span>
-                  <span class="alert-tag gray">Lazer</span>
-                </div>
-                <div class="alert-actions">
-                  <button class="alert-btn primary" onclick="window.location.href='relatorios.html'">Ver relatório</button>
-                  <button class="alert-btn" onclick="dismissAlert(this)">Dispensar</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="alert-card warn" data-type="warn">
-              <div class="unread-dot"></div>
-              <div class="alert-icon warn">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-              </div>
-              <div class="alert-body">
-                <div class="alert-top">
-                  <div class="alert-title">IPTU 2026 — Parcela vence em 3 dias</div>
-                  <div class="alert-time">5h atrás</div>
-                </div>
-                <div class="alert-desc">Parcela 03/10 do IPTU no valor de R$ 284,60 vence em 14/03/2026 (quinta-feira). Saldo disponível suficiente na conta Nubank.</div>
-                <div class="alert-tags">
-                  <span class="alert-tag warn">Aviso</span>
-                  <span class="alert-tag gray">Conta a pagar</span>
-                  <span class="alert-tag gray">IPTU</span>
-                </div>
-                <div class="alert-actions">
-                  <button class="alert-btn primary">Agendar pagamento</button>
-                  <button class="alert-btn" onclick="dismissAlert(this)">Dispensar</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="alert-card warn" data-type="warn">
-              <div class="alert-icon warn">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
-              </div>
-              <div class="alert-body">
-                <div class="alert-top">
-                  <div class="alert-title">Meta "Reserva emergência" abaixo do ideal</div>
-                  <div class="alert-time">8h atrás</div>
-                </div>
-                <div class="alert-desc">Sua reserva de emergência está em R$ 14.400 (2.3 meses de cobertura). A meta recomendada é de 6 meses (≈ R$ 37.200). Progresso: 38.7%.</div>
-                <div class="alert-tags">
-                  <span class="alert-tag warn">Aviso</span>
-                  <span class="alert-tag gray">Meta</span>
-                  <span class="alert-tag gray">Reserva</span>
-                </div>
-                <div class="alert-actions">
-                  <button class="alert-btn primary" onclick="window.location.href='metas.html'">Ver meta</button>
-                  <button class="alert-btn" onclick="dismissAlert(this)">Dispensar</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="alert-card warn" data-type="warn">
-              <div class="alert-icon warn">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-              </div>
-              <div class="alert-body">
-                <div class="alert-top">
-                  <div class="alert-title">2 assinaturas sem uso há mais de 30 dias</div>
-                  <div class="alert-time">12h atrás</div>
-                </div>
-                <div class="alert-desc">Paramount+ (R$ 34,90/mês) e Adobe Creative (R$ 89,00/mês) não tiveram acesso registrado nos últimos 30 dias. Total desperdiçado: R$ 123,90/mês.</div>
-                <div class="alert-tags">
-                  <span class="alert-tag warn">Aviso</span>
-                  <span class="alert-tag gray">Assinaturas</span>
-                </div>
-                <div class="alert-actions">
-                  <button class="alert-btn primary">Revisar assinaturas</button>
-                  <button class="alert-btn" onclick="dismissAlert(this)">Dispensar</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="alert-card info" data-type="info">
-              <div class="alert-icon info">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              </div>
-              <div class="alert-body">
-                <div class="alert-top">
-                  <div class="alert-title">CDB vence em 15 dias</div>
-                  <div class="alert-time">Ontem · 18:30</div>
-                </div>
-                <div class="alert-desc">Seu CDB Banco Inter (R$ 5.000 + juros ~R$ 820) vence em 26/03/2026. Você pode renovar automaticamente ou resgatar para reinvestir.</div>
-                <div class="alert-tags">
-                  <span class="alert-tag info">Informativo</span>
-                  <span class="alert-tag gray">Investimento</span>
-                  <span class="alert-tag gray">Vencimento</span>
-                </div>
-                <div class="alert-actions">
-                  <button class="alert-btn primary" onclick="window.location.href='investimentos.html'">Ver investimento</button>
-                  <button class="alert-btn" onclick="dismissAlert(this)">Dispensar</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="alert-card ok" data-type="ok">
-              <div class="alert-icon ok">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              </div>
-              <div class="alert-body">
-                <div class="alert-top">
-                  <div class="alert-title">Salário recebido · R$ 8.200,00</div>
-                  <div class="alert-time">Hoje · 09:12</div>
-                </div>
-                <div class="alert-desc">Crédito de R$ 8.200,00 identificado na conta Nubank Conta (****4421). Remetente: EMPRESA LTDA. Saldo atualizado para R$ 24.831,42.</div>
-                <div class="alert-tags">
-                  <span class="alert-tag ok">Positivo</span>
-                  <span class="alert-tag gray">Receita</span>
-                  <span class="alert-tag gray">Salário</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="alert-card ok" data-type="ok">
-              <div class="alert-icon ok">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-              </div>
-              <div class="alert-body">
-                <div class="alert-top">
-                  <div class="alert-title">Gastos 8.3% menores que fevereiro</div>
-                  <div class="alert-time">Ontem · 23:59</div>
-                </div>
-                <div class="alert-desc">Você fechou março com R$ 4.731 em despesas totais, contra R$ 5.160 em fevereiro. Redução de R$ 429. Continue assim!</div>
-                <div class="alert-tags">
-                  <span class="alert-tag ok">Positivo</span>
-                  <span class="alert-tag gray">Relatório mensal</span>
-                </div>
-              </div>
-            </div>
-
+            <div style="padding:40px;text-align:center;color:var(--lgray);font-size:13px;">Carregando alertas…</div>
           </div>
         </div>
 
@@ -1071,53 +902,148 @@
 </div><!-- end app -->
 
 <script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-const _sb = createClient(
-  'https://xdxcczywfincjcbvbecb.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeGNjenl3ZmluY2pjYnZiZWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3MTgwNjMsImV4cCI6MjA1NzI5NDA2M30.kMbTpRoTAXNqMCgpDVHKoWqTPqYtTLMWm8rFqFLjmN0'
-);
-(async function(){
-  const { data:{ session } } = await _sb.auth.getSession();
-  if(!session){ window.location.href='auth.html?mode=login'; return; }
-  const u = session.user;
-  const name = u.user_metadata?.full_name || u.email.split('@')[0];
-  const initials = name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
-  document.getElementById('sbUserName').textContent = name;
-  document.getElementById('sbAvatar').textContent = initials;
-})();
-</script>
+import { requireAuth, getUser, getAlerts, markAlertRead, signOut } from './js/db.js';
 
-<script>
-window.dismissAlert = function(btn){
-  const card = btn.closest('.alert-card');
-  card.style.transition = 'opacity 0.3s, transform 0.3s';
-  card.style.opacity = '0';
-  card.style.transform = 'translateX(20px)';
-  setTimeout(()=>{ card.classList.add('dismissed'); updateCounts(); }, 300);
-};
+/* ── TYPE MAPPING ── */
+function cardType(tipo) {
+  if (!tipo) return 'info';
+  const t = tipo.toLowerCase();
+  if (t === 'erro' || t === 'critico' || t === 'critical' || t === 'error') return 'crit';
+  if (t === 'alerta' || t === 'aviso' || t === 'warning' || t === 'warn') return 'warn';
+  if (t === 'sucesso' || t === 'ok' || t === 'success') return 'ok';
+  return 'info';
+}
 
-window.markAllRead = function(){
-  document.querySelectorAll('.unread-dot').forEach(d=>d.remove());
-};
+function typeIcon(type) {
+  const icons = {
+    crit: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`,
+    warn: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>`,
+    ok: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+    info: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+  };
+  return icons[type] || icons.info;
+}
 
-window.filterAlerts = function(type, btn){
-  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.alert-card:not(.dismissed)').forEach(c=>{
-    c.style.display = (type==='all' || c.dataset.type===type) ? '' : 'none';
-  });
-};
+function typeLabel(type) {
+  return { crit: 'Crítico', warn: 'Aviso', ok: 'Positivo', info: 'Info' }[type] || 'Info';
+}
 
-window.openNewRule = function(){
-  alert('Modal de criação de nova regra — será implementado na versão completa!');
-};
+function relTime(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  const diff = Math.floor((now - d) / 1000);
+  if (diff < 60) return 'Agora há pouco';
+  if (diff < 3600) return `${Math.floor(diff/60)}min atrás`;
+  if (diff < 86400) return `${Math.floor(diff/3600)}h atrás`;
+  if (diff < 172800) return 'Ontem · ' + d.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+  return d.toLocaleDateString('pt-BR');
+}
 
-function updateCounts(){
-  const crits = document.querySelectorAll('.alert-card.crit:not(.dismissed)').length;
-  const warns = document.querySelectorAll('.alert-card.warn:not(.dismissed)').length;
+/* ── STATE ── */
+let allAlerts = [];
+
+/* ── RENDER ── */
+function renderAlerts(filter = 'all') {
+  const list = document.getElementById('alertsList');
+  const visible = filter === 'all' ? allAlerts : allAlerts.filter(a => cardType(a.tipo) === filter);
+
+  if (visible.length === 0) {
+    list.innerHTML = `<div style="padding:60px 20px;text-align:center;color:var(--lgray);font-size:13px;">
+      <div style="font-size:36px;margin-bottom:12px;">🔔</div>
+      <div style="font-weight:600;color:var(--white);margin-bottom:6px;">Nenhum alerta</div>
+      <div>Tudo certo por aqui!</div>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = visible.map(a => {
+    const type = cardType(a.tipo);
+    const unread = !a.lido ? '<div class="unread-dot"></div>' : '';
+    return `<div class="alert-card ${type}" data-type="${type}" data-id="${a.id}">
+      ${unread}
+      <div class="alert-icon ${type}">${typeIcon(type)}</div>
+      <div class="alert-body">
+        <div class="alert-top">
+          <div class="alert-title">${esc(a.mensagem)}</div>
+          <div class="alert-time">${relTime(a.created_at)}</div>
+        </div>
+        <div class="alert-tags" style="margin-top:8px;">
+          <span class="alert-tag ${type}">${typeLabel(type)}</span>
+          ${a.agente ? `<span class="alert-tag gray">${esc(a.agente)}</span>` : ''}
+        </div>
+        <div class="alert-actions">
+          <button class="alert-btn" onclick="window.dismissAlert('${a.id}')">✓ Marcar como lida</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateStats() {
+  const crits = allAlerts.filter(a => !a.lido && cardType(a.tipo) === 'crit').length;
+  const warns = allAlerts.filter(a => !a.lido && cardType(a.tipo) === 'warn').length;
+  const infos = allAlerts.filter(a => cardType(a.tipo) === 'info' || cardType(a.tipo) === 'ok').length;
   document.getElementById('critCount').textContent = crits;
   document.getElementById('warnCount').textContent = warns;
+  document.getElementById('infoCount').textContent = infos;
+  const unread = allAlerts.filter(a => !a.lido).length;
+  document.getElementById('alertsSubtitle').textContent =
+    `${allAlerts.length} total · ${unread} não ${unread === 1 ? 'lido' : 'lidos'}`;
 }
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ── GLOBAL ACTIONS ── */
+window.dismissAlert = async function(id) {
+  await markAlertRead(id);
+  allAlerts = allAlerts.map(a => a.id === id ? { ...a, lido: true } : a);
+  const card = document.querySelector(`.alert-card[data-id="${id}"]`);
+  if (card) {
+    card.style.transition = 'opacity 0.3s, transform 0.3s';
+    card.style.opacity = '0';
+    card.style.transform = 'translateX(20px)';
+    setTimeout(() => { renderAlerts(window._activeFilter || 'all'); updateStats(); }, 300);
+  }
+};
+
+window.markAllRead = async function() {
+  const unread = allAlerts.filter(a => !a.lido);
+  await Promise.all(unread.map(a => markAlertRead(a.id)));
+  allAlerts = allAlerts.map(a => ({ ...a, lido: true }));
+  renderAlerts(window._activeFilter || 'all');
+  updateStats();
+};
+
+window.filterAlerts = function(type, btn) {
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  window._activeFilter = type;
+  renderAlerts(type);
+};
+
+window.openNewRule = function() {
+  alert('Criação de regras automáticas chegará em breve!');
+};
+
+window.doSignOut = function() { signOut(); };
+
+/* ── INIT ── */
+(async function() {
+  const session = await requireAuth('auth.html?mode=login');
+  if (!session) return;
+
+  const u = session.user;
+  const name = u.user_metadata?.full_name || u.email.split('@')[0];
+  const initials = name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  document.getElementById('sbUserName').textContent = name;
+  document.getElementById('sbAvatar').textContent = initials;
+
+  allAlerts = await getAlerts();
+  renderAlerts('all');
+  updateStats();
+})();
 </script>
 </body>
 </html>
