@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Investimentos · Nexora</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --lime:#C8FF00; --lime-dark:#A8D400; --lime-dim:rgba(200,255,0,0.12);
+      --lime-glow:rgba(200,255,0,0.22); --lime-border:rgba(200,255,0,0.28);
+      --black:#060606; --dark:#0C0C0C; --surface:#101010; --surface2:#141414;
+      --card:#161616; --card2:#1A1A1A; --border:rgba(255,255,255,0.07);
+      --border2:rgba(255,255,255,0.04); --white:#FFFFFF; --gray:#666; --lgray:#999;
+      --danger:#FF4D4D; --danger-dim:rgba(255,77,77,0.12); --danger-brd:rgba(255,77,77,0.28);
+      --success:#00D37F; --success-dim:rgba(0,211,127,0.12); --success-brd:rgba(0,211,127,0.28);
+      --warning:#FFB020; --warning-dim:rgba(255,176,32,0.12); --warning-brd:rgba(255,176,32,0.28);
+      --info:#4DA6FF; --info-dim:rgba(77,166,255,0.12); --info-brd:rgba(77,166,255,0.28);
+      --purple:#c084fc; --purple-dim:rgba(192,132,252,0.12); --purple-brd:rgba(192,132,252,0.28);
+      --font-title:'Space Grotesk',sans-serif; --font-body:'Inter',sans-serif;
+      --sidebar-w:260px; --topbar-h:68px; --radius:14px; --radius-sm:9px; --tr:0.28s cubic-bezier(0.4,0,0.2,1);
+    }
+    html { scroll-behavior: smooth; }
+    body { background:var(--black); color:var(--white); font-family:var(--font-body); font-size:14px; line-height:1.55; overflow-x:hidden; min-height:100vh; }
+    ::-webkit-scrollbar{width:5px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:var(--card2);border-radius:4px;}
+    .app { display:flex; min-height:100vh; }
+
+    /* SIDEBAR */
+    .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;overflow-y:auto;}
+    .sidebar::before{content:'';position:absolute;top:0;left:0;right:0;height:180px;background:radial-gradient(ellipse at 50% -20%,rgba(200,255,0,0.08) 0%,transparent 70%);pointer-events:none;}
+    .sb-logo{display:flex;align-items:center;gap:10px;padding:22px 20px 18px;border-bottom:1px solid var(--border);}
+    .sb-logo-icon{width:34px;height:34px;border-radius:9px;background:var(--lime);color:#000;font-family:var(--font-title);font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .sb-logo-text{font-family:var(--font-title);font-weight:700;font-size:16px;}
+    .sb-logo-badge{margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.06em;background:var(--lime-dim);color:var(--lime);border:1px solid var(--lime-border);padding:2px 7px;border-radius:20px;}
+    .sb-nav{padding:14px 12px;flex:1;display:flex;flex-direction:column;gap:2px;}
+    .sb-section-label{font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--gray);text-transform:uppercase;padding:8px 8px 4px;}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);color:var(--lgray);font-size:13.5px;font-weight:500;text-decoration:none;transition:all var(--tr);}
+    .sb-item svg{width:17px;height:17px;flex-shrink:0;}
+    .sb-item:hover{background:rgba(255,255,255,0.05);color:var(--white);}
+    .sb-item.active{background:var(--lime-dim);color:var(--lime);border:1px solid var(--lime-border);}
+    .badge{margin-left:auto;font-size:10px;font-weight:700;background:var(--danger);color:#fff;padding:1px 6px;border-radius:20px;min-width:20px;text-align:center;}
+    .sb-footer{padding:14px 16px;border-top:1px solid var(--border);}
+    .sb-user{display:flex;align-items:center;gap:10px;}
+    .sb-avatar{width:34px;height:34px;border-radius:50%;background:var(--lime-dim);border:1.5px solid var(--lime-border);color:var(--lime);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .sb-user-name{font-size:13px;font-weight:600;}
+    .sb-user-plan{font-size:11px;color:var(--lime);}
+
+    /* MAIN */
+    .main-wrapper{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+    .topbar{height:var(--topbar-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:14px;position:sticky;top:0;z-index:50;}
+    .topbar-title{font-family:var(--font-title);font-weight:700;font-size:18px;}
+    .topbar-sub{font-size:12.5px;color:var(--lgray);margin-left:2px;}
+    .topbar-actions{margin-left:auto;display:flex;align-items:center;gap:10px;}
+    .btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;font-family:var(--font-body);cursor:pointer;border:none;transition:all var(--tr);text-decoration:none;}
+    .btn svg{width:15px;height:15px;}
+    .btn-lime{background:var(--lime);color:#000;}
+    .btn-lime:hover{background:var(--lime-dark);transform:translateY(-1px);}
+    .btn-ghost{background:transparent;color:var(--lgray);border:1px solid var(--border);}
+    .btn-ghost:hover{background:rgba(255,255,255,0.04);color:var(--white);}
+
+    .page-content{padding:28px;flex:1;display:flex;flex-direction:column;gap:22px;}
+
+    /* STATS */
+    .stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden;}
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+    .stat-card.lime::before{background:var(--lime);}
+    .stat-card.green::before{background:var(--success);}
+    .stat-card.blue::before{background:var(--info);}
+    .stat-card.purple::before{background:var(--purple);}
+    .stat-label{font-size:11.5px;color:var(--lgray);font-weight:500;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;}
+    .stat-value{font-family:var(--font-title);font-weight:700;font-size:22px;}
+    .stat-delta{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;margin-top:5px;padding:2px 7px;border-radius:20px;}
+    .stat-delta.up{background:var(--success-dim);color:var(--success);}
+    .stat-delta.down{background:var(--danger-dim);color:var(--danger);}
+    .stat-icon{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;opacity:.6;}
+    .stat-icon svg{width:18px;height:18px;}
+    .stat-icon.lime{background:var(--lime-dim);color:var(--lime);}
+    .stat-icon.green{background:var(--success-dim);color:var(--success);}
+    .stat-icon.blue{background:var(--info-dim);color:var(--info);}
+    .stat-icon.purple{background:var(--purple-dim);color:var(--purple);}
+
+    /* LAYOUT GRIDS */
+    .two-col{display:grid;grid-template-columns:1fr 340px;gap:18px;}
+    .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;}
+
+    /* CHART CARD */
+    .chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;}
+    .chart-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;}
+    .chart-title{font-family:var(--font-title);font-weight:600;font-size:15px;}
+    .chart-sub{font-size:12px;color:var(--lgray);margin-top:2px;}
+    .chart-actions{display:flex;gap:6px;}
+    .chart-btn{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--lgray);transition:all var(--tr);}
+    .chart-btn.active{background:var(--lime-dim);color:var(--lime);border-color:var(--lime-border);}
+    .chart-btn:hover:not(.active){background:rgba(255,255,255,0.04);color:var(--white);}
+    .chart-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;}
+    .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--lgray);}
+    .legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+
+    /* PORTFOLIO TABLE */
+    .table-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+    .table-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);}
+    .table-title{font-family:var(--font-title);font-weight:600;font-size:15px;}
+    .table-wrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;}
+    thead th{text-align:left;padding:10px 20px;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--gray);border-bottom:1px solid var(--border);white-space:nowrap;}
+    tbody tr{border-bottom:1px solid var(--border2);transition:background var(--tr);}
+    tbody tr:last-child{border-bottom:none;}
+    tbody tr:hover{background:rgba(255,255,255,0.02);}
+    tbody td{padding:13px 20px;font-size:13px;color:var(--lgray);white-space:nowrap;}
+    .asset-name-col{display:flex;align-items:center;gap:10px;}
+    .asset-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;font-family:var(--font-title);}
+    .td-name{font-weight:600;color:var(--white);font-size:13.5px;}
+    .td-sub{font-size:11.5px;color:var(--gray);margin-top:1px;}
+    .td-val{font-family:var(--font-title);font-weight:700;font-size:14px;color:var(--white);}
+    .td-ret{font-size:12.5px;font-weight:700;padding:3px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:3px;}
+    .td-ret.pos{background:var(--success-dim);color:var(--success);}
+    .td-ret.neg{background:var(--danger-dim);color:var(--danger);}
+    .td-pct{font-size:12.5px;color:var(--lgray);}
+    .td-bar-bg{width:80px;height:5px;background:var(--border2);border-radius:10px;overflow:hidden;}
+    .td-bar-fill{height:5px;border-radius:10px;}
+    .asset-tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;border:1px solid;}
+
+    /* ALLOCATION DONUT */
+    .alloc-wrap{display:flex;align-items:center;gap:20px;}
+    .alloc-labels{flex:1;display:flex;flex-direction:column;gap:9px;}
+    .alloc-item{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+    .alloc-left{display:flex;align-items:center;gap:8px;}
+    .alloc-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+    .alloc-cat{font-size:12.5px;color:var(--lgray);}
+    .alloc-val{font-size:12.5px;font-weight:700;color:var(--white);}
+    .alloc-bar-bg{height:3px;background:var(--border2);border-radius:2px;margin-top:3px;}
+    .alloc-bar-fill{height:3px;border-radius:2px;}
+
+    /* HIGHLIGHTS CARDS */
+    .highlight-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;display:flex;flex-direction:column;gap:10px;}
+    .hl-title{font-family:var(--font-title);font-weight:600;font-size:14px;margin-bottom:2px;}
+    .hl-value{font-family:var(--font-title);font-weight:800;font-size:24px;}
+    .hl-label{font-size:12px;color:var(--lgray);}
+    .hl-badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;}
+    .hl-badge.pos{background:var(--success-dim);color:var(--success);}
+    .hl-badge.neg{background:var(--danger-dim);color:var(--danger);}
+    .hl-trend{height:40px;display:flex;align-items:flex-end;gap:3px;}
+    .hl-bar{flex:1;border-radius:3px 3px 0 0;transition:height .3s ease;}
+
+    /* AI PANEL */
+    .ai-panel{background:linear-gradient(135deg,rgba(200,255,0,0.07) 0%,rgba(200,255,0,0.02) 100%);border:1px solid var(--lime-border);border-radius:var(--radius);padding:18px 22px;}
+    .ai-panel-title{font-family:var(--font-title);font-weight:700;font-size:13px;color:var(--lime);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+    .ai-rec{display:flex;flex-direction:column;gap:10px;}
+    .ai-rec-item{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;}
+    .ai-rec-item-title{font-weight:600;font-size:13px;margin-bottom:4px;}
+    .ai-rec-item-desc{font-size:12px;color:var(--lgray);line-height:1.5;}
+    .ai-rec-item-tag{display:inline-flex;margin-top:6px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;}
+    .ai-rec-item-tag.buy{background:var(--success-dim);color:var(--success);}
+    .ai-rec-item-tag.hold{background:var(--warning-dim);color:var(--warning);}
+    .ai-rec-item-tag.watch{background:var(--info-dim);color:var(--info);}
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">N</div>
+      <div><div class="sb-logo-text">Nexora</div></div>
+      <span class="sb-logo-badge">PRO</span>
+    </div>
+    <nav class="sb-nav">
+      <span class="sb-section-label">Principal</span>
+      <a class="sb-item" href="dashboard.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Visão Geral
+      </a>
+      <a class="sb-item" href="transacoes.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+        Transações <span class="badge">32</span>
+      </a>
+      <a class="sb-item" href="contas.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        Contas
+      </a>
+      <a class="sb-item" href="cartoes.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path stroke-linecap="round" d="M2 10h20"/></svg>
+        Cartões
+      </a>
+      <span class="sb-section-label" style="margin-top:8px">IA & Insights</span>
+      <a class="sb-item" href="chat-ia.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        Chat IA
+      </a>
+      <a class="sb-item" href="alertas.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        Alertas <span class="badge">5</span>
+      </a>
+      <span class="sb-section-label" style="margin-top:8px">Financeiro</span>
+      <a class="sb-item" href="relatorios.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Relatórios
+      </a>
+      <a class="sb-item" href="metas.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138z"/></svg>
+        Metas
+      </a>
+      <a class="sb-item active" href="investimentos.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        Investimentos
+      </a>
+      <span class="sb-section-label" style="margin-top:8px">Sistema</span>
+      <a class="sb-item" href="configuracoes.html">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Configurações
+      </a>
+    </nav>
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar" id="sbAvatar">ES</div>
+        <div><div class="sb-user-name" id="sbUserName">Elan Souzaa</div><div class="sb-user-plan">Plano Pro ✦</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title">Investimentos</div>
+        <div class="topbar-sub">Portfólio e rentabilidade</div>
+      </div>
+      <div class="topbar-actions">
+        <div style="display:flex;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:4px;gap:2px;">
+          <button class="chart-btn active" onclick="setPeriod(this,'1m')">1M</button>
+          <button class="chart-btn" onclick="setPeriod(this,'3m')">3M</button>
+          <button class="chart-btn" onclick="setPeriod(this,'6m')">6M</button>
+          <button class="chart-btn" onclick="setPeriod(this,'1a')">1A</button>
+          <button class="chart-btn" onclick="setPeriod(this,'total')">Total</button>
+        </div>
+        <button class="btn btn-lime" onclick="addAsset()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Adicionar Ativo
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+
+      <!-- STATS STRIP -->
+      <div class="stats-strip">
+        <div class="stat-card lime">
+          <div class="stat-icon lime">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div class="stat-label">Patrimônio Total</div>
+          <div class="stat-value" style="color:var(--lime)">R$ 142.830</div>
+          <div class="stat-delta up">↑ R$ 8.420 este mês</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon green">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+          </div>
+          <div class="stat-label">Rentabilidade (12M)</div>
+          <div class="stat-value" style="color:var(--success)">+18,4%</div>
+          <div class="stat-delta up">vs CDI: +3,2%</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon blue">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+          </div>
+          <div class="stat-label">Ativos na Carteira</div>
+          <div class="stat-value" style="color:var(--info)">14</div>
+          <div class="stat-delta up">4 classes de ativos</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-icon purple">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <div class="stat-label">Dividendos (12M)</div>
+          <div class="stat-value" style="color:var(--purple)">R$ 4.650</div>
+          <div class="stat-delta up">Yield: 3,26% a.a.</div>
+        </div>
+      </div>
+
+      <!-- PORTFOLIO EVOLUTION + ALLOCATION -->
+      <div class="two-col">
+
+        <!-- LINE CHART: Portfolio evolution -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Evolução do Portfólio</div>
+              <div class="chart-sub">Patrimônio acumulado ao longo do tempo</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-family:var(--font-title);font-weight:800;font-size:20px;color:var(--lime)">R$ 142.830</div>
+              <div style="font-size:12px;color:var(--success);font-weight:600;margin-top:2px">↑ +18,4% em 12 meses</div>
+            </div>
+          </div>
+          <svg width="100%" viewBox="0 0 560 170" id="portfolioChart">
+            <defs>
+              <linearGradient id="gPortfolio" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#C8FF00" stop-opacity=".3"/>
+                <stop offset="100%" stop-color="#C8FF00" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- Grid -->
+            <line x1="40" y1="15" x2="40" y2="140" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+            <line x1="40" y1="50" x2="555" y2="50" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="4,4"/>
+            <line x1="40" y1="85" x2="555" y2="85" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="4,4"/>
+            <line x1="40" y1="120" x2="555" y2="120" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="4,4"/>
+            <line x1="40" y1="140" x2="555" y2="140" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+            <!-- Y labels -->
+            <text x="33" y="53" text-anchor="end" fill="#555" font-size="10" font-family="Inter">160k</text>
+            <text x="33" y="88" text-anchor="end" fill="#555" font-size="10" font-family="Inter">130k</text>
+            <text x="33" y="123" text-anchor="end" fill="#555" font-size="10" font-family="Inter">100k</text>
+            <!-- CDI baseline (dashed) -->
+            <path d="M55,128 L108,124 L161,120 L214,115 L267,111 L320,107 L373,103 L426,99 L479,95 L532,91" fill="none" stroke="rgba(77,166,255,0.4)" stroke-width="1.5" stroke-dasharray="5,3"/>
+            <!-- Portfolio line + fill -->
+            <path d="M55,135 L108,128 L161,120 L214,112 L267,105 L320,92 L373,80 L426,68 L479,55 L532,32 L532,140 L479,140 L426,140 L373,140 L320,140 L267,140 L214,140 L161,140 L108,140 L55,140 Z" fill="url(#gPortfolio)"/>
+            <path d="M55,135 L108,128 L161,120 L214,112 L267,105 L320,92 L373,80 L426,68 L479,55 L532,32" fill="none" stroke="#C8FF00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- End dot -->
+            <circle cx="532" cy="32" r="5" fill="#C8FF00"/>
+            <circle cx="532" cy="32" r="9" fill="rgba(200,255,0,0.2)"/>
+            <!-- X labels -->
+            <text x="55" y="156" text-anchor="middle" fill="#555" font-size="9.5" font-family="Inter">Mar/25</text>
+            <text x="161" y="156" text-anchor="middle" fill="#555" font-size="9.5" font-family="Inter">Jun/25</text>
+            <text x="267" y="156" text-anchor="middle" fill="#555" font-size="9.5" font-family="Inter">Set/25</text>
+            <text x="373" y="156" text-anchor="middle" fill="#555" font-size="9.5" font-family="Inter">Dez/25</text>
+            <text x="479" y="156" text-anchor="middle" fill="#555" font-size="9.5" font-family="Inter">Mar/26</text>
+          </svg>
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#C8FF00"></div> Portfólio</div>
+            <div class="legend-item"><div class="legend-dot" style="background:rgba(77,166,255,0.5)"></div> CDI (benchmark)</div>
+          </div>
+        </div>
+
+        <!-- ALLOCATION DONUT -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Alocação</div>
+              <div class="chart-sub">Distribuição por classe de ativo</div>
+            </div>
+          </div>
+          <div class="alloc-wrap" style="margin-top:4px">
+            <div style="position:relative;flex-shrink:0;">
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <!-- Renda Fixa 38% -->
+                <circle cx="60" cy="60" r="44" fill="none" stroke="#C8FF00" stroke-width="20"
+                  stroke-dasharray="104.8 168.1" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+                <!-- Ações 28% -->
+                <circle cx="60" cy="60" r="44" fill="none" stroke="#4DA6FF" stroke-width="20"
+                  stroke-dasharray="77.2 195.8" stroke-dashoffset="-104.8" transform="rotate(-90 60 60)"/>
+                <!-- FIIs 20% -->
+                <circle cx="60" cy="60" r="44" fill="none" stroke="#00D37F" stroke-width="20"
+                  stroke-dasharray="55.2 217.8" stroke-dashoffset="-182.0" transform="rotate(-90 60 60)"/>
+                <!-- Criptos 8% -->
+                <circle cx="60" cy="60" r="44" fill="none" stroke="#c084fc" stroke-width="20"
+                  stroke-dasharray="22.1 250.9" stroke-dashoffset="-237.2" transform="rotate(-90 60 60)"/>
+                <!-- Internacional 6% -->
+                <circle cx="60" cy="60" r="44" fill="none" stroke="#FFB020" stroke-width="20"
+                  stroke-dasharray="16.6 256.4" stroke-dashoffset="-259.3" transform="rotate(-90 60 60)"/>
+                <text x="60" y="56" text-anchor="middle" fill="#fff" font-size="16" font-weight="800" font-family="Space Grotesk">14</text>
+                <text x="60" y="68" text-anchor="middle" fill="#666" font-size="9.5" font-family="Inter">ativos</text>
+              </svg>
+            </div>
+            <div class="alloc-labels">
+              <div class="alloc-item">
+                <div class="alloc-left"><div class="alloc-dot" style="background:#C8FF00"></div><div class="alloc-cat">Renda Fixa</div></div>
+                <div class="alloc-val">38% · R$ 54.275</div>
+              </div>
+              <div class="alloc-bar-bg"><div class="alloc-bar-fill" style="width:38%;background:#C8FF00"></div></div>
+              <div class="alloc-item">
+                <div class="alloc-left"><div class="alloc-dot" style="background:#4DA6FF"></div><div class="alloc-cat">Ações (BR)</div></div>
+                <div class="alloc-val">28% · R$ 40.000</div>
+              </div>
+              <div class="alloc-bar-bg"><div class="alloc-bar-fill" style="width:28%;background:#4DA6FF"></div></div>
+              <div class="alloc-item">
+                <div class="alloc-left"><div class="alloc-dot" style="background:#00D37F"></div><div class="alloc-cat">FIIs</div></div>
+                <div class="alloc-val">20% · R$ 28.566</div>
+              </div>
+              <div class="alloc-bar-bg"><div class="alloc-bar-fill" style="width:20%;background:#00D37F"></div></div>
+              <div class="alloc-item">
+                <div class="alloc-left"><div class="alloc-dot" style="background:#c084fc"></div><div class="alloc-cat">Criptoativos</div></div>
+                <div class="alloc-val">8% · R$ 11.426</div>
+              </div>
+              <div class="alloc-bar-bg"><div class="alloc-bar-fill" style="width:8%;background:#c084fc"></div></div>
+              <div class="alloc-item">
+                <div class="alloc-left"><div class="alloc-dot" style="background:#FFB020"></div><div class="alloc-cat">Internacional</div></div>
+                <div class="alloc-val">6% · R$ 8.563</div>
+              </div>
+              <div class="alloc-bar-bg"><div class="alloc-bar-fill" style="width:6%;background:#FFB020"></div></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /two-col -->
+
+      <!-- HIGHLIGHTS ROW -->
+      <div class="three-col">
+        <div class="highlight-card">
+          <div>
+            <div class="hl-label">Melhor ativo (12M)</div>
+            <div class="hl-title">MGLU3 · Magazine Luiza</div>
+          </div>
+          <div>
+            <div class="hl-value" style="color:var(--success)">+47,2%</div>
+            <div class="hl-badge pos">↑ R$ 6.840 de retorno</div>
+          </div>
+          <div class="hl-trend">
+            <div class="hl-bar" style="height:30%;background:var(--success);opacity:.4"></div>
+            <div class="hl-bar" style="height:40%;background:var(--success);opacity:.5"></div>
+            <div class="hl-bar" style="height:35%;background:var(--success);opacity:.5"></div>
+            <div class="hl-bar" style="height:50%;background:var(--success);opacity:.6"></div>
+            <div class="hl-bar" style="height:45%;background:var(--success);opacity:.6"></div>
+            <div class="hl-bar" style="height:60%;background:var(--success);opacity:.7"></div>
+            <div class="hl-bar" style="height:70%;background:var(--success);opacity:.8"></div>
+            <div class="hl-bar" style="height:80%;background:var(--success);opacity:.9"></div>
+            <div class="hl-bar" style="height:100%;background:var(--success)"></div>
+          </div>
+        </div>
+        <div class="highlight-card">
+          <div>
+            <div class="hl-label">Dividendos recebidos (12M)</div>
+            <div class="hl-title">MXRF11 · Maxi Renda</div>
+          </div>
+          <div>
+            <div class="hl-value" style="color:var(--purple)">R$ 1.920</div>
+            <div class="hl-badge pos">Yield: 12,4% a.a.</div>
+          </div>
+          <div class="hl-trend">
+            <div class="hl-bar" style="height:60%;background:var(--purple);opacity:.5"></div>
+            <div class="hl-bar" style="height:65%;background:var(--purple);opacity:.55"></div>
+            <div class="hl-bar" style="height:55%;background:var(--purple);opacity:.55"></div>
+            <div class="hl-bar" style="height:70%;background:var(--purple);opacity:.6"></div>
+            <div class="hl-bar" style="height:75%;background:var(--purple);opacity:.65"></div>
+            <div class="hl-bar" style="height:80%;background:var(--purple);opacity:.7"></div>
+            <div class="hl-bar" style="height:85%;background:var(--purple);opacity:.8"></div>
+            <div class="hl-bar" style="height:90%;background:var(--purple);opacity:.9"></div>
+            <div class="hl-bar" style="height:100%;background:var(--purple)"></div>
+          </div>
+        </div>
+        <div class="highlight-card">
+          <div>
+            <div class="hl-label">Pior ativo (12M)</div>
+            <div class="hl-title">BTC · Bitcoin</div>
+          </div>
+          <div>
+            <div class="hl-value" style="color:var(--warning)">−8,3%</div>
+            <div class="hl-badge neg">↓ R$ 1.120 de perda</div>
+          </div>
+          <div class="hl-trend">
+            <div class="hl-bar" style="height:100%;background:var(--warning);opacity:.8"></div>
+            <div class="hl-bar" style="height:80%;background:var(--warning);opacity:.75"></div>
+            <div class="hl-bar" style="height:90%;background:var(--warning);opacity:.7"></div>
+            <div class="hl-bar" style="height:70%;background:var(--warning);opacity:.65"></div>
+            <div class="hl-bar" style="height:60%;background:var(--warning);opacity:.6"></div>
+            <div class="hl-bar" style="height:65%;background:var(--warning);opacity:.55"></div>
+            <div class="hl-bar" style="height:50%;background:var(--warning);opacity:.5"></div>
+            <div class="hl-bar" style="height:45%;background:var(--warning);opacity:.45"></div>
+            <div class="hl-bar" style="height:40%;background:var(--warning);opacity:.4"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PORTFOLIO TABLE + AI PANEL -->
+      <div class="two-col" style="grid-template-columns:1fr 300px;">
+
+        <!-- PORTFOLIO TABLE -->
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title">Carteira Detalhada</div>
+            <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px;" onclick="exportPortfolio()">Exportar →</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ativo</th>
+                  <th>Tipo</th>
+                  <th>Valor Atual</th>
+                  <th>Retorno</th>
+                  <th>Alocação</th>
+                  <th>Dividendo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="asset-name-col">
+                      <div class="asset-icon" style="background:var(--lime-dim);color:var(--lime)">TD</div>
+                      <div><div class="td-name">Tesouro IPCA+ 2029</div><div class="td-sub">Tesouro Direto</div></div>
+                    </div>
+                  </td>
+                  <td><span class="asset-tag" style="background:var(--lime-dim);color:var(--lime);border-color:var(--lime-border)">RF</span></td>
+                  <td><span class="td-val">R$ 32.450</span></td>
+                  <td><span class="td-ret pos">↑ +14,2%</span></td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div class="td-bar-bg"><div class="td-bar-fill" style="width:87%;background:var(--lime)"></div></div>
+                      <span class="td-pct">22,7%</span>
+                    </div>
+                  </td>
+                  <td><span style="font-size:12.5px;color:var(--lgray)">IPCA+6,2%</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="asset-name-col">
+                      <div class="asset-icon" style="background:var(--info-dim);color:var(--info)">PB</div>
+                      <div><div class="td-name">PETR4 · Petrobras</div><div class="td-sub">Ação ON</div></div>
+                    </div>
+                  </td>
+                  <td><span class="asset-tag" style="background:var(--info-dim);color:var(--info);border-color:var(--info-brd)">Ação</span></td>
+                  <td><span class="td-val">R$ 18.200</span></td>
+                  <td><span class="td-ret pos">↑ +28,6%</span></td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div class="td-bar-bg"><div class="td-bar-fill" style="width:48%;background:var(--info)"></div></div>
+                      <span class="td-pct">12,7%</span>
+                    </div>
+                  </td>
+                  <td><span style="font-size:12.5px;color:var(--lgray)">Div: 8,4% a.a.</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="asset-name-col">
+                      <div class="asset-icon" style="background:var(--success-dim);color:var(--success)">MX</div>
+                      <div><div class="td-name">MXRF11 · Maxi Renda</div><div class="td-sub">Fundo Imobiliário</div></div>
+                    </div>
+                  </td>
+                  <td><span class="asset-tag" style="background:var(--success-dim);color:var(--success);border-color:var(--success-brd)">FII</span></td>
+                  <td><span class="td-val">R$ 15.480</span></td>
+                  <td><span class="td-ret pos">↑ +9,8%</span></td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div class="td-bar-bg"><div class="td-bar-fill" style="width:41%;background:var(--success)"></div></div>
+                      <span class="td-pct">10,8%</span>
+                    </div>
+                  </td>
+                  <td><span style="font-size:12.5px;color:var(--lgray)">Yield: 12,4% a.a.</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="asset-name-col">
+                      <div class="asset-icon" style="background:var(--info-dim);color:var(--info)">MG</div>
+                      <div><div class="td-name">MGLU3 · Magazine Luiza</div><div class="td-sub">Ação ON</div></div>
+                    </div>
+                  </td>
+                  <td><span class="asset-tag" style="background:var(--info-dim);color:var(--info);border-color:var(--info-brd)">Ação</span></td>
+                  <td><span class="td-val">R$ 14.520</span></td>
+                  <td><span class="td-ret pos">↑ +47,2%</span></td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div class="td-bar-bg"><div class="td-bar-fill" style="width:38%;background:var(--info)"></div></div>
+                      <span class="td-pct">10,2%</span>
+                    </div>
+                  </td>
+                  <td><span style="font-size:12.5px;color:var(--lgray)">—</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="asset-name-col">
+                      <div class="asset-icon" style="background:var(--lime-dim);color:var(--lime)">LCI</div>
+                      <div><div class="td-name">LCI Nubank 97% CDI</div><div class="td-sub">Renda Fixa</div></div>
+                    </div>
+                  </td>
+                  <td><span class="asset-tag" style="background:var(--lime-dim);color:var(--lime);border-color:var(--lime-border)">RF</span></td>
+                  <td><span class="td-val">R$ 12.800</span></td>
+                  <td><span class="td-ret pos">↑ +13,1%</span></td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div class="td-bar-bg"><div class="td-bar-fill" style="width:34%;background:var(--lime)"></div></div>
+                      <span class="td-pct">9,0%</span>
+                    </div>
+                  </td>
+                  <td><span style="font-size:12.5px;color:var(--lgray)">97% CDI</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="asset-name-col">
+                      <div class="asset-icon" style="background:var(--warning-dim);color:var(--warning)">INT</div>
+                      <div><div class="td-name">IVVB11 · S&P 500</div><div class="td-sub">ETF Internacional</div></div>
+                    </div>
+                  </td>
+                  <td><span class="asset-tag" style="background:var(--warning-dim);color:var(--warning);border-color:var(--warning-brd)">ETF</span></td>
+                  <td><span class="td-val">R$ 8.560</span></td>
+                  <td><span class="td-ret pos">↑ +22,4%</span></td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div class="td-bar-bg"><div class="td-bar-fill" style="width:23%;background:var(--warning)"></div></div>
+                      <span class="td-pct">6,0%</span>
+                    </div>
+                  </td>
+                  <td><span style="font-size:12.5px;color:var(--lgray)">—</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="asset-name-col">
+                      <div class="asset-icon" style="background:var(--purple-dim);color:var(--purple)">₿</div>
+                      <div><div class="td-name">Bitcoin (BTC)</div><div class="td-sub">Criptoativo</div></div>
+                    </div>
+                  </td>
+                  <td><span class="asset-tag" style="background:var(--purple-dim);color:var(--purple);border-color:var(--purple-brd)">Cripto</span></td>
+                  <td><span class="td-val">R$ 11.420</span></td>
+                  <td><span class="td-ret neg">↓ −8,3%</span></td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div class="td-bar-bg"><div class="td-bar-fill" style="width:30%;background:var(--purple)"></div></div>
+                      <span class="td-pct">8,0%</span>
+                    </div>
+                  </td>
+                  <td><span style="font-size:12.5px;color:var(--lgray)">—</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- AI RECOMMENDATIONS -->
+        <div class="ai-panel">
+          <div class="ai-panel-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Recomendações da IA
+          </div>
+          <div class="ai-rec">
+            <div class="ai-rec-item">
+              <div class="ai-rec-item-title">Aumentar posição em FIIs</div>
+              <div class="ai-rec-item-desc">Sua alocação em FIIs (20%) está abaixo do ideal para perfil moderado. Considere aumentar para 25-28%.</div>
+              <span class="ai-rec-item-tag buy">Comprar</span>
+            </div>
+            <div class="ai-rec-item">
+              <div class="ai-rec-item-title">Manter PETR4</div>
+              <div class="ai-rec-item-desc">Os dividendos de 8,4% a.a. são atrativos. Aguardar próximo relatório de produção antes de reavaliar.</div>
+              <span class="ai-rec-item-tag hold">Manter</span>
+            </div>
+            <div class="ai-rec-item">
+              <div class="ai-rec-item-title">Rever posição em BTC</div>
+              <div class="ai-rec-item-desc">Volatilidade elevada. Considere reduzir exposição a cripto para &lt;5% do portfólio total.</div>
+              <span class="ai-rec-item-tag watch">Observar</span>
+            </div>
+          </div>
+          <a href="chat-ia.html" class="btn btn-ghost" style="margin-top:14px;font-size:12.5px;padding:8px;justify-content:center;width:100%;">Analisar portfólio com IA →</a>
+        </div>
+
+      </div><!-- /two-col table -->
+
+    </main>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const sb = createClient(
+  'https://xdxcczywfincjcbvbecb.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeGNjenl3ZmluY2pjYnZiZWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4NjAyMzEsImV4cCI6MjA1NjQzNjIzMX0.m-3PIU4lcOiOhEYv8GBe7EAZSFzBPHH6tH7a3OWS2nw'
+);
+(async () => {
+  const { data:{ session } } = await sb.auth.getSession();
+  if(!session){ window.location.href='auth.html?mode=login'; return; }
+  const meta = JSON.parse(localStorage.getItem('nx-user-meta') || '{}');
+  const name = meta.first_name ? `${meta.first_name} ${meta.last_name||''}`.trim() : (session.user.email||'').split('@')[0];
+  const initials = name.split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('sbUserName').textContent = name;
+  document.getElementById('sbAvatar').textContent = initials;
+})();
+
+function setPeriod(el) {
+  el.closest('div').querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+function addAsset() { toast('Conecte sua corretora para importar ativos automaticamente!', 'lime'); }
+function exportPortfolio() { toast('Exportando portfólio em PDF...', 'blue'); }
+
+function toast(msg, color) {
+  const colors = { lime:'rgba(200,255,0,0.3)', blue:'rgba(77,166,255,0.3)', green:'rgba(0,211,127,0.3)' };
+  const fg = { lime:'#C8FF00', blue:'#4DA6FF', green:'#00D37F' };
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:28px;right:28px;z-index:9999;background:#161616;border:1px solid ${colors[color]||colors.lime};color:#fff;padding:13px 20px;border-radius:12px;font-family:Inter,sans-serif;font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);`;
+  t.innerHTML = `<span style="color:${fg[color]||fg.lime};font-size:16px">✦</span> ${msg}`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+window.setPeriod = setPeriod;
+window.addAsset = addAsset;
+window.exportPortfolio = exportPortfolio;
+</script>
+</body>
+</html>
