@@ -621,33 +621,37 @@
 </div>
 
 <script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-const sb = createClient(
-  'https://xdxcczywfincjcbvbecb.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeGNjenl3ZmluY2pjYnZiZWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4NjAyMzEsImV4cCI6MjA1NjQzNjIzMX0.m-3PIU4lcOiOhEYv8GBe7EAZSFzBPHH6tH7a3OWS2nw'
-);
-let currentSession = null;
+import {
+  requireAuth, signOut as sbSignOut, getUser,
+  getProfile, updateProfile, sb
+} from '../js/db.js';
 
 (async () => {
-  const { data:{ session } } = await sb.auth.getSession();
-  if(!session){ window.location.href='auth.html?mode=login'; return; }
-  currentSession = session;
-  const meta = JSON.parse(localStorage.getItem('nx-user-meta') || '{}');
-  const fn = meta.first_name || '';
-  const ln = meta.last_name || '';
-  const name = (fn + ' ' + ln).trim() || session.user.email.split('@')[0];
-  const initials = name.split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,2);
+  const session = await requireAuth('../auth.html?mode=login');
+  if (!session) return;
+
+  const user = session.user;
+  const profile = await getProfile();
+
+  const fn = profile?.nome || user.user_metadata?.full_name?.split(' ')[0] || '';
+  const ln = profile?.sobrenome || user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '';
+  const phone = profile?.telefone || '';
+  const name = (fn + ' ' + ln).trim() || user.email.split('@')[0];
+  const initials = name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
 
   document.getElementById('sbUserName').textContent = name;
   document.getElementById('sbAvatar').textContent = initials;
-  document.getElementById('avatarBig').innerHTML = initials + '<span class="avatar-change" title="Alterar foto">✎</span>';
-  document.getElementById('profileFullName').textContent = name;
-  document.getElementById('profileEmail').textContent = session.user.email;
+  if (document.getElementById('avatarBig'))
+    document.getElementById('avatarBig').innerHTML = initials + '<span class="avatar-change" title="Alterar foto">✎</span>';
+  if (document.getElementById('profileFullName'))
+    document.getElementById('profileFullName').textContent = name;
+  if (document.getElementById('profileEmail'))
+    document.getElementById('profileEmail').textContent = user.email;
 
   document.getElementById('fFirstName').value = fn;
   document.getElementById('fLastName').value = ln;
-  document.getElementById('fEmail').value = session.user.email;
-  document.getElementById('fPhone').value = meta.phone || '';
+  document.getElementById('fEmail').value = user.email;
+  document.getElementById('fPhone').value = phone;
 })();
 
 function showPanel(el, id) {
@@ -656,39 +660,53 @@ function showPanel(el, id) {
   el.classList.add('active');
   document.getElementById('panel-' + id).classList.add('active');
 }
-function saveProfile() {
+
+async function saveProfile() {
   const fn = document.getElementById('fFirstName').value.trim();
   const ln = document.getElementById('fLastName').value.trim();
   const phone = document.getElementById('fPhone').value.trim();
-  const meta = JSON.parse(localStorage.getItem('nx-user-meta') || '{}');
-  localStorage.setItem('nx-user-meta', JSON.stringify({ ...meta, first_name: fn, last_name: ln, phone }));
-  const name = (fn + ' ' + ln).trim();
-  document.getElementById('sbUserName').textContent = name || 'Usuário';
-  const initials = name.split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,2) || 'U';
+
+  const { error } = await updateProfile({ nome: fn, sobrenome: ln, telefone: phone });
+  if (error) { toast('Erro ao salvar: ' + error.message, 'warn'); return; }
+
+  const name = (fn + ' ' + ln).trim() || 'Usuário';
+  const initials = name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase() || 'U';
+  document.getElementById('sbUserName').textContent = name;
   document.getElementById('sbAvatar').textContent = initials;
-  document.getElementById('avatarBig').innerHTML = initials + '<span class="avatar-change" title="Alterar foto">✎</span>';
-  document.getElementById('profileFullName').textContent = name;
+  if (document.getElementById('avatarBig'))
+    document.getElementById('avatarBig').innerHTML = initials + '<span class="avatar-change" title="Alterar foto">✎</span>';
+  if (document.getElementById('profileFullName'))
+    document.getElementById('profileFullName').textContent = name;
   toast('Perfil salvo com sucesso!', 'lime');
 }
-function changePassword() { toast('E-mail de redefinição enviado!', 'blue'); }
+
+async function changePassword() {
+  const user = await getUser();
+  if (!user) return;
+  const { error } = await sb.auth.resetPasswordForEmail(user.email, {
+    redirectTo: window.location.origin + '/auth.html?mode=reset'
+  });
+  if (error) { toast('Erro: ' + error.message, 'warn'); return; }
+  toast('E-mail de redefinição enviado para ' + user.email, 'blue');
+}
+
 function saveAppearance() { toast('Preferências de aparência salvas!', 'lime'); }
 function disconnectBank(name) { toast(`Banco "${name}" desconectado.`, 'warn'); }
-function connectBank() { toast('Redirecionando para Open Finance...', 'blue'); }
+function connectBank() { toast('Integração via Open Finance em breve!', 'blue'); }
 function managePlan() { toast('Abrindo portal de cobrança...', 'lime'); }
-function exportData(fmt) { toast(`Exportando dados em ${fmt.toUpperCase()}...`, 'blue'); }
+function exportData(fmt) { toast(`Exportação em ${fmt.toUpperCase()} em breve!`, 'blue'); }
 function resetPrefs() {
-  if(confirm('Resetar todas as preferências?')) { localStorage.removeItem('nx-user-meta'); toast('Preferências resetadas.', 'warn'); }
+  if (confirm('Resetar preferências locais?')) { toast('Preferências resetadas.', 'warn'); }
 }
 function deleteAccount() { toast('Entre em contato com suporte@nexora.app para excluir sua conta.', 'warn'); }
 function pickTheme(t) {
   document.querySelectorAll('.theme-opt').forEach(o => o.style.border = '1px solid var(--border)');
-  document.getElementById('thOpt-' + t).style.border = '2px solid var(--lime-border)';
+  const el = document.getElementById('thOpt-' + t);
+  if (el) el.style.border = '2px solid var(--lime-border)';
   toast(`Tema "${t}" aplicado!`, 'lime');
 }
-async function signOut() {
-  await sb.auth.signOut();
-  localStorage.removeItem('nx-user-meta');
-  window.location.href = 'auth.html?mode=login';
+async function doSignOut() {
+  await sbSignOut();
 }
 
 function toast(msg, color) {
@@ -713,7 +731,8 @@ window.exportData = exportData;
 window.resetPrefs = resetPrefs;
 window.deleteAccount = deleteAccount;
 window.pickTheme = pickTheme;
-window.signOut = signOut;
+window.signOut = doSignOut;
+window.doSignOut = doSignOut;
 </script>
 </body>
 </html>

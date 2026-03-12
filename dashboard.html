@@ -1,2233 +1,391 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexora — Dashboard Financeiro</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-  <style>
-
-/* ══════════════════════════════════════════════════════════
-   RESET & VARIABLES
-══════════════════════════════════════════════════════════ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --lime:        #C8FF00;
-  --lime-dark:   #A8D400;
-  --lime-dim:    rgba(200,255,0,0.12);
-  --lime-glow:   rgba(200,255,0,0.22);
-  --lime-border: rgba(200,255,0,0.28);
-  --black:       #060606;
-  --dark:        #0C0C0C;
-  --surface:     #101010;
-  --surface2:    #141414;
-  --card:        #161616;
-  --card2:       #1A1A1A;
-  --border:      rgba(255,255,255,0.07);
-  --border2:     rgba(255,255,255,0.04);
-  --white:       #FFFFFF;
-  --gray:        #666;
-  --lgray:       #999;
-  --mgray:       #444;
-  --red:         #FF4D4D;
-  --red-dim:     rgba(255,77,77,0.12);
-  --green:       #00E676;
-  --green-dim:   rgba(0,230,118,0.12);
-  --blue:        #448AFF;
-  --blue-dim:    rgba(68,138,255,0.12);
-  --orange:      #FF9100;
-  --orange-dim:  rgba(255,145,0,0.12);
-  --font-title:  'Space Grotesk', sans-serif;
-  --font-body:   'Inter', sans-serif;
-  --sidebar-w:   260px;
-  --topbar-h:    68px;
-  --radius:      14px;
-  --radius-sm:   9px;
-  --radius-xs:   6px;
-  --tr:          0.28s cubic-bezier(0.4,0,0.2,1);
-}
-
-html { scroll-behavior: smooth; }
-body {
-  background: var(--black);
-  color: var(--white);
-  font-family: var(--font-body);
-  font-size: 14px;
-  line-height: 1.55;
-  overflow-x: hidden;
-  min-height: 100vh;
-}
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--lime-dark); }
-
-/* ══════════════════════════════════════════════════════════
-   APP LAYOUT
-══════════════════════════════════════════════════════════ */
-.app {
-  display: flex;
-  min-height: 100vh;
-}
-
-/* ══════════════════════════════════════════════════════════
-   SIDEBAR
-══════════════════════════════════════════════════════════ */
-.sidebar {
-  width: var(--sidebar-w);
-  min-height: 100vh;
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0; left: 0;
-  z-index: 100;
-  transition: transform var(--tr);
-  overflow: hidden;
-}
-
-/* Sidebar glow de fundo */
-.sidebar::before {
-  content: '';
-  position: absolute;
-  bottom: -60px; left: -60px;
-  width: 220px; height: 220px;
-  background: var(--lime-glow);
-  filter: blur(80px);
-  pointer-events: none;
-  border-radius: 50%;
-}
-
-/* Logo */
-.sb-logo {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  padding: 22px 22px 18px;
-  border-bottom: 1px solid var(--border2);
-}
-
-.sb-logo-icon {
-  width: 36px; height: 36px;
-  background: var(--lime);
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-title);
-  font-weight: 800;
-  font-size: 18px;
-  color: var(--black);
-  flex-shrink: 0;
-  box-shadow: 0 0 18px var(--lime-glow);
-}
-
-.sb-logo-text {
-  font-family: var(--font-title);
-  font-weight: 700;
-  font-size: 19px;
-  letter-spacing: -0.02em;
-  color: var(--white);
-}
-.sb-logo-badge {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--lime);
-  background: var(--lime-dim);
-  border: 1px solid var(--lime-border);
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin-left: 2px;
-}
-
-/* Nav sections */
-.sb-nav {
-  flex: 1;
-  padding: 16px 12px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.sb-section-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--mgray);
-  padding: 12px 10px 6px;
-  margin-top: 6px;
-}
-
-.sb-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  color: var(--lgray);
-  font-size: 13.5px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background var(--tr), color var(--tr);
-  position: relative;
-  text-decoration: none;
-  user-select: none;
-}
-
-.sb-item:hover {
-  background: rgba(255,255,255,0.05);
-  color: var(--white);
-}
-
-.sb-item.active {
-  background: var(--lime-dim);
-  color: var(--lime);
-  font-weight: 600;
-}
-
-.sb-item.active::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 50%;
-  transform: translateY(-50%);
-  width: 3px; height: 22px;
-  background: var(--lime);
-  border-radius: 0 3px 3px 0;
-  box-shadow: 0 0 10px var(--lime);
-}
-
-.sb-item svg {
-  width: 18px; height: 18px;
-  flex-shrink: 0;
-  opacity: 0.7;
-  transition: opacity var(--tr);
-}
-.sb-item:hover svg, .sb-item.active svg { opacity: 1; }
-
-.sb-item .badge {
-  margin-left: auto;
-  background: var(--lime);
-  color: var(--black);
-  font-size: 10px;
-  font-weight: 800;
-  padding: 2px 7px;
-  border-radius: 100px;
-  min-width: 20px;
-  text-align: center;
-}
-
-.sb-item .badge.red {
-  background: var(--red);
-  color: #fff;
-}
-
-/* Sidebar footer: user */
-.sb-footer {
-  padding: 14px 14px 18px;
-  border-top: 1px solid var(--border2);
-}
-
-.sb-user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 10px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: background var(--tr);
-}
-.sb-user:hover { background: rgba(255,255,255,0.05); }
-
-.sb-avatar {
-  width: 34px; height: 34px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--lime-dark), var(--lime));
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-title);
-  font-weight: 700;
-  font-size: 13px;
-  color: var(--black);
-  flex-shrink: 0;
-}
-
-.sb-user-info { flex: 1; min-width: 0; }
-.sb-user-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--white);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.sb-user-plan {
-  font-size: 11px;
-  color: var(--lime);
-  font-weight: 500;
-}
-
-.sb-user-chevron {
-  color: var(--gray);
-  width: 14px; height: 14px;
-  flex-shrink: 0;
-}
-
-/* ══════════════════════════════════════════════════════════
-   MAIN WRAPPER
-══════════════════════════════════════════════════════════ */
-.main-wrapper {
-  flex: 1;
-  margin-left: var(--sidebar-w);
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-/* ══════════════════════════════════════════════════════════
-   TOPBAR
-══════════════════════════════════════════════════════════ */
-.topbar {
-  height: var(--topbar-h);
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 0 28px;
-  position: sticky;
-  top: 0;
-  z-index: 90;
-}
-
-.topbar-title {
-  font-family: var(--font-title);
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--white);
-  flex: 1;
-}
-.topbar-title span { color: var(--lime); }
-
-/* Period selector */
-.period-selector {
-  display: flex;
-  gap: 4px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 4px;
-}
-
-.period-btn {
-  padding: 5px 13px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--lgray);
-  cursor: pointer;
-  transition: background var(--tr), color var(--tr);
-  border: none;
-  background: transparent;
-}
-.period-btn:hover { color: var(--white); background: rgba(255,255,255,0.06); }
-.period-btn.active {
-  background: var(--lime-dim);
-  color: var(--lime);
-  border: 1px solid var(--lime-border);
-}
-
-/* Search */
-.topbar-search {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 8px 14px;
-  width: 210px;
-  transition: border-color var(--tr);
-}
-.topbar-search:focus-within { border-color: var(--lime-border); }
-.topbar-search svg { color: var(--gray); width: 15px; height: 15px; flex-shrink: 0; }
-.topbar-search input {
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--white);
-  font-family: var(--font-body);
-  font-size: 13px;
-  width: 100%;
-}
-.topbar-search input::placeholder { color: var(--mgray); }
-
-/* Topbar icons */
-.topbar-icon-btn {
-  width: 38px; height: 38px;
-  border-radius: var(--radius-sm);
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  position: relative;
-  transition: border-color var(--tr), background var(--tr);
-}
-.topbar-icon-btn:hover {
-  background: rgba(255,255,255,0.06);
-  border-color: var(--lime-border);
-}
-.topbar-icon-btn svg { width: 17px; height: 17px; color: var(--lgray); }
-.topbar-icon-btn .notif-dot {
-  position: absolute;
-  top: 7px; right: 7px;
-  width: 7px; height: 7px;
-  background: var(--lime);
-  border-radius: 50%;
-  border: 1.5px solid var(--surface);
-  animation: pulse-dot 2s infinite;
-}
-
-@keyframes pulse-dot {
-  0%,100% { opacity:1; transform:scale(1); }
-  50%      { opacity:.5; transform:scale(1.5); }
-}
-
-/* Topbar user pill */
-.topbar-user {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 10px 5px 5px;
-  border-radius: 100px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  transition: border-color var(--tr);
-}
-.topbar-user:hover { border-color: var(--lime-border); }
-.topbar-user .avatar {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--lime-dark), var(--lime));
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-title);
-  font-size: 11px; font-weight: 700;
-  color: var(--black);
-}
-.topbar-user .uname {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--white);
-}
-
-/* ══════════════════════════════════════════════════════════
-   MAIN CONTENT AREA
-══════════════════════════════════════════════════════════ */
-.content {
-  flex: 1;
-  padding: 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  background: var(--dark);
-}
-
-/* Section header */
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-.section-title {
-  font-family: var(--font-title);
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--white);
-}
-.section-subtitle {
-  font-size: 12px;
-  color: var(--lgray);
-  margin-top: 2px;
-}
-.section-action {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--lime);
-  cursor: pointer;
-  display: flex; align-items: center; gap: 4px;
-  transition: opacity var(--tr);
-}
-.section-action:hover { opacity: .7; }
-
-
-/* ══════════════════════════════════════════════════════════
-   OVERVIEW CARDS
-══════════════════════════════════════════════════════════ */
-.overview-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-
-.ov-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px 22px;
-  position: relative;
-  overflow: hidden;
-  transition: border-color var(--tr), transform var(--tr);
-}
-.ov-card:hover {
-  border-color: rgba(255,255,255,0.12);
-  transform: translateY(-2px);
-}
-.ov-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--accent-color, var(--lime));
-  opacity: 0.7;
-}
-
-.ov-card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-.ov-label {
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  color: var(--lgray);
-  text-transform: uppercase;
-}
-.ov-icon {
-  width: 34px; height: 34px;
-  border-radius: var(--radius-sm);
-  display: flex; align-items: center; justify-content: center;
-  background: var(--icon-bg, var(--lime-dim));
-}
-.ov-icon svg { width: 17px; height: 17px; color: var(--icon-color, var(--lime)); }
-
-.ov-value {
-  font-family: var(--font-title);
-  font-size: 26px;
-  font-weight: 800;
-  color: var(--white);
-  letter-spacing: -0.03em;
-  line-height: 1;
-  margin-bottom: 8px;
-}
-.ov-value span { font-size: 14px; font-weight: 500; color: var(--lgray); }
-
-.ov-change {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  font-weight: 600;
-}
-.ov-change.up   { color: var(--green); }
-.ov-change.down { color: var(--red); }
-.ov-change svg  { width: 13px; height: 13px; }
-.ov-change-label { font-size: 11px; color: var(--gray); font-weight: 400; margin-left: 4px; }
-
-/* Mini sparkline inside card */
-/* .ov-spark height now controlled by wrapper div */
-.ov-spark { display: block; }
-
-/* ══════════════════════════════════════════════════════════
-   CHARTS ROW
-══════════════════════════════════════════════════════════ */
-.charts-row {
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 16px;
-}
-
-.chart-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 22px 24px;
-}
-
-.chart-card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.chart-legend {
-  display: flex;
-  gap: 14px;
-  margin-top: 4px;
-}
-.legend-item {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 11.5px; color: var(--lgray);
-}
-.legend-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.chart-wrap {
-  position: relative;
-  height: 220px;
-}
-
-/* Donut chart card */
-.donut-wrap {
-  position: relative;
-  height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.donut-center {
-  position: absolute;
-  text-align: center;
-  pointer-events: none;
-}
-.donut-center-val {
-  font-family: var(--font-title);
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--white);
-  line-height: 1;
-}
-.donut-center-lbl {
-  font-size: 10px;
-  color: var(--lgray);
-  font-weight: 500;
-  margin-top: 3px;
-}
-
-/* Category list below donut */
-.cat-list {
-  margin-top: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-.cat-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.cat-dot {
-  width: 9px; height: 9px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.cat-name {
-  font-size: 12.5px;
-  color: var(--lgray);
-  flex: 1;
-}
-.cat-pct {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--white);
-}
-.cat-bar-wrap {
-  flex: 1;
-  height: 4px;
-  background: var(--surface2);
-  border-radius: 2px;
-  overflow: hidden;
-}
-.cat-bar {
-  height: 100%;
-  border-radius: 2px;
-  transition: width 1s cubic-bezier(0.4,0,0.2,1);
-}
-
-/* ══════════════════════════════════════════════════════════
-   BOTTOM ROW: TRANSACTIONS + AI FEED
-══════════════════════════════════════════════════════════ */
-.bottom-row {
-  display: grid;
-  grid-template-columns: 1fr 370px;
-  gap: 16px;
-}
-
-/* ── Transactions table ── */
-.tx-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-.tx-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 22px 0;
-}
-
-/* Filter tabs */
-.filter-tabs {
-  display: flex;
-  gap: 4px;
-  padding: 14px 22px 0;
-}
-.filter-tab {
-  padding: 5px 13px;
-  border-radius: 100px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--lgray);
-  cursor: pointer;
-  transition: background var(--tr), color var(--tr);
-  border: 1px solid transparent;
-}
-.filter-tab:hover { color: var(--white); background: rgba(255,255,255,0.05); }
-.filter-tab.active {
-  color: var(--lime);
-  background: var(--lime-dim);
-  border-color: var(--lime-border);
-}
-
-/* Table */
-.tx-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.tx-table th {
-  text-align: left;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--mgray);
-  padding: 12px 22px;
-  border-bottom: 1px solid var(--border2);
-}
-.tx-table td {
-  padding: 13px 22px;
-  border-bottom: 1px solid var(--border2);
-  vertical-align: middle;
-}
-.tx-table tr:last-child td { border-bottom: none; }
-.tx-table tr:hover td { background: rgba(255,255,255,0.02); }
-
-.tx-merchant {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-}
-.tx-icon {
-  width: 34px; height: 34px;
-  border-radius: var(--radius-sm);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-  background: var(--surface2);
-}
-.tx-name {
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--white);
-}
-.tx-category {
-  font-size: 11px;
-  color: var(--gray);
-  margin-top: 1px;
-}
-.tx-date { font-size: 12px; color: var(--lgray); }
-.tx-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11.5px;
-  font-weight: 600;
-  padding: 3px 9px;
-  border-radius: 100px;
-}
-.tx-status.ok    { background: var(--green-dim); color: var(--green); }
-.tx-status.pend  { background: var(--orange-dim); color: var(--orange); }
-.tx-status.fail  { background: var(--red-dim); color: var(--red); }
-
-.tx-amount {
-  font-family: var(--font-title);
-  font-size: 14px;
-  font-weight: 700;
-  text-align: right;
-}
-.tx-amount.debit  { color: var(--red); }
-.tx-amount.credit { color: var(--green); }
-
-/* ── AI Feed ── */
-.ai-feed-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-.ai-feed-header {
-  padding: 20px 20px 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.ai-feed-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-title);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--white);
-}
-.ai-live-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--lime);
-  box-shadow: 0 0 8px var(--lime);
-  animation: pulse-dot 2s infinite;
-}
-
-.ai-feed-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 12px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ai-alert {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 13px 14px;
-  display: flex;
-  gap: 11px;
-  transition: border-color var(--tr);
-}
-.ai-alert:hover { border-color: rgba(255,255,255,0.1); }
-
-.ai-alert-icon {
-  width: 32px; height: 32px;
-  border-radius: 9px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px;
-  flex-shrink: 0;
-}
-.ai-alert-icon.warn  { background: var(--orange-dim); }
-.ai-alert-icon.ok    { background: var(--green-dim); }
-.ai-alert-icon.info  { background: var(--blue-dim); }
-.ai-alert-icon.alert { background: var(--red-dim); }
-
-.ai-alert-body { flex: 1; min-width: 0; }
-.ai-alert-msg {
-  font-size: 12.5px;
-  color: var(--white);
-  line-height: 1.45;
-  font-weight: 500;
-}
-.ai-alert-meta {
-  font-size: 11px;
-  color: var(--gray);
-  margin-top: 4px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.ai-whatsapp-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 10px;
-  font-weight: 700;
-  color: #25D366;
-  background: rgba(37,211,102,0.1);
-  border-radius: 4px;
-  padding: 1px 5px;
-}
-
-/* ══════════════════════════════════════════════════════════
-   GOALS ROW
-══════════════════════════════════════════════════════════ */
-.goals-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-
-.goal-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px 22px;
-  transition: border-color var(--tr);
-}
-.goal-card:hover { border-color: var(--lime-border); }
-
-.goal-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-.goal-emoji { font-size: 22px; }
-.goal-pct {
-  font-family: var(--font-title);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--lime);
-}
-
-.goal-name {
-  font-family: var(--font-title);
-  font-size: 14.5px;
-  font-weight: 700;
-  color: var(--white);
-  margin-bottom: 5px;
-}
-.goal-values {
-  font-size: 12px;
-  color: var(--lgray);
-  margin-bottom: 12px;
-}
-.goal-values strong {
-  color: var(--white);
-  font-weight: 700;
-}
-
-.goal-progress {
-  width: 100%;
-  height: 6px;
-  background: var(--surface2);
-  border-radius: 3px;
-  overflow: hidden;
-}
-.goal-bar {
-  height: 100%;
-  border-radius: 3px;
-  background: linear-gradient(90deg, var(--lime-dark), var(--lime));
-  box-shadow: 0 0 8px var(--lime-glow);
-  transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
-}
-
-.goal-deadline {
-  font-size: 11px;
-  color: var(--gray);
-  margin-top: 8px;
-}
-
-/* ══════════════════════════════════════════════════════════
-   AI AGENTS PANEL (sidebar card)
-══════════════════════════════════════════════════════════ */
-.agents-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px 22px;
-}
-
-.agent-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border2);
-}
-.agent-item:last-child { border-bottom: none; }
-
-.agent-avatar {
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  background: var(--lime-dim);
-  border: 1px solid var(--lime-border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 17px;
-  flex-shrink: 0;
-}
-
-.agent-info { flex: 1; min-width: 0; }
-.agent-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--white);
-}
-.agent-status {
-  font-size: 11px;
-  color: var(--gray);
-  margin-top: 2px;
-}
-
-.agent-badge {
-  font-size: 10px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 100px;
-}
-.agent-badge.on  { background: var(--green-dim); color: var(--green); }
-.agent-badge.off { background: var(--surface2); color: var(--gray); }
-
-/* ══════════════════════════════════════════════════════════
-   STAT ROW (mini metrics)
-══════════════════════════════════════════════════════════ */
-.stat-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: var(--border2);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  margin-top: 16px;
-}
-.stat-cell {
-  background: var(--card);
-  padding: 14px 16px;
-  text-align: center;
-}
-.stat-val {
-  font-family: var(--font-title);
-  font-size: 17px;
-  font-weight: 800;
-  color: var(--white);
-}
-.stat-lbl {
-  font-size: 10.5px;
-  color: var(--gray);
-  margin-top: 2px;
-}
-
-/* ══════════════════════════════════════════════════════════
-   MODAL (notification panel)
-══════════════════════════════════════════════════════════ */
-.notif-panel {
-  position: fixed;
-  top: calc(var(--topbar-h) + 8px);
-  right: 16px;
-  width: 340px;
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(200,255,0,0.06);
-  z-index: 200;
-  overflow: hidden;
-  transform: translateY(-10px) scale(0.97);
-  opacity: 0;
-  pointer-events: none;
-  transition: transform var(--tr), opacity var(--tr);
-}
-.notif-panel.open {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-  pointer-events: all;
-}
-.notif-panel-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 18px 12px;
-  border-bottom: 1px solid var(--border2);
-}
-.notif-panel-title {
-  font-family: var(--font-title);
-  font-size: 14px; font-weight: 700; color: var(--white);
-}
-.notif-clear {
-  font-size: 11px; color: var(--lime); cursor: pointer; font-weight: 600;
-}
-.notif-list {
-  max-height: 380px;
-  overflow-y: auto;
-  padding: 8px;
-}
-.notif-item {
-  display: flex; gap: 10px;
-  padding: 10px 10px;
-  border-radius: var(--radius-sm);
-  transition: background var(--tr);
-  cursor: pointer;
-}
-.notif-item:hover { background: rgba(255,255,255,0.04); }
-.notif-item-icon {
-  width: 30px; height: 30px;
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-.notif-item-body { flex: 1; }
-.notif-item-msg { font-size: 12.5px; color: var(--white); line-height: 1.4; }
-.notif-item-time { font-size: 11px; color: var(--gray); margin-top: 3px; }
-
-/* ══════════════════════════════════════════════════════════
-   TOOLTIP
-══════════════════════════════════════════════════════════ */
-.tooltip-wrap { position: relative; display: inline-block; }
-.tooltip-box {
-  position: absolute;
-  bottom: calc(100% + 7px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--card2);
-  border: 1px solid var(--border);
-  color: var(--white);
-  font-size: 11.5px;
-  padding: 6px 10px;
-  border-radius: var(--radius-xs);
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity var(--tr);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-}
-.tooltip-wrap:hover .tooltip-box { opacity: 1; }
-
-/* ══════════════════════════════════════════════════════════
-   ANIMATIONS
-══════════════════════════════════════════════════════════ */
-@keyframes fade-up {
-  from { opacity:0; transform:translateY(16px); }
-  to   { opacity:1; transform:translateY(0); }
-}
-@keyframes fade-in {
-  from { opacity:0; }
-  to   { opacity:1; }
-}
-@keyframes slide-in-right {
-  from { opacity:0; transform:translateX(20px); }
-  to   { opacity:1; transform:translateX(0); }
-}
-@keyframes count-up {
-  from { opacity:0; transform:translateY(8px); }
-  to   { opacity:1; transform:translateY(0); }
-}
-@keyframes shimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position:  400px 0; }
-}
-
-.anim-fade-up   { animation: fade-up 0.5s ease both; }
-.anim-fade-in   { animation: fade-in 0.4s ease both; }
-.anim-slide-r   { animation: slide-in-right 0.45s ease both; }
-
-/* Stagger delays */
-.d1 { animation-delay: 0.05s; }
-.d2 { animation-delay: 0.10s; }
-.d3 { animation-delay: 0.15s; }
-.d4 { animation-delay: 0.20s; }
-.d5 { animation-delay: 0.25s; }
-
-/* Skeleton loader */
-.skeleton {
-  background: linear-gradient(90deg,
-    var(--surface2) 0%,
-    var(--card2) 50%,
-    var(--surface2) 100%);
-  background-size: 800px 100%;
-  animation: shimmer 1.6s infinite linear;
-  border-radius: var(--radius-xs);
-}
-
-/* ══════════════════════════════════════════════════════════
-   NOISE OVERLAY
-══════════════════════════════════════════════════════════ */
-.noise {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 999;
-  opacity: 0.025;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
-}
-
-/* ══════════════════════════════════════════════════════════
-   RESPONSIVE
-══════════════════════════════════════════════════════════ */
-@media (max-width: 1280px) {
-  .overview-grid { grid-template-columns: repeat(2, 1fr); }
-  .charts-row { grid-template-columns: 1fr; }
-  .bottom-row { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 900px) {
-  :root { --sidebar-w: 0px; }
-  .sidebar { transform: translateX(-260px); width: 260px; }
-  .sidebar.open { transform: translateX(0); }
-  .main-wrapper { margin-left: 0; }
-  .content { padding: 18px; }
-  .goals-row { grid-template-columns: 1fr; }
-  .overview-grid { grid-template-columns: 1fr 1fr; }
-}
-
-@media (max-width: 580px) {
-  .overview-grid { grid-template-columns: 1fr; }
-  .period-selector { display: none; }
-  .topbar-search { display: none; }
-}
-
-/* ── Scrollable tables on small screens ── */
-.tx-table-wrap { overflow-x: auto; }
-
-/* ══════════════════════════════════════════════════════════
-   MISC UTILITIES
-══════════════════════════════════════════════════════════ */
-.flex { display: flex; }
-.items-center { align-items: center; }
-.gap-2 { gap: 8px; }
-.gap-3 { gap: 12px; }
-.ml-auto { margin-left: auto; }
-.text-sm { font-size: 12px; }
-.text-xs { font-size: 11px; }
-.font-bold { font-weight: 700; }
-.text-lime { color: var(--lime); }
-.text-gray { color: var(--lgray); }
-.text-white { color: var(--white); }
-.text-green { color: var(--green); }
-.text-red { color: var(--red); }
-.rounded { border-radius: var(--radius-sm); }
-.w-full { width: 100%; }
-.hidden { display: none !important; }
-
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Nexora — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--lime:#C8FF00;--black:#060606;--surface:#101010;--card:#161616;--border:#222;--txt:#E8E8E8;--muted:#888;--sidebar-w:260px;--danger:#FF4D4D;--success:#00C48C;--warn:#FFB800}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--black);color:var(--txt);display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.logo{padding:24px 20px;font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--lime);border-bottom:1px solid var(--border)}
+.logo span{color:var(--txt)}
+.nav{flex:1;padding:16px 12px;overflow-y:auto}
+.nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;margin-bottom:4px;transition:all .2s}
+.nav a:hover{background:#1a1a1a;color:var(--txt)}
+.nav a.active{background:rgba(200,255,0,.1);color:var(--lime)}
+.nav-section{font-size:11px;color:var(--muted);padding:12px 12px 4px;letter-spacing:.08em;text-transform:uppercase}
+.sidebar-footer{padding:16px;border-top:1px solid var(--border)}
+.user-pill{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:#1a1a1a}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--black);flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-plan{font-size:11px;color:var(--muted)}
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar h1{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:'Inter',sans-serif}
+.btn-lime{background:var(--lime);color:var(--black)}.btn-lime:hover{background:#b8ec00}
+.btn-ghost{background:transparent;color:var(--txt);border:1px solid var(--border)}.btn-ghost:hover{background:#1a1a1a}
+.content{padding:28px;flex:1}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.stat-label{font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:500}
+.stat-value{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;margin-bottom:4px}
+.stat-sub{font-size:12px;color:var(--muted)}
+.stat-pos{color:var(--success)}.stat-neg{color:var(--danger)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+.grid-3{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.card-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600}
+.card-action{font-size:13px;color:var(--lime);text-decoration:none;cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif;font-weight:500}
+.tx-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.tx-item:last-child{border-bottom:none}
+.tx-icon{width:38px;height:38px;border-radius:10px;background:#1e1e1e;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.tx-info{flex:1;min-width:0}
+.tx-desc{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-meta{font-size:12px;color:var(--muted)}
+.tx-val{font-size:14px;font-weight:700;text-align:right;flex-shrink:0}
+.goal-item{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-bottom:1px solid var(--border)}
+.goal-item:last-child{border-bottom:none}
+.goal-top{display:flex;justify-content:space-between;align-items:center}
+.goal-name{font-size:14px;font-weight:500}
+.goal-pct{font-size:13px;color:var(--lime);font-weight:600}
+.progress-bar{height:6px;background:#222;border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--lime),#a0d000);border-radius:99px}
+.goal-vals{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;text-align:center;gap:12px}
+.empty-icon{font-size:48px;opacity:.5}
+.empty-title{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600}
+.empty-sub{font-size:14px;color:var(--muted);max-width:300px;line-height:1.6}
+.period-tabs{display:flex;gap:6px}
+.period-tab{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .2s}
+.period-tab.active{background:var(--lime);color:var(--black);border-color:var(--lime)}
+.welcome-banner{background:linear-gradient(135deg,rgba(200,255,0,.08),rgba(200,255,0,.03));border:1px solid rgba(200,255,0,.2);border-radius:14px;padding:24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.welcome-text h2{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px}
+.welcome-text p{font-size:14px;color:var(--muted);max-width:420px;line-height:1.6}
+.welcome-actions{display:flex;gap:10px}
+.toast{position:fixed;bottom:24px;right:24px;background:#1e1e1e;border:1px solid var(--border);border-radius:10px;padding:14px 18px;font-size:13px;z-index:9999;opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}.toast.success{border-color:var(--success);color:var(--success)}.toast.error{border-color:var(--danger);color:var(--danger)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+.form-group{margin-bottom:14px}
+.form-label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+.form-input{width:100%;background:#1e1e1e;border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--txt);font-size:14px;font-family:'Inter',sans-serif}
+.form-input:focus{outline:none;border-color:var(--lime)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:1200px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-
-<!-- Noise overlay -->
-<div class="noise"></div>
-
-<!-- Notification panel (dropdown) -->
-<div class="notif-panel" id="notifPanel">
-  <div class="notif-panel-header">
-    <span class="notif-panel-title">Notificações</span>
-    <span class="notif-clear" onclick="clearNotifs()">Limpar tudo</span>
-  </div>
-  <div class="notif-list" id="notifList">
-    <div class="notif-item">
-      <div class="notif-item-icon" style="background:var(--red-dim)">⚠️</div>
-      <div class="notif-item-body">
-        <div class="notif-item-msg">Gasto acima do limite na categoria Alimentação</div>
-        <div class="notif-item-time">há 5 min · Agente Guardião</div>
-      </div>
-    </div>
-    <div class="notif-item">
-      <div class="notif-item-icon" style="background:var(--green-dim)">✅</div>
-      <div class="notif-item-body">
-        <div class="notif-item-msg">Recebimento de R$ 4.200 confirmado — Salário</div>
-        <div class="notif-item-time">há 1h · Agente Radar</div>
-      </div>
-    </div>
-    <div class="notif-item">
-      <div class="notif-item-icon" style="background:var(--blue-dim)">💡</div>
-      <div class="notif-item-body">
-        <div class="notif-item-msg">Oportunidade: Você pode investir R$ 850 este mês</div>
-        <div class="notif-item-time">há 2h · Agente Conselheiro</div>
-      </div>
-    </div>
-    <div class="notif-item">
-      <div class="notif-item-icon" style="background:var(--orange-dim)">🔔</div>
-      <div class="notif-item-body">
-        <div class="notif-item-msg">Fatura do cartão Nubank vence em 3 dias — R$ 1.247</div>
-        <div class="notif-item-time">há 4h · Agente Calendário</div>
-      </div>
-    </div>
-    <div class="notif-item">
-      <div class="notif-item-icon" style="background:var(--lime-dim)">📈</div>
-      <div class="notif-item-body">
-        <div class="notif-item-msg">Meta Viagem alcançou 68% — você está no ritmo certo!</div>
-        <div class="notif-item-time">ontem · Agente Metas</div>
+<aside class="sidebar">
+  <div class="logo">Nexo<span>ra</span></div>
+  <nav class="nav">
+    <div class="nav-section">Principal</div>
+    <a href="dashboard.html" class="active">🏠 Dashboard</a>
+    <a href="transacoes.html">↕️ Transações</a>
+    <a href="contas.html">🏦 Contas</a>
+    <a href="cartoes.html">💳 Cartões</a>
+    <div class="nav-section">Gestão</div>
+    <a href="metas.html">🎯 Metas</a>
+    <a href="relatorios.html">📊 Relatórios</a>
+    <a href="investimentos.html">📈 Investimentos</a>
+    <div class="nav-section">Suporte</div>
+    <a href="chat-ia.html">🤖 Chat IA</a>
+    <a href="alertas.html">🔔 Alertas</a>
+    <a href="configuracoes.html">⚙️ Configurações</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="user-avatar" id="sidebarAvatar">?</div>
+      <div class="user-info">
+        <div class="user-name" id="sidebarName">Carregando…</div>
+        <div class="user-plan" id="sidebarPlan">Plano Free</div>
       </div>
     </div>
   </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <h1>Dashboard</h1>
+    <div class="topbar-right">
+      <div class="period-tabs">
+        <button class="period-tab active" onclick="window.setPeriod('month',this)">Este mês</button>
+        <button class="period-tab" onclick="window.setPeriod('3m',this)">3 meses</button>
+        <button class="period-tab" onclick="window.setPeriod('year',this)">Este ano</button>
+      </div>
+      <button class="btn btn-lime" onclick="window.openTxModal()">+ Nova Transação</button>
+    </div>
+  </header>
+  <div class="content" id="mainContent"><div class="empty"><div class="empty-icon">⏳</div><div class="empty-sub">Carregando…</div></div></div>
 </div>
 
-<!-- ════════════════════════════════════════════════
-     APP WRAPPER
-════════════════════════════════════════════════ -->
-<div class="app">
-
-  <!-- ═══════════════════════════════════════════
-       SIDEBAR
-  ═══════════════════════════════════════════ -->
-  <aside class="sidebar" id="sidebar">
-
-    <!-- Logo -->
-    <div class="sb-logo">
-      <div class="sb-logo-icon">N</div>
-      <div>
-        <div class="sb-logo-text">Nexora</div>
-      </div>
-      <span class="sb-logo-badge">PRO</span>
+<!-- TX MODAL -->
+<div class="modal-overlay" id="txModal">
+<div class="modal-box">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700" id="txModalTitle">Nova Transação</h2>
+    <button onclick="window.closeTxModal()" style="background:none;border:none;color:var(--muted);font-size:24px;cursor:pointer;line-height:1">×</button>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:20px">
+    <button id="tabEntrada" class="btn" style="flex:1;background:rgba(0,196,140,.15);color:var(--success);border:1px solid var(--success)" onclick="window.setTxTipo('entrada')">⬇ Entrada</button>
+    <button id="tabSaida"   class="btn btn-ghost" style="flex:1" onclick="window.setTxTipo('saida')">⬆ Saída</button>
+  </div>
+  <input type="hidden" id="txId"/>
+  <input type="hidden" id="txTipo" value="entrada"/>
+  <div class="form-grid">
+    <div style="grid-column:1/-1" class="form-group">
+      <label class="form-label">Descrição / Para quem *</label>
+      <input id="txDesc" class="form-input" placeholder="Ex: iFood, João Silva, Salário…"/>
     </div>
-
-    <!-- Nav -->
-    <nav class="sb-nav">
-
-      <span class="sb-section-label">Principal</span>
-
-      <a class="sb-item active" href="dashboard.html">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-          <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-        </svg>
-        Visão Geral
-      </a>
-
-      <a class="sb-item" href="transacoes.html">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/>
-        </svg>
-        Transações
-        <span class="badge">24</span>
-      </a>
-
-      <a class="sb-item" href="contas.html">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-        </svg>
-        Contas
-      </a>
-
-      <a class="sb-item" href="cartoes.html">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <rect x="2" y="5" width="20" height="14" rx="2"/><path stroke-linecap="round" d="M2 10h20"/>
-        </svg>
-        Cartões
-      </a>
-
-      <span class="sb-section-label">Inteligência</span>
-
-      <a class="sb-item" href="chat-ia.html">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H4a2 2 0 01-2-2V5a2 2 0 012-2h16a2 2 0 012 2v10a2 2 0 01-2 2h-1"/>
-        </svg>
-        Agentes IA
-        <span class="badge" style="background:var(--lime);color:var(--black)">5</span>
-      </a>
-
-      <a class="sb-item" href="alertas.html">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-        </svg>
-        Alertas
-        <span class="badge red">3</span>
-      </a>
-
-      <a class="sb-item" href="relatorios.html">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-        </svg>
-        Relatórios
-      </a>
-
-      <span class="sb-section-label">Outros</span>
-
-      <a class="sb-item" href="metas.html">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>
-        </svg>
-        Metas
-      </a>
-
-      <a class="sb-item" href="configuracoes.html">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-        </svg>
-        Configurações
-      </a>
-
-    </nav>
-
-    <!-- Footer user -->
-    <div class="sb-footer">
-      <a class="sb-user" href="configuracoes.html">
-        <div class="sb-avatar" id="sbAvatarInitials">JS</div>
-        <div class="sb-user-info">
-          <div class="sb-user-name" id="sbUserName">João Silva</div>
-          <div class="sb-user-plan">✦ Plano Pro</div>
-        </div>
-        <svg class="sb-user-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-        </svg>
-      </a>
+    <div class="form-group">
+      <label class="form-label">Valor (R$) *</label>
+      <input id="txValor" type="number" step="0.01" class="form-input" placeholder="0,00"/>
     </div>
+    <div class="form-group">
+      <label class="form-label">Data *</label>
+      <input id="txData" type="date" class="form-input"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Categoria *</label>
+      <select id="txCategoria" class="form-input"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Conta *</label>
+      <select id="txConta" class="form-input"></select>
+    </div>
+    <div class="form-group" style="grid-column:1/-1">
+      <label class="form-label">Forma de Pagamento *</label>
+      <select id="txMetodo" class="form-input"></select>
+    </div>
+    <div class="form-group" style="grid-column:1/-1">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px">
+        <input type="checkbox" id="txRecorrente" style="width:16px;height:16px;accent-color:var(--lime)"/> Transação recorrente / fixa mensal
+      </label>
+    </div>
+    <div class="form-group" style="grid-column:1/-1">
+      <label class="form-label">Observações</label>
+      <textarea id="txNotas" rows="2" class="form-input" placeholder="Informações extras…" style="resize:none"></textarea>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;margin-top:8px;justify-content:flex-end">
+    <button class="btn btn-ghost" onclick="window.closeTxModal()">Cancelar</button>
+    <button class="btn btn-lime" id="txSaveBtn" onclick="window.saveTx()">Salvar</button>
+  </div>
+</div>
+</div>
 
-  </aside>
-  <!-- /sidebar -->
+<div class="toast" id="toast"></div>
 
-  <!-- ═══════════════════════════════════════════
-       MAIN WRAPPER
-  ═══════════════════════════════════════════ -->
-  <div class="main-wrapper">
+<script type="module">
+import { sb, requireAuth, getProfile, getAccounts, getTransactions, getGoals, getInvestments,
+         createTransaction, updateTransaction, fmt, fmtDate, categorias, metodos } from './js/db.js';
 
-    <!-- ═══════════════════════════════════════
-         TOPBAR
-    ═══════════════════════════════════════ -->
-    <header class="topbar">
+let profile=null, accounts=[], transactions=[], goals=[], investments=[];
+let period='month', editingTxId=null;
 
-      <!-- Mobile hamburger -->
-      <button id="hamburger" onclick="toggleSidebar()" style="display:none;background:none;border:none;cursor:pointer;padding:4px;margin-right:4px;">
-        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--lgray)">
-          <path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-      </button>
-
-      <div class="topbar-title">
-        Visão <span>Geral</span>
-      </div>
-
-      <!-- Period selector -->
-      <div class="period-selector">
-        <button class="period-btn" onclick="setPeriod(this,'7d')">7D</button>
-        <button class="period-btn active" onclick="setPeriod(this,'30d')">30D</button>
-        <button class="period-btn" onclick="setPeriod(this,'3m')">3M</button>
-        <button class="period-btn" onclick="setPeriod(this,'1a')">1A</button>
-      </div>
-
-      <!-- Search -->
-      <div class="topbar-search">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/>
-        </svg>
-        <input type="text" placeholder="Buscar transação…" id="searchInput" oninput="filterTx(this.value)"/>
-      </div>
-
-      <!-- Notif button -->
-      <div class="topbar-icon-btn tooltip-wrap" id="notifBtn" onclick="toggleNotif()">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-        </svg>
-        <span class="notif-dot" id="notifDot"></span>
-        <span class="tooltip-box">Notificações</span>
-      </div>
-
-      <!-- WhatsApp button -->
-      <div class="topbar-icon-btn tooltip-wrap">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#25D366" width="18" height="18">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-        </svg>
-        <span class="tooltip-box">WhatsApp conectado</span>
-      </div>
-
-      <!-- User pill -->
-      <div class="topbar-user">
-        <div class="avatar" id="topAvatarInitials">JS</div>
-        <span class="uname" id="topUserName">João</span>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;color:var(--gray);margin-left:2px">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-        </svg>
-      </div>
-
-    </header>
-    <!-- /topbar -->
-
-
-    <!-- ═══════════════════════════════════════
-         MAIN CONTENT
-    ═══════════════════════════════════════ -->
-    <main class="content">
-
-      <!-- ── SECTION 1: OVERVIEW CARDS ── -->
-      <section>
-        <div class="overview-grid">
-
-          <!-- Saldo Total -->
-          <div class="ov-card anim-fade-up d1" style="--accent-color:var(--lime);--icon-bg:var(--lime-dim);--icon-color:var(--lime)">
-            <div class="ov-card-top">
-              <span class="ov-label">Saldo Total</span>
-              <div class="ov-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-              </div>
-            </div>
-            <div class="ov-value">R$ <span id="valSaldo">24.830</span><span>,00</span></div>
-            <div>
-              <span class="ov-change up">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
-                +8,4%
-              </span>
-              <span class="ov-change-label">vs mês anterior</span>
-            </div>
-            <div style="position:relative;height:36px;margin-top:14px;opacity:0.7"><canvas id="spark0" style="display:block"></canvas></div>
-          </div>
-
-          <!-- Receitas -->
-          <div class="ov-card anim-fade-up d2" style="--accent-color:var(--green);--icon-bg:var(--green-dim);--icon-color:var(--green)">
-            <div class="ov-card-top">
-              <span class="ov-label">Receitas</span>
-              <div class="ov-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
-                </svg>
-              </div>
-            </div>
-            <div class="ov-value">R$ <span id="valReceitas">7.450</span><span>,00</span></div>
-            <div>
-              <span class="ov-change up">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
-                +12,1%
-              </span>
-              <span class="ov-change-label">vs mês anterior</span>
-            </div>
-            <div style="position:relative;height:36px;margin-top:14px;opacity:0.7"><canvas id="spark1" style="display:block"></canvas></div>
-          </div>
-
-          <!-- Despesas -->
-          <div class="ov-card anim-fade-up d3" style="--accent-color:var(--red);--icon-bg:var(--red-dim);--icon-color:var(--red)">
-            <div class="ov-card-top">
-              <span class="ov-label">Despesas</span>
-              <div class="ov-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M17 13l-5 5m0 0l-5-5m5 5V6"/>
-                </svg>
-              </div>
-            </div>
-            <div class="ov-value">R$ <span id="valDespesas">3.290</span><span>,00</span></div>
-            <div>
-              <span class="ov-change down">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
-                +5,3%
-              </span>
-              <span class="ov-change-label">vs mês anterior</span>
-            </div>
-            <div style="position:relative;height:36px;margin-top:14px;opacity:0.7"><canvas id="spark2" style="display:block"></canvas></div>
-          </div>
-
-          <!-- Investimentos -->
-          <div class="ov-card anim-fade-up d4" style="--accent-color:var(--blue);--icon-bg:var(--blue-dim);--icon-color:var(--blue)">
-            <div class="ov-card-top">
-              <span class="ov-label">Investimentos</span>
-              <div class="ov-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                </svg>
-              </div>
-            </div>
-            <div class="ov-value">R$ <span id="valInvest">12.600</span><span>,00</span></div>
-            <div>
-              <span class="ov-change up">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
-                +3,7%
-              </span>
-              <span class="ov-change-label">rendimento mês</span>
-            </div>
-            <div style="position:relative;height:36px;margin-top:14px;opacity:0.7"><canvas id="spark3" style="display:block"></canvas></div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- ── SECTION 2: CHARTS ROW ── -->
-      <section>
-        <div class="charts-row">
-
-          <!-- Linha: Evolução do Saldo -->
-          <div class="chart-card anim-fade-up d1">
-            <div class="chart-card-header">
-              <div>
-                <div class="section-title">Evolução do Saldo</div>
-                <div class="chart-legend">
-                  <div class="legend-item">
-                    <div class="legend-dot" style="background:var(--lime)"></div>
-                    Saldo
-                  </div>
-                  <div class="legend-item">
-                    <div class="legend-dot" style="background:var(--blue)"></div>
-                    Receitas
-                  </div>
-                  <div class="legend-item">
-                    <div class="legend-dot" style="background:var(--red)"></div>
-                    Despesas
-                  </div>
-                </div>
-              </div>
-              <span class="section-action">Ver detalhes ›</span>
-            </div>
-            <div class="chart-wrap">
-              <canvas id="lineChart"></canvas>
-            </div>
-          </div>
-
-          <!-- Donut: Gastos por Categoria -->
-          <div class="chart-card anim-fade-up d2">
-            <div class="chart-card-header">
-              <div>
-                <div class="section-title">Gastos por Categoria</div>
-                <div class="section-subtitle">Março 2026</div>
-              </div>
-              <span class="section-action">Detalhes ›</span>
-            </div>
-            <div class="donut-wrap">
-              <canvas id="donutChart" style="max-width:180px;max-height:180px"></canvas>
-              <div class="donut-center">
-                <div class="donut-center-val">R$ 3.290</div>
-                <div class="donut-center-lbl">Total gasto</div>
-              </div>
-            </div>
-            <div class="cat-list">
-              <div class="cat-item">
-                <div class="cat-dot" style="background:#C8FF00"></div>
-                <span class="cat-name">Alimentação</span>
-                <div class="cat-bar-wrap"><div class="cat-bar" style="width:32%;background:#C8FF00"></div></div>
-                <span class="cat-pct">32%</span>
-              </div>
-              <div class="cat-item">
-                <div class="cat-dot" style="background:#448AFF"></div>
-                <span class="cat-name">Transporte</span>
-                <div class="cat-bar-wrap"><div class="cat-bar" style="width:18%;background:#448AFF"></div></div>
-                <span class="cat-pct">18%</span>
-              </div>
-              <div class="cat-item">
-                <div class="cat-dot" style="background:#FF9100"></div>
-                <span class="cat-name">Lazer</span>
-                <div class="cat-bar-wrap"><div class="cat-bar" style="width:15%;background:#FF9100"></div></div>
-                <span class="cat-pct">15%</span>
-              </div>
-              <div class="cat-item">
-                <div class="cat-dot" style="background:#00E676"></div>
-                <span class="cat-name">Saúde</span>
-                <div class="cat-bar-wrap"><div class="cat-bar" style="width:12%;background:#00E676"></div></div>
-                <span class="cat-pct">12%</span>
-              </div>
-              <div class="cat-item">
-                <div class="cat-dot" style="background:#AA00FF"></div>
-                <span class="cat-name">Outros</span>
-                <div class="cat-bar-wrap"><div class="cat-bar" style="width:23%;background:#AA00FF"></div></div>
-                <span class="cat-pct">23%</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- ── SECTION 3: TRANSACTIONS + AI FEED ── -->
-      <section>
-        <div class="bottom-row">
-
-          <!-- Tabela de Transações -->
-          <div class="tx-card anim-fade-up d1">
-            <div class="tx-card-header">
-              <div>
-                <div class="section-title">Transações Recentes</div>
-                <div class="section-subtitle">Últimas 24 movimentações</div>
-              </div>
-              <span class="section-action">Ver todas ›</span>
-            </div>
-
-            <div class="filter-tabs">
-              <div class="filter-tab active" onclick="filterTxType(this,'all')">Todas</div>
-              <div class="filter-tab" onclick="filterTxType(this,'credit')">Entradas</div>
-              <div class="filter-tab" onclick="filterTxType(this,'debit')">Saídas</div>
-              <div class="filter-tab" onclick="filterTxType(this,'pend')">Pendentes</div>
-            </div>
-
-            <div class="tx-table-wrap" style="margin-top:10px">
-              <table class="tx-table" id="txTable">
-                <thead>
-                  <tr>
-                    <th>Estabelecimento</th>
-                    <th>Data</th>
-                    <th>Status</th>
-                    <th style="text-align:right">Valor</th>
-                  </tr>
-                </thead>
-                <tbody id="txBody">
-                  <tr data-type="credit">
-                    <td><div class="tx-merchant"><div class="tx-icon">💼</div><div><div class="tx-name">Salário — Empresa XYZ</div><div class="tx-category">Receita</div></div></div></td>
-                    <td class="tx-date">10 Mar</td>
-                    <td><span class="tx-status ok">● Confirmado</span></td>
-                    <td class="tx-amount credit">+R$ 4.200,00</td>
-                  </tr>
-                  <tr data-type="debit">
-                    <td><div class="tx-merchant"><div class="tx-icon">🛒</div><div><div class="tx-name">Supermercado Extra</div><div class="tx-category">Alimentação</div></div></div></td>
-                    <td class="tx-date">09 Mar</td>
-                    <td><span class="tx-status ok">● Confirmado</span></td>
-                    <td class="tx-amount debit">−R$ 287,40</td>
-                  </tr>
-                  <tr data-type="debit">
-                    <td><div class="tx-merchant"><div class="tx-icon">⛽</div><div><div class="tx-name">Posto Ipiranga</div><div class="tx-category">Transporte</div></div></div></td>
-                    <td class="tx-date">09 Mar</td>
-                    <td><span class="tx-status ok">● Confirmado</span></td>
-                    <td class="tx-amount debit">−R$ 180,00</td>
-                  </tr>
-                  <tr data-type="debit">
-                    <td><div class="tx-merchant"><div class="tx-icon">🍕</div><div><div class="tx-name">iFood</div><div class="tx-category">Alimentação</div></div></div></td>
-                    <td class="tx-date">08 Mar</td>
-                    <td><span class="tx-status ok">● Confirmado</span></td>
-                    <td class="tx-amount debit">−R$ 64,90</td>
-                  </tr>
-                  <tr data-type="pend">
-                    <td><div class="tx-merchant"><div class="tx-icon">💳</div><div><div class="tx-name">Nubank — Fatura</div><div class="tx-category">Cartão de Crédito</div></div></div></td>
-                    <td class="tx-date">13 Mar</td>
-                    <td><span class="tx-status pend">● Pendente</span></td>
-                    <td class="tx-amount debit">−R$ 1.247,00</td>
-                  </tr>
-                  <tr data-type="credit">
-                    <td><div class="tx-merchant"><div class="tx-icon">📈</div><div><div class="tx-name">Rendimento CDB</div><div class="tx-category">Investimentos</div></div></div></td>
-                    <td class="tx-date">07 Mar</td>
-                    <td><span class="tx-status ok">● Confirmado</span></td>
-                    <td class="tx-amount credit">+R$ 312,50</td>
-                  </tr>
-                  <tr data-type="debit">
-                    <td><div class="tx-merchant"><div class="tx-icon">🏥</div><div><div class="tx-name">Farmácia Droga Raia</div><div class="tx-category">Saúde</div></div></div></td>
-                    <td class="tx-date">07 Mar</td>
-                    <td><span class="tx-status ok">● Confirmado</span></td>
-                    <td class="tx-amount debit">−R$ 93,20</td>
-                  </tr>
-                  <tr data-type="debit">
-                    <td><div class="tx-merchant"><div class="tx-icon">🎬</div><div><div class="tx-name">Netflix</div><div class="tx-category">Assinaturas</div></div></div></td>
-                    <td class="tx-date">06 Mar</td>
-                    <td><span class="tx-status ok">● Confirmado</span></td>
-                    <td class="tx-amount debit">−R$ 39,90</td>
-                  </tr>
-                  <tr data-type="debit">
-                    <td><div class="tx-merchant"><div class="tx-icon">🎵</div><div><div class="tx-name">Spotify</div><div class="tx-category">Assinaturas</div></div></div></td>
-                    <td class="tx-date">06 Mar</td>
-                    <td><span class="tx-status ok">● Confirmado</span></td>
-                    <td class="tx-amount debit">−R$ 21,90</td>
-                  </tr>
-                  <tr data-type="debit">
-                    <td><div class="tx-merchant"><div class="tx-icon">🏠</div><div><div class="tx-name">Aluguel</div><div class="tx-category">Moradia</div></div></div></td>
-                    <td class="tx-date">05 Mar</td>
-                    <td><span class="tx-status ok">● Confirmado</span></td>
-                    <td class="tx-amount debit">−R$ 1.500,00</td>
-                  </tr>
-                  <tr data-type="credit">
-                    <td><div class="tx-merchant"><div class="tx-icon">💡</div><div><div class="tx-name">Freelance Design</div><div class="tx-category">Receita Extra</div></div></div></td>
-                    <td class="tx-date">04 Mar</td>
-                    <td><span class="tx-status ok">● Confirmado</span></td>
-                    <td class="tx-amount credit">+R$ 850,00</td>
-                  </tr>
-                  <tr data-type="debit">
-                    <td><div class="tx-merchant"><div class="tx-icon">🍔</div><div><div class="tx-name">McDonald's</div><div class="tx-category">Alimentação</div></div></div></td>
-                    <td class="tx-date">03 Mar</td>
-                    <td><span class="tx-status ok">● Confirmado</span></td>
-                    <td class="tx-amount debit">−R$ 42,50</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- AI Feed — lado direito (marcador, será preenchido na Parte 5) -->
-                    <!-- AI Feed -->
-          <div class="ai-feed-card anim-slide-r d2">
-            <div class="ai-feed-header">
-              <div class="ai-feed-title">
-                <div class="ai-live-dot"></div>
-                Agentes IA — Ao Vivo
-              </div>
-              <span class="section-action" style="font-size:11px">Ver todos ›</span>
-            </div>
-            <div style="padding:10px 20px 0">
-              <div class="stat-row">
-                <div class="stat-cell"><div class="stat-val text-lime">5</div><div class="stat-lbl">Agentes ativos</div></div>
-                <div class="stat-cell"><div class="stat-val">47</div><div class="stat-lbl">Alertas hoje</div></div>
-                <div class="stat-cell"><div class="stat-val text-green">R$320</div><div class="stat-lbl">Economia gerada</div></div>
-              </div>
-            </div>
-            <div class="ai-feed-list" id="aiFeedList">
-              <div class="ai-alert">
-                <div class="ai-alert-icon alert">🚨</div>
-                <div class="ai-alert-body">
-                  <div class="ai-alert-msg">Gasto em Alimentação atingiu 94% do limite mensal (R$ 940/R$ 1.000)</div>
-                  <div class="ai-alert-meta">há 5 min · Agente Guardião <span class="ai-whatsapp-badge">✓ WhatsApp</span></div>
-                </div>
-              </div>
-              <div class="ai-alert">
-                <div class="ai-alert-icon ok">✅</div>
-                <div class="ai-alert-body">
-                  <div class="ai-alert-msg">Salário de R$ 4.200 recebido e categorizado automaticamente</div>
-                  <div class="ai-alert-meta">há 1h · Agente Radar <span class="ai-whatsapp-badge">✓ WhatsApp</span></div>
-                </div>
-              </div>
-              <div class="ai-alert">
-                <div class="ai-alert-icon info">💡</div>
-                <div class="ai-alert-body">
-                  <div class="ai-alert-msg">Com base no seu padrão, você pode aplicar R$ 850 em CDB este mês e manter a reserva</div>
-                  <div class="ai-alert-meta">há 2h · Agente Conselheiro</div>
-                </div>
-              </div>
-              <div class="ai-alert">
-                <div class="ai-alert-icon warn">⏰</div>
-                <div class="ai-alert-body">
-                  <div class="ai-alert-msg">Fatura Nubank (R$ 1.247) vence em 3 dias — saldo suficiente disponível</div>
-                  <div class="ai-alert-meta">há 4h · Agente Calendário <span class="ai-whatsapp-badge">✓ WhatsApp</span></div>
-                </div>
-              </div>
-              <div class="ai-alert">
-                <div class="ai-alert-icon ok">📈</div>
-                <div class="ai-alert-body">
-                  <div class="ai-alert-msg">Meta "Viagem Europa" está em 68% — no ritmo certo para Outubro</div>
-                  <div class="ai-alert-meta">ontem · Agente Metas</div>
-                </div>
-              </div>
-              <div class="ai-alert">
-                <div class="ai-alert-icon info">🔍</div>
-                <div class="ai-alert-body">
-                  <div class="ai-alert-msg">Detectei cobrança duplicada no Spotify (2x R$ 21,90) — verificar extrato</div>
-                  <div class="ai-alert-meta">ontem · Agente Guardião <span class="ai-whatsapp-badge">✓ WhatsApp</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-
-      <!-- ── SECTION 4: METAS ── -->
-      <section>
-        <div class="section-header">
-          <div>
-            <div class="section-title">Minhas Metas</div>
-            <div class="section-subtitle">Progresso dos seus objetivos financeiros</div>
-          </div>
-          <span class="section-action">+ Nova meta</span>
-        </div>
-        <div class="goals-row">
-
-          <div class="goal-card anim-fade-up d1">
-            <div class="goal-top">
-              <span class="goal-emoji">✈️</span>
-              <span class="goal-pct">68%</span>
-            </div>
-            <div class="goal-name">Viagem Europa</div>
-            <div class="goal-values"><strong>R$ 6.800</strong> de R$ 10.000</div>
-            <div class="goal-progress"><div class="goal-bar" style="width:68%"></div></div>
-            <div class="goal-deadline">⏱ Meta: Outubro 2026</div>
-          </div>
-
-          <div class="goal-card anim-fade-up d2">
-            <div class="goal-top">
-              <span class="goal-emoji">🏠</span>
-              <span class="goal-pct">34%</span>
-            </div>
-            <div class="goal-name">Entrada Apartamento</div>
-            <div class="goal-values"><strong>R$ 17.000</strong> de R$ 50.000</div>
-            <div class="goal-progress"><div class="goal-bar" style="width:34%"></div></div>
-            <div class="goal-deadline">⏱ Meta: Dezembro 2028</div>
-          </div>
-
-          <div class="goal-card anim-fade-up d3">
-            <div class="goal-top">
-              <span class="goal-emoji">🚗</span>
-              <span class="goal-pct">81%</span>
-            </div>
-            <div class="goal-name">Troca do Carro</div>
-            <div class="goal-values"><strong>R$ 24.300</strong> de R$ 30.000</div>
-            <div class="goal-progress"><div class="goal-bar" style="width:81%"></div></div>
-            <div class="goal-deadline">⏱ Meta: Junho 2026</div>
-          </div>
-
-        </div>
-      </section>
-
-    </main>
-  </div><!-- /main-wrapper -->
-</div><!-- /app -->
-
-<script>
-/* ══════════════════════════════════════════════════════
-   USER — carrega dados da sessão (gravados pelo auth.html)
-══════════════════════════════════════════════════════ */
-// ── Supabase Auth ───────────────────────────
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-const _sb = createClient(
-  'https://xdxcczywfincjcbvbecb.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeGNjenl3ZmluY2pjYnZiZWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNjA4MTAsImV4cCI6MjA4ODczNjgxMH0.Jhg9yNbMuWtzQ9GPaoJ6KL_nxzht1FLWEHpfDr-J3sE'
-);
-
-// Protect route — redirect if not logged in
-(async function loadUser() {
-  const { data: { session } } = await _sb.auth.getSession();
-  if (!session) { window.location.href = 'auth.html?mode=login'; return; }
-
-  const user = session.user;
-  const meta = user.user_metadata || {};
-  const nome      = meta.nome      || user.email.split('@')[0];
-  const sobrenome = meta.sobrenome || '';
-  const full      = (nome + ' ' + sobrenome).trim();
-  const initials  = ((nome[0]||'') + (sobrenome[0]||'')).toUpperCase() || user.email[0].toUpperCase();
-
-  document.getElementById('sbUserName').textContent      = full;
-  document.getElementById('topUserName').textContent     = nome;
-  document.getElementById('sbAvatarInitials').textContent = initials;
-  document.getElementById('topAvatarInitials').textContent = initials;
+(async()=>{
+  const session = await requireAuth();
+  if(!session) return;
+  [profile,accounts,transactions,goals,investments] = await Promise.all([
+    getProfile(),getAccounts(),getTransactions(),getGoals(),getInvestments()
+  ]);
+  renderSidebar();
+  populateTxModal();
+  renderContent();
 })();
 
-/* ══════════════════════════════════════════════════════
-   CHART.JS — DEFAULTS
-══════════════════════════════════════════════════════ */
-Chart.defaults.color = '#666';
-Chart.defaults.font.family = "'Inter', sans-serif";
-Chart.defaults.font.size = 11;
+function renderSidebar(){
+  if(!profile) return;
+  const n=`${profile.nome} ${profile.sobrenome}`.trim()||'Usuário';
+  document.getElementById('sidebarName').textContent=n;
+  document.getElementById('sidebarPlan').textContent=profile.plano==='pro'?'⭐ Pro':'Plano Free';
+  document.getElementById('sidebarAvatar').textContent=n.charAt(0).toUpperCase();
+}
 
-/* ── LINE CHART ── */
-const lineCtx = document.getElementById('lineChart').getContext('2d');
-
-const months = ['Set','Out','Nov','Dez','Jan','Fev','Mar'];
-
-const gradLime = lineCtx.createLinearGradient(0,0,0,220);
-gradLime.addColorStop(0,'rgba(200,255,0,0.18)');
-gradLime.addColorStop(1,'rgba(200,255,0,0)');
-
-const gradBlue = lineCtx.createLinearGradient(0,0,0,220);
-gradBlue.addColorStop(0,'rgba(68,138,255,0.15)');
-gradBlue.addColorStop(1,'rgba(68,138,255,0)');
-
-const gradRed = lineCtx.createLinearGradient(0,0,0,220);
-gradRed.addColorStop(0,'rgba(255,77,77,0.12)');
-gradRed.addColorStop(1,'rgba(255,77,77,0)');
-
-const lineChart = new Chart(lineCtx, {
-  type: 'line',
-  data: {
-    labels: months,
-    datasets: [
-      {
-        label: 'Saldo',
-        data: [18200, 19500, 20100, 21800, 22400, 22950, 24830],
-        borderColor: '#C8FF00',
-        backgroundColor: gradLime,
-        borderWidth: 2,
-        pointBackgroundColor: '#C8FF00',
-        pointRadius: 3,
-        pointHoverRadius: 6,
-        tension: 0.4,
-        fill: true
-      },
-      {
-        label: 'Receitas',
-        data: [5800, 6100, 6300, 6800, 7000, 7200, 7450],
-        borderColor: '#448AFF',
-        backgroundColor: gradBlue,
-        borderWidth: 2,
-        pointBackgroundColor: '#448AFF',
-        pointRadius: 3,
-        pointHoverRadius: 6,
-        tension: 0.4,
-        fill: true
-      },
-      {
-        label: 'Despesas',
-        data: [3100, 3400, 2900, 3200, 3100, 2800, 3290],
-        borderColor: '#FF4D4D',
-        backgroundColor: gradRed,
-        borderWidth: 2,
-        pointBackgroundColor: '#FF4D4D',
-        pointRadius: 3,
-        pointHoverRadius: 6,
-        tension: 0.4,
-        fill: true
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: { mode: 'index', intersect: false },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: '#1A1A1A',
-        borderColor: 'rgba(255,255,255,0.08)',
-        borderWidth: 1,
-        padding: 10,
-        callbacks: {
-          label: ctx => ' R$ ' + ctx.parsed.y.toLocaleString('pt-BR') + ',00'
-        }
-      }
-    },
-    scales: {
-      x: {
-        grid: { color: 'rgba(255,255,255,0.04)' },
-        ticks: { color: '#555' }
-      },
-      y: {
-        grid: { color: 'rgba(255,255,255,0.04)' },
-        ticks: {
-          color: '#555',
-          callback: v => 'R$' + (v/1000).toFixed(0) + 'k'
-        }
-      }
-    }
-  }
-});
-
-/* ── DONUT CHART ── */
-const donutCtx = document.getElementById('donutChart').getContext('2d');
-new Chart(donutCtx, {
-  type: 'doughnut',
-  data: {
-    labels: ['Alimentação','Transporte','Lazer','Saúde','Outros'],
-    datasets: [{
-      data: [32, 18, 15, 12, 23],
-      backgroundColor: ['#C8FF00','#448AFF','#FF9100','#00E676','#AA00FF'],
-      borderColor: '#161616',
-      borderWidth: 3,
-      hoverBorderWidth: 0
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    cutout: '72%',
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: '#1A1A1A',
-        borderColor: 'rgba(255,255,255,0.08)',
-        borderWidth: 1,
-        callbacks: {
-          label: ctx => ' ' + ctx.label + ': ' + ctx.parsed + '%'
-        }
-      }
-    }
-  }
-});
-
-/* ── SPARKLINES ── */
-const sparkData = [
-  { color:'#C8FF00', vals:[180,195,210,205,220,230,248] },
-  { color:'#00E676', vals:[55,58,60,64,70,72,74]        },
-  { color:'#FF4D4D', vals:[28,31,29,32,30,27,32]        },
-  { color:'#448AFF', vals:[95,100,108,112,118,122,126]  }
-];
-
-sparkData.forEach((d,i) => {
-  const c = document.getElementById('spark'+i);
-  if (!c) return;
-  const ctx = c.getContext('2d');
-  const grad = ctx.createLinearGradient(0,0,0,36);
-  grad.addColorStop(0, d.color+'44');
-  grad.addColorStop(1, d.color+'00');
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: d.vals.map(()=>''),
-      datasets: [{
-        data: d.vals,
-        borderColor: d.color,
-        backgroundColor: grad,
-        borderWidth: 1.5,
-        pointRadius: 0,
-        tension: 0.4,
-        fill: true
-      }]
-    },
-    options: {
-      responsive:true,
-      maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{enabled:false} },
-      scales:{
-        x:{ display:false, grid:{display:false} },
-        y:{ display:false, grid:{display:false} }
-      },
-      animation:{ duration:1200 },
-      elements:{ line:{borderCapStyle:'round'} }
-    }
-  });
-});
-
-/* ══════════════════════════════════════════════════════
-   FILTER TRANSACTIONS
-══════════════════════════════════════════════════════ */
-let currentTypeFilter = 'all';
-let currentSearch = '';
-
-function filterTxType(el, type) {
-  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+window.setPeriod=(p,el)=>{
+  period=p;
+  document.querySelectorAll('.period-tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  currentTypeFilter = type;
-  applyTxFilter();
-}
-
-function filterTx(val) {
-  currentSearch = val.toLowerCase();
-  applyTxFilter();
-}
-
-function applyTxFilter() {
-  const rows = document.querySelectorAll('#txBody tr');
-  rows.forEach(row => {
-    const typeMatch = currentTypeFilter === 'all' || row.dataset.type === currentTypeFilter;
-    const text = row.textContent.toLowerCase();
-    const searchMatch = !currentSearch || text.includes(currentSearch);
-    row.style.display = (typeMatch && searchMatch) ? '' : 'none';
-  });
-}
-
-/* ══════════════════════════════════════════════════════
-   PERIOD SELECTOR
-══════════════════════════════════════════════════════ */
-const periodDatasets = {
-  '7d': {
-    labels:['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
-    saldo:[23800,24100,23900,24200,24500,24700,24830],
-    rec:  [0,0,0,0,850,0,0],
-    desp: [64,180,93,42,0,287,0]
-  },
-  '30d': {
-    labels:['Set','Out','Nov','Dez','Jan','Fev','Mar'],
-    saldo:[18200,19500,20100,21800,22400,22950,24830],
-    rec:  [5800,6100,6300,6800,7000,7200,7450],
-    desp: [3100,3400,2900,3200,3100,2800,3290]
-  },
-  '3m': {
-    labels:['Jan','Fev','Mar'],
-    saldo:[22400,22950,24830],
-    rec:  [7000,7200,7450],
-    desp: [3100,2800,3290]
-  },
-  '1a': {
-    labels:['Mar25','Jun','Set','Dez','Mar26'],
-    saldo:[16000,18200,20100,21800,24830],
-    rec:  [5200,5800,6300,6800,7450],
-    desp: [3600,3100,2900,3200,3290]
-  }
+  renderContent();
 };
 
-function setPeriod(btn, key) {
-  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const d = periodDatasets[key];
-  if (!d) return;
-  lineChart.data.labels = d.labels;
-  lineChart.data.datasets[0].data = d.saldo;
-  lineChart.data.datasets[1].data = d.rec;
-  lineChart.data.datasets[2].data = d.desp;
-  lineChart.update('active');
+function periodRange(){
+  const now=new Date();
+  if(period==='month') return {from:new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0],to:new Date(now.getFullYear(),now.getMonth()+1,0).toISOString().split('T')[0]};
+  if(period==='3m') return {from:new Date(now.getFullYear(),now.getMonth()-2,1).toISOString().split('T')[0],to:new Date(now.getFullYear(),now.getMonth()+1,0).toISOString().split('T')[0]};
+  return {from:`${now.getFullYear()}-01-01`,to:`${now.getFullYear()}-12-31`};
 }
 
-/* ══════════════════════════════════════════════════════
-   NOTIFICATION PANEL
-══════════════════════════════════════════════════════ */
-function toggleNotif() {
-  const panel = document.getElementById('notifPanel');
-  panel.classList.toggle('open');
-}
+function renderContent(){
+  const {from,to}=periodRange();
+  const fil=transactions.filter(t=>t.data_compra>=from&&t.data_compra<=to);
+  const entradas=fil.filter(t=>t.tipo==='entrada').reduce((a,t)=>a+(+t.valor),0);
+  const saidas=fil.filter(t=>t.tipo==='saida').reduce((a,t)=>a+(+t.valor),0);
+  const saldoTotal=accounts.reduce((a,c)=>a+(+c.saldo),0);
+  const patrimInv=investments.reduce((a,i)=>a+(+i.valor_atual),0);
+  const recentes=[...transactions].sort((a,b)=>b.data_compra.localeCompare(a.data_compra)).slice(0,8);
+  const isEmpty=transactions.length===0&&accounts.length===0;
+  const el=document.getElementById('mainContent');
 
-function clearNotifs() {
-  document.getElementById('notifList').innerHTML =
-    '<div style="text-align:center;padding:24px;color:var(--gray);font-size:13px">Nenhuma notificação</div>';
-  document.getElementById('notifDot').style.display = 'none';
-}
+  const stats=`<div class="stats-grid">
+    ${sCard('💰','Saldo Total',fmt(saldoTotal),accounts.length+' conta(s)','')}
+    ${sCard('📥','Entradas',fmt(entradas),fil.filter(t=>t.tipo==='entrada').length+' transações','pos')}
+    ${sCard('📤','Saídas',fmt(saidas),fil.filter(t=>t.tipo==='saida').length+' transações','neg')}
+    ${sCard('📈','Investimentos',fmt(patrimInv),investments.length+' ativo(s)','')}
+  </div>`;
 
-document.addEventListener('click', e => {
-  const panel = document.getElementById('notifPanel');
-  const btn   = document.getElementById('notifBtn');
-  if (panel.classList.contains('open') && !panel.contains(e.target) && !btn.contains(e.target)) {
-    panel.classList.remove('open');
-  }
-});
-
-/* ══════════════════════════════════════════════════════
-   SIDEBAR NAVIGATION
-══════════════════════════════════════════════════════ */
-function setPage(page) {
-  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-  const titles = {
-    dashboard:'Visão <span>Geral</span>',
-    transacoes:'Minhas <span>Transações</span>',
-    contas:'Minhas <span>Contas</span>',
-    cartoes:'Meus <span>Cartões</span>',
-    agentes:'Agentes <span>IA</span>',
-    alertas:'Central de <span>Alertas</span>',
-    relatorios:'<span>Relatórios</span>',
-    metas:'Minhas <span>Metas</span>',
-    config:'<span>Configurações</span>'
-  };
-  document.querySelector('.topbar-title').innerHTML = titles[page] || titles.dashboard;
-}
-
-/* ══════════════════════════════════════════════════════
-   MOBILE SIDEBAR TOGGLE
-══════════════════════════════════════════════════════ */
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-}
-
-function checkMobile() {
-  const hb = document.getElementById('hamburger');
-  if (window.innerWidth <= 900) {
-    hb.style.display = 'block';
-  } else {
-    hb.style.display = 'none';
-    document.getElementById('sidebar').classList.remove('open');
-  }
-}
-window.addEventListener('resize', checkMobile);
-checkMobile();
-
-/* ══════════════════════════════════════════════════════
-   ANIMATED COUNT-UP
-══════════════════════════════════════════════════════ */
-function animateCount(el, target, prefix, suffix, duration) {
-  const start = 0;
-  const startTime = performance.now();
-  function update(now) {
-    const elapsed = now - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const ease = 1 - Math.pow(1 - progress, 3);
-    const current = Math.floor(ease * target);
-    el.textContent = prefix + current.toLocaleString('pt-BR') + suffix;
-    if (progress < 1) requestAnimationFrame(update);
-  }
-  requestAnimationFrame(update);
-}
-
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    animateCount(document.getElementById('valSaldo'),   24830, '', '', 1200);
-    animateCount(document.getElementById('valReceitas'), 7450, '', '', 1000);
-    animateCount(document.getElementById('valDespesas'), 3290, '', '', 900);
-    animateCount(document.getElementById('valInvest'),  12600, '', '', 1100);
-  }, 300);
-});
-
-/* ══════════════════════════════════════════════════════
-   LIVE AI FEED — simula novos alertas periódicos
-══════════════════════════════════════════════════════ */
-const liveAlerts = [
-  { icon:'🔔', type:'warn', msg:'Pix recebido de R$ 150,00 — João Mendes', time:'agora' },
-  { icon:'💳', type:'info', msg:'Compra de R$ 89,90 no Rappi detectada', time:'agora' },
-  { icon:'📊', type:'ok',   msg:'Saldo diário acima da média: +R$ 420', time:'agora' },
-  { icon:'⚡', type:'alert',msg:'Tentativa de cobrança incomum bloqueada', time:'agora' }
-];
-let liveIdx = 0;
-
-setInterval(() => {
-  const a = liveAlerts[liveIdx % liveAlerts.length];
-  liveIdx++;
-  const list = document.getElementById('aiFeedList');
-  if (!list) return;
-  const div = document.createElement('div');
-  div.className = 'ai-alert anim-slide-r';
-  div.innerHTML = `
-    <div class="ai-alert-icon ${a.type}">${a.icon}</div>
-    <div class="ai-alert-body">
-      <div class="ai-alert-msg">${a.msg}</div>
-      <div class="ai-alert-meta">${a.time} · Agente Radar</div>
+  if(isEmpty){
+    el.innerHTML=welcomeBanner()+stats+`
+    <div class="grid-3">
+      <div class="card"><div class="card-header"><span class="card-title">Últimas Transações</span></div>
+        <div class="empty"><div class="empty-icon">↕️</div><div class="empty-title">Sem transações ainda</div><div class="empty-sub">Clique em "+ Nova Transação" para começar, ou importe um extrato bancário.</div></div>
+      </div>
+      <div class="card"><div class="card-header"><span class="card-title">Metas</span></div>
+        <div class="empty"><div class="empty-icon">🎯</div><div class="empty-sub">Nenhuma meta criada</div><a href="metas.html" class="btn btn-ghost" style="margin-top:8px;font-size:12px">Criar meta</a></div>
+      </div>
     </div>`;
-  list.insertBefore(div, list.firstChild);
-  if (list.children.length > 10) list.removeChild(list.lastChild);
-}, 12000);
+    return;
+  }
+
+  el.innerHTML=stats+`
+  <div class="grid-3">
+    <div class="card"><div class="card-header"><span class="card-title">Últimas Transações</span><a href="transacoes.html" class="card-action">Ver todas →</a></div>
+      ${recentes.length===0?`<div class="empty"><div class="empty-icon">↕️</div><div class="empty-sub">Sem transações no período</div></div>`:recentes.map(txRow).join('')}
+    </div>
+    <div class="card"><div class="card-header"><span class="card-title">🎯 Metas</span><a href="metas.html" class="card-action">Ver todas →</a></div>
+      ${goals.length===0?`<div class="empty"><div class="empty-icon">🎯</div><div class="empty-sub">Nenhuma meta criada</div><a href="metas.html" class="btn btn-ghost" style="margin-top:8px;font-size:12px">Criar meta</a></div>`:goals.slice(0,4).map(goalRow).join('')}
+    </div>
+  </div>
+  <div class="grid-2">${accountsCard()}${catCard(fil)}</div>`;
+}
+
+function sCard(icon,label,value,sub,t){
+  return `<div class="stat-card"><div class="stat-label">${icon} ${label}</div><div class="stat-value ${t==='pos'?'stat-pos':t==='neg'?'stat-neg':''}">${value}</div><div class="stat-sub">${sub}</div></div>`;
+}
+
+function txRow(t){
+  const v=t.tipo==='entrada'?`<span class="stat-pos">+${fmt(t.valor)}</span>`:`<span class="stat-neg">−${fmt(t.valor)}</span>`;
+  return `<div class="tx-item"><div class="tx-icon">${catIcon(t.categoria)}</div><div class="tx-info"><div class="tx-desc">${t.descricao}</div><div class="tx-meta">${fmtDate(t.data_compra)} · ${cap(t.metodo)}</div></div><div class="tx-val">${v}</div></div>`;
+}
+
+function goalRow(g){
+  const pct=Math.min(100,Math.round((+g.valor_atual/+g.valor_objetivo)*100));
+  return `<div class="goal-item"><div class="goal-top"><span class="goal-name">${g.emoji||'🎯'} ${g.nome}</span><span class="goal-pct">${pct}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div><div class="goal-vals"><span>${fmt(g.valor_atual)}</span><span>${fmt(g.valor_objetivo)}</span></div></div>`;
+}
+
+function accountsCard(){
+  if(accounts.length===0) return `<div class="card"><div class="card-header"><span class="card-title">🏦 Contas</span><a href="contas.html" class="card-action">Gerenciar →</a></div><div class="empty"><div class="empty-icon">🏦</div><div class="empty-sub">Adicione sua primeira conta</div><a href="contas.html" class="btn btn-lime" style="margin-top:8px;font-size:12px">+ Adicionar</a></div></div>`;
+  return `<div class="card"><div class="card-header"><span class="card-title">🏦 Contas</span><a href="contas.html" class="card-action">Gerenciar →</a></div>${accounts.map(a=>`<div class="tx-item"><div class="tx-icon" style="background:${a.cor||'#1e1e1e'}">${a.icone||'🏦'}</div><div class="tx-info"><div class="tx-desc">${a.nome}</div><div class="tx-meta">${cap(a.tipo)} · ${a.banco}</div></div><div class="tx-val" style="color:${+a.saldo>=0?'var(--success)':'var(--danger)'}">${fmt(a.saldo)}</div></div>`).join('')}</div>`;
+}
+
+function catCard(fil){
+  const cats={};
+  fil.filter(t=>t.tipo==='saida').forEach(t=>{cats[t.categoria]=(cats[t.categoria]||0)+(+t.valor);});
+  const total=Object.values(cats).reduce((a,v)=>a+v,0);
+  const top=Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  if(top.length===0) return `<div class="card"><div class="card-header"><span class="card-title">📊 Gastos por Categoria</span></div><div class="empty"><div class="empty-icon">📊</div><div class="empty-sub">Nenhuma saída no período</div></div></div>`;
+  return `<div class="card"><div class="card-header"><span class="card-title">📊 Gastos por Categoria</span></div>${top.map(([c,v])=>{const pct=Math.round((v/total)*100);return `<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>${catIcon(c)} ${catLbl(c)}</span><span style="color:var(--muted)">${fmt(v)} · ${pct}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div></div>`;}).join('')}</div>`;
+}
+
+function welcomeBanner(){
+  const name=profile?.nome||'usuário';
+  return `<div class="welcome-banner"><div class="welcome-text"><h2>Bem-vindo ao Nexora, ${name}! 👋</h2><p>Seu dashboard está pronto. Comece adicionando suas contas bancárias e primeiras transações.</p></div><div class="welcome-actions"><a href="contas.html" class="btn btn-lime">+ Adicionar Conta</a><button class="btn btn-ghost" onclick="window.openTxModal()">+ Nova Transação</button></div></div>`;
+}
+
+/* TX MODAL */
+function populateTxModal(){
+  const cs=document.getElementById('txCategoria');
+  categorias().forEach(c=>{cs.appendChild(new Option(c.l,c.v));});
+  const ms=document.getElementById('txMetodo');
+  metodos().forEach(m=>{ms.appendChild(new Option(m.l,m.v));});
+  document.getElementById('txData').value=new Date().toISOString().split('T')[0];
+  refreshTxAccounts();
+}
+
+function refreshTxAccounts(){
+  const sel=document.getElementById('txConta');
+  sel.innerHTML='<option value="">— Selecione a conta —</option>';
+  if(accounts.length===0){sel.innerHTML='<option value="">Nenhuma conta (adicione em Contas)</option>';return;}
+  accounts.forEach(a=>{sel.appendChild(new Option(`${a.icone||'🏦'} ${a.nome} (${a.banco})`,a.id));});
+}
+
+window.openTxModal=(tx=null)=>{
+  editingTxId=tx?tx.id:null;
+  document.getElementById('txModalTitle').textContent=tx?'Editar Transação':'Nova Transação';
+  document.getElementById('txSaveBtn').textContent=tx?'Salvar Alterações':'Salvar';
+  if(tx){
+    document.getElementById('txId').value=tx.id;
+    document.getElementById('txDesc').value=tx.descricao;
+    document.getElementById('txValor').value=tx.valor;
+    document.getElementById('txData').value=tx.data_compra;
+    document.getElementById('txCategoria').value=tx.categoria;
+    document.getElementById('txConta').value=tx.account_id||'';
+    document.getElementById('txMetodo').value=tx.metodo;
+    document.getElementById('txRecorrente').checked=tx.recorrente;
+    document.getElementById('txNotas').value=tx.notas||'';
+    setTipoUI(tx.tipo);document.getElementById('txTipo').value=tx.tipo;
+  }else{
+    document.getElementById('txId').value='';document.getElementById('txDesc').value='';
+    document.getElementById('txValor').value='';
+    document.getElementById('txData').value=new Date().toISOString().split('T')[0];
+    document.getElementById('txCategoria').value='outros';document.getElementById('txConta').value='';
+    document.getElementById('txMetodo').value='pix';document.getElementById('txRecorrente').checked=false;
+    document.getElementById('txNotas').value='';setTipoUI('entrada');document.getElementById('txTipo').value='entrada';
+  }
+  document.getElementById('txModal').style.display='flex';
+};
+
+window.closeTxModal=()=>{document.getElementById('txModal').style.display='none';};
+
+window.setTxTipo=(tipo)=>{document.getElementById('txTipo').value=tipo;setTipoUI(tipo);};
+
+function setTipoUI(tipo){
+  const te=document.getElementById('tabEntrada'),ts=document.getElementById('tabSaida');
+  if(tipo==='entrada'){te.style.cssText='flex:1;background:rgba(0,196,140,.15);color:var(--success);border:1px solid var(--success)';ts.className='btn btn-ghost';ts.style.cssText='flex:1';}
+  else{ts.style.cssText='flex:1;background:rgba(255,77,77,.12);color:var(--danger);border:1px solid var(--danger)';te.className='btn btn-ghost';te.style.cssText='flex:1';}
+}
+
+window.saveTx=async()=>{
+  const desc=document.getElementById('txDesc').value.trim();
+  const valor=parseFloat(document.getElementById('txValor').value);
+  const data=document.getElementById('txData').value;
+  const cat=document.getElementById('txCategoria').value;
+  const conta=document.getElementById('txConta').value;
+  const met=document.getElementById('txMetodo').value;
+  const tipo=document.getElementById('txTipo').value;
+  const rec=document.getElementById('txRecorrente').checked;
+  const notas=document.getElementById('txNotas').value.trim();
+  if(!desc){toast('Informe a descrição','error');return;}
+  if(!valor||valor<=0){toast('Informe um valor válido','error');return;}
+  if(!data){toast('Informe a data','error');return;}
+  const btn=document.getElementById('txSaveBtn');btn.textContent='Salvando…';btn.disabled=true;
+  const payload={descricao:desc,valor,data_compra:data,categoria:cat,account_id:conta||null,metodo:met,tipo,recorrente:rec,notas};
+  const res=editingTxId ? await import('./js/db.js').then(m=>m.updateTransaction(editingTxId,payload)) : await createTransaction(payload);
+  btn.textContent='Salvar';btn.disabled=false;
+  if(res.error){toast('Erro: '+res.error.message,'error');return;}
+  toast(editingTxId?'Transação atualizada!':'Transação registrada!','success');
+  window.closeTxModal();
+  [transactions,accounts]=await Promise.all([getTransactions(),getAccounts()]);
+  renderContent();
+};
+
+function toast(msg,type='success'){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className=`toast show ${type}`;
+  setTimeout(()=>{el.className='toast';},3200);
+}
+
+function catIcon(c){const m={alimentacao:'🍽️',transporte:'🚗',saude:'🏥',educacao:'📚',lazer:'🎮',moradia:'🏠',vestuario:'👕',servicos:'📱',salario:'💼',freelance:'💻',investimentos:'📈',transferencia:'↔️',outros:'📦'};return m[c]||'📦';}
+function catLbl(c){const f=categorias().find(x=>x.v===c);return f?f.l.replace(/^\S+\s/,''):cap(c);}
+function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
 </script>
 </body>
 </html>
