@@ -693,9 +693,11 @@ const _sb = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeGNjenl3ZmluY2pjYnZiZWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNjA4MTAsImV4cCI6MjA4ODczNjgxMH0.Jhg9yNbMuWtzQ9GPaoJ6KL_nxzht1FLWEHpfDr-J3sE'
 );
 
-// Redirect if already logged in
+// Redirect if already logged in — but NOT when the user explicitly navigated to
+// the login screen (e.g. after manual sign-out via ?mode=login).
 _sb.auth.getSession().then(({data:{session}})=>{
-  if(session) window.location.href='/dashboard.html';
+  const explicitLogin = new URLSearchParams(window.location.search).get('mode') === 'login';
+  if(session && !explicitLogin) window.location.href='/dashboard.html';
 });
 
 // ════════════════════════════════════════════════════

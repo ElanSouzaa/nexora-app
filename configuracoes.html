@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
+  <script>(function(){const t=localStorage.getItem('nx-theme')||'dark';document.documentElement.setAttribute('data-theme',t==='system'?(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):t);})();</script>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Configurações · Nexora</title>
@@ -473,7 +474,7 @@
                 <div class="theme-opt" id="thOpt-light" onclick="pickTheme('light')" style="flex:1; padding:14px; border-radius:10px; border:1px solid var(--border); background:var(--surface2); cursor:pointer; text-align:center;">
                   <div style="font-size:22px; margin-bottom:6px;">☀️</div>
                   <div style="font-size:13px; font-weight:600;">Claro</div>
-                  <div style="font-size:11px; color:var(--lgray); margin-top:2px;">Em breve</div>
+                  <div style="font-size:11px; color:var(--lgray); margin-top:2px;">Tema claro</div>
                 </div>
                 <div class="theme-opt" id="thOpt-system" onclick="pickTheme('system')" style="flex:1; padding:14px; border-radius:10px; border:1px solid var(--border); background:var(--surface2); cursor:pointer; text-align:center;">
                   <div style="font-size:22px; margin-bottom:6px;">💻</div>
@@ -700,11 +701,31 @@ function resetPrefs() {
 }
 function deleteAccount() { toast('Entre em contato com suporte@nexora.app para excluir sua conta.', 'warn'); }
 function pickTheme(t) {
+  // Save preference
+  localStorage.setItem('nx-theme', t);
+
+  // Resolve actual theme (system = follow OS)
+  const resolved = t === 'system'
+    ? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+    : t;
+  document.documentElement.setAttribute('data-theme', resolved);
+
+  // Update border highlights
   document.querySelectorAll('.theme-opt').forEach(o => o.style.border = '1px solid var(--border)');
   const el = document.getElementById('thOpt-' + t);
   if (el) el.style.border = '2px solid var(--lime-border)';
-  toast(`Tema "${t}" aplicado!`, 'lime');
+
+  const names = { dark: 'Escuro', light: 'Claro', system: 'Sistema' };
+  toast(`Tema ${names[t] || t} aplicado!`, 'lime');
 }
+
+// Sync active theme indicator on load
+(function syncThemeUI() {
+  const saved = localStorage.getItem('nx-theme') || 'dark';
+  document.querySelectorAll('.theme-opt').forEach(o => o.style.border = '1px solid var(--border)');
+  const el = document.getElementById('thOpt-' + saved);
+  if (el) el.style.border = '2px solid var(--lime-border)';
+})();
 async function doSignOut() {
   await sbSignOut();
 }

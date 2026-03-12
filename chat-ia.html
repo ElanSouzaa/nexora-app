@@ -1264,19 +1264,52 @@
 </div><!-- end app -->
 
 <script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-const _sb = createClient(
-  'https://xdxcczywfincjcbvbecb.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeGNjenl3ZmluY2pjYnZiZWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3MTgwNjMsImV4cCI6MjA1NzI5NDA2M30.kMbTpRoTAXNqMCgpDVHKoWqTPqYtTLMWm8rFqFLjmN0'
-);
+import { requireAuth, getProfile, getAccounts, getTransactions, getGoals, getInvestments, fmt } from './js/db.js';
+
+// ─── Load real financial data ─────────────────────────────────────────────────
+let _ctx = { loaded: false, accounts: [], transactions: [], goals: [], investments: [], totalBalance: 0, monthIncome: 0, monthSpend: 0 };
+
 (async function(){
-  const { data:{ session } } = await _sb.auth.getSession();
-  if(!session){ window.location.href='auth.html?mode=login'; return; }
-  const u = session.user;
-  const name = u.user_metadata?.full_name || u.email.split('@')[0];
+  const session = await requireAuth();
+  if(!session) return;
+
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0,10);
+
+  const [profile, accounts, transactions, goals, investments] = await Promise.all([
+    getProfile(), getAccounts(), getTransactions(), getGoals(), getInvestments()
+  ]);
+
+  // Sidebar
+  const name = profile?.nome ? `${profile.nome} ${profile.sobrenome||''}`.trim()
+    : (session.user.user_metadata?.full_name || session.user.email.split('@')[0] || 'Usuário');
   const initials = name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
   document.getElementById('sbUserName').textContent = name;
   document.getElementById('sbAvatar').textContent = initials;
+
+  // Build context
+  const thisMonthTx = transactions.filter(t => (t.data||'') >= monthStart);
+  const monthIncome = thisMonthTx.filter(t=>t.tipo==='entrada').reduce((s,t)=>s+(+t.valor),0);
+  const monthSpend  = thisMonthTx.filter(t=>t.tipo==='saida').reduce((s,t)=>s+(+t.valor),0);
+  const totalBalance = accounts.reduce((s,a)=>s+(+a.saldo),0);
+
+  // Spend by category
+  const byCat = {};
+  thisMonthTx.filter(t=>t.tipo==='saida').forEach(t=>{
+    byCat[t.categoria||'Outros'] = (byCat[t.categoria||'Outros']||0) + (+t.valor);
+  });
+  const topCats = Object.entries(byCat).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  _ctx = { loaded: true, name, accounts, transactions, thisMonthTx, goals, investments,
+           totalBalance, monthIncome, monthSpend, topCats, profile };
+
+  // Update welcome panel with real data if present
+  const saldo = document.getElementById('ctx-saldo');
+  const economia = document.getElementById('ctx-economia');
+  const gastos = document.getElementById('ctx-gastos');
+  if(saldo)   saldo.textContent   = fmt(totalBalance);
+  if(economia)economia.textContent = fmt(monthIncome - monthSpend);
+  if(gastos)  gastos.textContent  = fmt(monthSpend);
 })();
 </script>
 
@@ -1417,44 +1450,91 @@ function appendMsg(html){
   scrollToBottom();
 }
 
-/* AI Response bank — cycling mock responses */
-const aiResponses = [
-  `<p>Entendido! Com base nos seus dados financeiros de março, aqui está minha análise:</p>
+/* ─── Real-data AI responses ──────────────────────────────────────────────── */
+function fmtN(n){ return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(n||0); }
+
+function getAIResponse(userMsg){
+  if(!_ctx.loaded) return `<p>Seus dados ainda estão carregando. Aguarde um momento e tente novamente.</p>`;
+
+  const q = (userMsg||'').toLowerCase();
+  const { totalBalance, monthIncome, monthSpend, topCats, accounts, goals, investments, thisMonthTx } = _ctx;
+  const net = monthIncome - monthSpend;
+  const savingsRate = monthIncome > 0 ? Math.round((net/monthIncome)*100) : 0;
+
+  // ── Gastos / Despesas ──────────────────────────────────────────────────────
+  if(/gasto|despesa|saída|saida|gastei|gaste|categori/.test(q)){
+    const rows = topCats.length
+      ? topCats.map(([cat,v])=>`<li><span class="tag">${cat}</span> — ${fmtN(v)}</li>`).join('')
+      : '<li>Nenhuma despesa registrada este mês.</li>';
+    return `<p>Aqui estão seus <strong>maiores gastos do mês</strong>:</p>
+   <ul>${rows}</ul>
    <div class="insight-grid">
-     <div class="insight-mini"><div class="insight-mini-label">Saldo atual</div><div class="insight-mini-value lime">R$ 24.831</div></div>
-     <div class="insight-mini"><div class="insight-mini-label">Economia do mês</div><div class="insight-mini-value up">+R$ 3.469</div></div>
+     <div class="insight-mini"><div class="insight-mini-label">Total saídas</div><div class="insight-mini-value down">${fmtN(monthSpend)}</div></div>
+     <div class="insight-mini"><div class="insight-mini-label">Entradas</div><div class="insight-mini-value up">${fmtN(monthIncome)}</div></div>
    </div>
-   <hr/>
-   <p>Sua saúde financeira está <strong>boa</strong>, com taxa de poupança de 42%. Continue assim! Quer uma análise mais detalhada por categoria?</p>`,
+   <p>Taxa de poupança: <strong>${savingsRate}%</strong>. ${savingsRate>=20?'Ótimo resultado!':'Tente chegar a pelo menos 20%.'}  Quer dicas para reduzir alguma categoria?</p>`;
+  }
 
-  `<p>Ótima pergunta! Veja o que encontrei nos seus dados:</p>
-   <ul>
-     <li>Seu <strong>maior gasto</strong> nos últimos 30 dias foi em <span class="tag">Alimentação</span> — R$ 1.240</li>
-     <li>Você tem <strong>3 assinaturas recorrentes</strong> que somam R$ 187/mês</li>
-     <li>Transporte caiu <strong>12%</strong> vs. mês passado — provável uso de mais transporte público</li>
-   </ul>
-   <p>Deseja que eu crie um plano de redução de gastos personalizado?</p>`,
-
-  `<p>Com base no seu histórico, tenho <strong>3 recomendações importantes</strong> para você este mês:</p>
-   <ul>
-     <li>💡 <strong>Pague o Nubank primeiro</strong> — está em 87% do limite, o que afeta seu score de crédito</li>
-     <li>📊 <strong>Revise suas assinaturas</strong> — identificei 2 serviços que você não usa há mais de 45 dias</li>
-     <li>🎯 <strong>Aumente a reserva</strong> — você está com apenas 2.3 meses de cobertura (ideal: 6 meses)</li>
-   </ul>
-   <p>Quer detalhes sobre algum desses pontos?</p>`,
-
-  `<p>Analisando seu fluxo de caixa de março:</p>
+  // ── Saldo / Contas ─────────────────────────────────────────────────────────
+  if(/saldo|conta|balanço|patrimônio|total/.test(q)){
+    const accRows = accounts.slice(0,5).map(a=>`<li><strong>${a.nome}</strong> — ${fmtN(a.saldo)}</li>`).join('') || '<li>Nenhuma conta cadastrada.</li>';
+    return `<p>Aqui está o resumo das suas <strong>contas</strong>:</p>
+   <ul>${accRows}</ul>
    <div class="insight-grid">
-     <div class="insight-mini"><div class="insight-mini-label">Receita</div><div class="insight-mini-value up">R$ 8.200</div></div>
-     <div class="insight-mini"><div class="insight-mini-label">Despesas</div><div class="insight-mini-value down">R$ 4.731</div></div>
-     <div class="insight-mini"><div class="insight-mini-label">Saldo líquido</div><div class="insight-mini-value lime">R$ 3.469</div></div>
-     <div class="insight-mini"><div class="insight-mini-label">Projeção abril</div><div class="insight-mini-value up">R$ 3.780</div></div>
-   </div>
-   <p>Seu fluxo está <strong>positivo e crescendo</strong>. A projeção para abril é otimista dado o padrão dos últimos 3 meses.</p>`,
-];
-let aiIdx = 0;
+     <div class="insight-mini"><div class="insight-mini-label">Saldo total</div><div class="insight-mini-value lime">${fmtN(totalBalance)}</div></div>
+     <div class="insight-mini"><div class="insight-mini-label">Nº contas</div><div class="insight-mini-value lime">${accounts.length}</div></div>
+   </div>`;
+  }
 
-function getAIResponse(){ return aiResponses[aiIdx++ % aiResponses.length]; }
+  // ── Receita / Salário ──────────────────────────────────────────────────────
+  if(/receita|entrada|salário|salario|ganho|renda/.test(q)){
+    return `<p>Analisando suas <strong>receitas deste mês</strong>:</p>
+   <div class="insight-grid">
+     <div class="insight-mini"><div class="insight-mini-label">Total entradas</div><div class="insight-mini-value up">${fmtN(monthIncome)}</div></div>
+     <div class="insight-mini"><div class="insight-mini-label">Total saídas</div><div class="insight-mini-value down">${fmtN(monthSpend)}</div></div>
+     <div class="insight-mini"><div class="insight-mini-label">Resultado líquido</div><div class="insight-mini-value ${net>=0?'up':'down'}">${fmtN(net)}</div></div>
+     <div class="insight-mini"><div class="insight-mini-label">Taxa poupança</div><div class="insight-mini-value lime">${savingsRate}%</div></div>
+   </div>
+   <p>${net>=0?`Seu saldo do mês está <strong>positivo em ${fmtN(net)}</strong>! Continue assim.`:`Atenção: você gastou <strong>${fmtN(-net)}</strong> a mais do que recebeu este mês.`}</p>`;
+  }
+
+  // ── Metas ──────────────────────────────────────────────────────────────────
+  if(/meta|objetivo|reserva|poupança|poupar/.test(q)){
+    const goalsRows = goals.slice(0,4).map(g=>{
+      const pct = g.valor_objetivo>0 ? Math.min(100,Math.round(((g.valor_atual||0)/g.valor_objetivo)*100)) : 0;
+      return `<li><strong>${g.emoji||'🎯'} ${g.nome||g.descricao}</strong> — ${pct}% concluído (${fmtN(g.valor_atual||0)} / ${fmtN(g.valor_objetivo)})</li>`;
+    }).join('') || '<li>Nenhuma meta cadastrada ainda.</li>';
+    return `<p>Suas <strong>metas financeiras</strong>:</p><ul>${goalsRows}</ul><p>Adicione metas na seção <a href="metas.html" style="color:var(--lime)">Metas</a> para eu poder acompanhar seu progresso.</p>`;
+  }
+
+  // ── Investimentos ──────────────────────────────────────────────────────────
+  if(/invest|ação|fundo|rend|carteira|ativo/.test(q)){
+    const invRows = investments.slice(0,4).map(i=>`<li><strong>${i.nome}</strong> (${i.tipo||'–'}) — ${fmtN(i.valor_atual||i.valor_investido)}</li>`).join('') || '<li>Nenhum investimento cadastrado ainda.</li>';
+    const totalInv = investments.reduce((s,i)=>s+(+(i.valor_atual||i.valor_investido||0)),0);
+    return `<p>Resumo da sua <strong>carteira de investimentos</strong>:</p>
+   <ul>${invRows}</ul>
+   <div class="insight-grid">
+     <div class="insight-mini"><div class="insight-mini-label">Patrimônio investido</div><div class="insight-mini-value lime">${fmtN(totalInv)}</div></div>
+     <div class="insight-mini"><div class="insight-mini-label">Ativos</div><div class="insight-mini-value lime">${investments.length}</div></div>
+   </div>`;
+  }
+
+  // ── Transações recentes ────────────────────────────────────────────────────
+  if(/transaç|última|recente|histórico|lançament/.test(q)){
+    const recent = (thisMonthTx||[]).slice(0,5).map(t=>`<li>${t.tipo==='entrada'?'📥':'📤'} <strong>${t.descricao||t.categoria}</strong> — ${fmtN(t.valor)} <small style="color:var(--lgray)">${t.data||''}</small></li>`).join('') || '<li>Nenhuma transação este mês.</li>';
+    return `<p>Suas <strong>transações mais recentes</strong> deste mês:</p><ul>${recent}</ul><p>Veja o histórico completo em <a href="transacoes.html" style="color:var(--lime)">Transações</a>.</p>`;
+  }
+
+  // ── Default: resumo geral ──────────────────────────────────────────────────
+  return `<p>Com base nos seus dados financeiros de <strong>${new Date().toLocaleString('pt-BR',{month:'long'})}</strong>:</p>
+   <div class="insight-grid">
+     <div class="insight-mini"><div class="insight-mini-label">Saldo total</div><div class="insight-mini-value lime">${fmtN(totalBalance)}</div></div>
+     <div class="insight-mini"><div class="insight-mini-label">Entradas no mês</div><div class="insight-mini-value up">${fmtN(monthIncome)}</div></div>
+     <div class="insight-mini"><div class="insight-mini-label">Saídas no mês</div><div class="insight-mini-value down">${fmtN(monthSpend)}</div></div>
+     <div class="insight-mini"><div class="insight-mini-label">Resultado</div><div class="insight-mini-value ${net>=0?'up':'down'}">${fmtN(net)}</div></div>
+   </div>
+   <p>Taxa de poupança: <strong>${savingsRate}%</strong>. Pergunte sobre <em>gastos</em>, <em>saldo</em>, <em>metas</em>, <em>investimentos</em> ou <em>transações</em> para uma análise detalhada.</p>`;
+}
 
 async function sendMessage(){
   if(isTyping) return;
