@@ -2,6 +2,11 @@
 <html lang="pt-BR" data-theme="dark">
 <head>
   <script>(function(){const t=localStorage.getItem('nx-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+  
+ml>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <script>(function(){const t=localStorage.getItem('nx-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <script>(function(){const t=localStorage.getItem('nx-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -184,7 +189,7 @@
       </a>
     </nav>
     <div class="sb-footer">
-      <div class="sb-user">
+      <div class="sb-user" onclick="location.href='configuracoes.html'" style="cursor:pointer" title="Configurações">
         <div class="sb-avatar" id="sbAvatar">??</div>
         <div><div class="sb-user-name" id="sbUserName">Carregando…</div><div class="sb-user-plan">Plano Pro ✦</div></div>
       </div>
@@ -287,9 +292,9 @@ let period='month', editingTxId=null;
 
 function renderSidebar(){
   if(!profile) return;
-  const n=`${profile.nome} ${profile.sobrenome}`.trim()||'Usuário';
+  const n=`${profile.nome||''} ${profile.sobrenome||''}`.trim()||'Usuário';
+  const initials=n.split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase()||'U';
   document.getElementById('sbUserName').textContent=n;
-  // plan hidden=profile.plano==='pro'?'⭐ Pro':'Plano Free';
   document.getElementById('sbAvatar').textContent=initials;
 }
 

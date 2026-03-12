@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
+  <script>(function(){const t=localStorage.getItem('nx-theme')||'dark';document.documentElement.setAttribute('data-theme',t==='system'?(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):t);})();</script>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Relatórios · Nexora</title>
@@ -128,12 +129,18 @@
       border: 1px solid var(--lime-border);
     }
     .sb-item.active svg { color: var(--lime); }
-    .badge {
-      margin-left: auto; font-size: 10px; font-weight: 700;
-      background: var(--danger); color: #fff;
-      padding: 1px 6px; border-radius: 20px; min-width: 20px; text-align: center;
+        .badge {
+      margin-left: auto;
+      background: var(--lime-dim);
+      color: var(--lime);
+      border: 1px solid var(--lime-border);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 20px;
+      min-width: 18px;
+      text-align: center;
     }
-    .badge.lime { background: var(--lime-dim); color: var(--lime); border: 1px solid var(--lime-border); }
     .sb-footer {
       padding: 14px 16px;
       border-top: 1px solid var(--border);
@@ -526,6 +533,16 @@
     .insights-text .insights-title { font-family: var(--font-title); font-weight: 700; font-size: 14px; color: var(--lime); }
     .insights-text .insights-desc { font-size: 12.5px; color: var(--lgray); margin-top: 3px; }
     .insights-cta { margin-left: auto; }
+  
+    [data-theme="light"] {
+      --black:#F4F5F0; --dark:#EAEBE6; --surface:#FFFFFF; --surface2:#F4F5F0;
+      --card:#FFFFFF; --card2:#ECEEE9; --border:rgba(0,0,0,0.08);
+      --border2:rgba(0,0,0,0.04); --white:#111111; --gray:#888; --lgray:#555;
+      --danger:#D93025; --danger-dim:rgba(217,48,37,0.1); --danger-brd:rgba(217,48,37,0.25);
+      --success:#1A7F4B; --success-dim:rgba(26,127,75,0.1); --success-brd:rgba(26,127,75,0.25);
+      --warning:#C07A00; --warning-dim:rgba(192,122,0,0.1); --warning-brd:rgba(192,122,0,0.25);
+      --info:#1A5FA8; --info-dim:rgba(26,95,168,0.1); --info-brd:rgba(26,95,168,0.25);
+    }
   </style>
 </head>
 <body>
@@ -587,7 +604,7 @@
       </a>
     </nav>
     <div class="sb-footer">
-      <div class="sb-user">
+      <div class="sb-user" onclick="location.href='configuracoes.html'" style="cursor:pointer" title="Configurações">
         <div class="sb-avatar" id="sbAvatar">ES</div>
         <div class="sb-user-info">
           <div class="sb-user-name" id="sbUserName">Elan Souzaa</div>
