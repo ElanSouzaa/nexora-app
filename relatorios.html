@@ -649,7 +649,7 @@
         </div>
         <div class="insights-text">
           <div class="insights-title">Insight da IA · Março 2026</div>
-          <div class="insights-desc">Seus gastos com alimentação aumentaram <strong style="color:#fff">23%</strong> em relação ao mês anterior. Em fevereiro você economizou <strong style="color:#C8FF00">R$ 430</strong> a mais do que a sua média dos últimos 6 meses.</div>
+          <div class="insights-desc"><span id="insightDesc">Analisando suas transações…</span></div>
         </div>
         <div class="insights-cta">
           <a href="chat-ia.html" class="btn btn-ghost" style="font-size:12.5px; padding:7px 13px; white-space:nowrap;">Analisar com IA →</a>
@@ -663,32 +663,32 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           </div>
           <div class="stat-label">Receita Total</div>
-          <div class="stat-value" style="color:var(--lime)">R$ 12.450</div>
-          <div class="stat-delta up">↑ 8,2%</div>
+          <div class="stat-value" style="color:var(--lime)" id="statReceita">–</div>
+          <div class="stat-delta" id="deltaReceita"></div>
         </div>
         <div class="stat-card red">
           <div class="stat-icon red">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
           </div>
           <div class="stat-label">Despesas Totais</div>
-          <div class="stat-value red">R$ 7.830</div>
-          <div class="stat-delta down">↑ 12,4%</div>
+          <div class="stat-value red" id="statDespesas">–</div>
+          <div class="stat-delta" id="deltaDespesas"></div>
         </div>
         <div class="stat-card green">
           <div class="stat-icon green">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           </div>
           <div class="stat-label">Saldo do Período</div>
-          <div class="stat-value green">R$ 4.620</div>
-          <div class="stat-delta up">↑ 3,1%</div>
+          <div class="stat-value green" id="statSaldo">–</div>
+          <div class="stat-delta" id="deltaSaldo"></div>
         </div>
         <div class="stat-card blue">
           <div class="stat-icon blue">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
           </div>
           <div class="stat-label">Transações</div>
-          <div class="stat-value" style="color:var(--info)">148</div>
-          <div class="stat-delta up">↑ 5 este mês</div>
+          <div class="stat-value" style="color:var(--info)" id="statCount">–</div>
+          <div class="stat-delta" id="deltaCount"></div>
         </div>
       </div>
 
@@ -755,57 +755,7 @@
               <div class="chart-sub">Distribuição de gastos</div>
             </div>
           </div>
-          <div class="donut-wrap">
-            <div style="position:relative; flex-shrink:0;">
-              <svg class="donut-svg" width="110" height="110" viewBox="0 0 110 110">
-                <!-- Alimentação 28% -->
-                <circle cx="55" cy="55" r="40" fill="none" stroke="#FFB020" stroke-width="18"
-                  stroke-dasharray="70.4 180.8" stroke-dashoffset="0" transform="rotate(-90 55 55)"/>
-                <!-- Moradia 24% -->
-                <circle cx="55" cy="55" r="40" fill="none" stroke="#FF4D4D" stroke-width="18"
-                  stroke-dasharray="60.3 191.0" stroke-dashoffset="-70.4" transform="rotate(-90 55 55)"/>
-                <!-- Transporte 18% -->
-                <circle cx="55" cy="55" r="40" fill="none" stroke="#4DA6FF" stroke-width="18"
-                  stroke-dasharray="45.2 206.1" stroke-dashoffset="-130.7" transform="rotate(-90 55 55)"/>
-                <!-- Saúde 14% -->
-                <circle cx="55" cy="55" r="40" fill="none" stroke="#00D37F" stroke-width="18"
-                  stroke-dasharray="35.2 216.1" stroke-dashoffset="-175.9" transform="rotate(-90 55 55)"/>
-                <!-- Lazer 16% -->
-                <circle cx="55" cy="55" r="40" fill="none" stroke="#c084fc" stroke-width="18"
-                  stroke-dasharray="40.2 211.1" stroke-dashoffset="-211.1" transform="rotate(-90 55 55)"/>
-                <!-- Center text -->
-                <text x="55" y="51" text-anchor="middle" fill="#fff" font-size="15" font-weight="700" font-family="Space Grotesk">63%</text>
-                <text x="55" y="63" text-anchor="middle" fill="#666" font-size="9" font-family="Inter">do limite</text>
-              </svg>
-            </div>
-            <div class="donut-labels">
-              <div class="donut-item">
-                <div class="donut-item-left"><div class="donut-dot" style="background:#FFB020"></div><div class="donut-cat">Alimentação</div></div>
-                <div class="donut-pct">28%</div>
-              </div>
-              <div class="donut-bar-bg"><div class="donut-bar-fill" style="width:28%;background:#FFB020"></div></div>
-              <div class="donut-item">
-                <div class="donut-item-left"><div class="donut-dot" style="background:#FF4D4D"></div><div class="donut-cat">Moradia</div></div>
-                <div class="donut-pct">24%</div>
-              </div>
-              <div class="donut-bar-bg"><div class="donut-bar-fill" style="width:24%;background:#FF4D4D"></div></div>
-              <div class="donut-item">
-                <div class="donut-item-left"><div class="donut-dot" style="background:#4DA6FF"></div><div class="donut-cat">Transporte</div></div>
-                <div class="donut-pct">18%</div>
-              </div>
-              <div class="donut-bar-bg"><div class="donut-bar-fill" style="width:18%;background:#4DA6FF"></div></div>
-              <div class="donut-item">
-                <div class="donut-item-left"><div class="donut-dot" style="background:#00D37F"></div><div class="donut-cat">Saúde</div></div>
-                <div class="donut-pct">14%</div>
-              </div>
-              <div class="donut-bar-bg"><div class="donut-bar-fill" style="width:14%;background:#00D37F"></div></div>
-              <div class="donut-item">
-                <div class="donut-item-left"><div class="donut-dot" style="background:#c084fc"></div><div class="donut-cat">Lazer</div></div>
-                <div class="donut-pct">16%</div>
-              </div>
-              <div class="donut-bar-bg"><div class="donut-bar-fill" style="width:16%;background:#c084fc"></div></div>
-            </div>
-          </div>
+          <div class="donut-wrap" id="donutWrap"></div>
         </div>
 
       </div>
@@ -900,85 +850,7 @@
                   <th style="text-align:right">Valor</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <div class="td-cat">
-                      <div class="td-cat-icon" style="background:var(--lime-dim)">💰</div>
-                      <div><div class="td-name">Salário</div><div class="td-sub">Depósito automático</div></div>
-                    </div>
-                  </td>
-                  <td><span class="td-badge income">Receita</span></td>
-                  <td>01/02</td>
-                  <td style="text-align:right"><span class="td-amount pos">+ R$ 8.500</span></td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="td-cat">
-                      <div class="td-cat-icon" style="background:var(--danger-dim)">🏠</div>
-                      <div><div class="td-name">Aluguel</div><div class="td-sub">Débito automático</div></div>
-                    </div>
-                  </td>
-                  <td><span class="td-badge housing">Moradia</span></td>
-                  <td>05/02</td>
-                  <td style="text-align:right"><span class="td-amount neg">− R$ 2.200</span></td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="td-cat">
-                      <div class="td-cat-icon" style="background:var(--info-dim)">🚗</div>
-                      <div><div class="td-name">Seguro Veicular</div><div class="td-sub">Porto Seguro</div></div>
-                    </div>
-                  </td>
-                  <td><span class="td-badge transport">Transporte</span></td>
-                  <td>10/02</td>
-                  <td style="text-align:right"><span class="td-amount neg">− R$ 780</span></td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="td-cat">
-                      <div class="td-cat-icon" style="background:var(--lime-dim)">💰</div>
-                      <div><div class="td-name">Freelance Design</div><div class="td-sub">Transferência PIX</div></div>
-                    </div>
-                  </td>
-                  <td><span class="td-badge income">Receita</span></td>
-                  <td>14/02</td>
-                  <td style="text-align:right"><span class="td-amount pos">+ R$ 1.950</span></td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="td-cat">
-                      <div class="td-cat-icon" style="background:var(--warning-dim)">🛒</div>
-                      <div><div class="td-name">Supermercado Pão de Açúcar</div><div class="td-sub">Cartão de crédito</div></div>
-                    </div>
-                  </td>
-                  <td><span class="td-badge food">Alimentação</span></td>
-                  <td>18/02</td>
-                  <td style="text-align:right"><span class="td-amount neg">− R$ 650</span></td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="td-cat">
-                      <div class="td-cat-icon" style="background:var(--success-dim)">🏥</div>
-                      <div><div class="td-name">Plano de Saúde Unimed</div><div class="td-sub">Débito automático</div></div>
-                    </div>
-                  </td>
-                  <td><span class="td-badge health">Saúde</span></td>
-                  <td>20/02</td>
-                  <td style="text-align:right"><span class="td-amount neg">− R$ 540</span></td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="td-cat">
-                      <div class="td-cat-icon" style="background:rgba(168,85,247,0.12)">🎭</div>
-                      <div><div class="td-name">Teatro e Cinema</div><div class="td-sub">Nubank</div></div>
-                    </div>
-                  </td>
-                  <td><span class="td-badge leisure">Lazer</span></td>
-                  <td>24/02</td>
-                  <td style="text-align:right"><span class="td-amount neg">− R$ 320</span></td>
-                </tr>
-              </tbody>
+              <tbody id="topTxTbody"><tr><td colspan="4" style="text-align:center;padding:30px;color:#666">Carregando…</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -1058,95 +930,196 @@
 </div>
 
 <script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-const sb = createClient(
-  'https://xdxcczywfincjcbvbecb.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeGNjenl3ZmluY2pjYnZiZWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4NjAyMzEsImV4cCI6MjA1NjQzNjIzMX0.m-3PIU4lcOiOhEYv8GBe7EAZSFzBPHH6tH7a3OWS2nw'
-);
+import { requireAuth, getTransactions, signOut } from './js/db.js';
 
-(async () => {
-  const { data:{ session } } = await sb.auth.getSession();
-  if(!session){ window.location.href='auth.html?mode=login'; return; }
-  const meta = JSON.parse(localStorage.getItem('nx-user-meta') || '{}');
-  const name = meta.first_name
-    ? `${meta.first_name} ${meta.last_name||''}`.trim()
-    : (session.user.email || '').split('@')[0];
-  const initials = name.split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,2);
-  document.getElementById('sbUserName').textContent = name;
-  document.getElementById('sbAvatar').textContent = initials;
-})();
+/* ─── UTILS ─── */
+const fmt  = v => new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' }).format(+v || 0);
+const esc  = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const fmtD = s => { const d = new Date(s + 'T00:00:00'); return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit' }); };
 
-// ═══ PERIOD TABS ═══
-const periodLabels = {
-  '7d': '25 fev – 03 mar 2026',
-  '30d': '01 fev – 03 mar 2026',
-  '3m': 'Dez 2025 – Mar 2026',
-  '6m': 'Set 2025 – Mar 2026',
-  '1a': 'Mar 2025 – Mar 2026',
+/* ─── CATEGORY CONFIG ─── */
+const CAT_COLORS = {
+  alimentacao:'#FFB020', moradia:'#FF4D4D', transporte:'#4DA6FF',
+  saude:'#00D37F', lazer:'#c084fc', educacao:'#60a5fa',
+  investimento:'#C8FF00', outros:'#888',
 };
-function setPeriod(el, key) {
+function catColor(c) { return CAT_COLORS[(c||'').toLowerCase()] || '#888'; }
+
+/* ─── PERIOD ─── */
+let _activePeriod = '30d';
+function periodDays(k) {
+  return { '7d':7, '30d':30, '3m':90, '6m':180, '1a':365 }[k] || 30;
+}
+function periodLabel(k) {
+  const now = new Date();
+  const from = new Date(now - periodDays(k) * 86400000);
+  const opts = { day:'2-digit', month:'short', year:'numeric' };
+  return `${from.toLocaleDateString('pt-BR', opts)} – ${now.toLocaleDateString('pt-BR', opts)}`;
+}
+
+/* ─── RENDER ─── */
+let _allTx = [];
+
+function renderReport(period) {
+  const days = periodDays(period);
+  const cutoff = new Date(Date.now() - days * 86400000).toISOString().slice(0,10);
+  const tx = _allTx.filter(t => (t.data || t.created_at?.slice(0,10)) >= cutoff);
+
+  const receita  = tx.filter(t => t.tipo === 'receita').reduce((s,t) => s + (+t.valor||0), 0);
+  const despesas = tx.filter(t => t.tipo === 'despesa').reduce((s,t) => s + (+t.valor||0), 0);
+  const saldo    = receita - despesas;
+
+  document.getElementById('statReceita').textContent  = fmt(receita);
+  document.getElementById('statDespesas').textContent = fmt(despesas);
+  document.getElementById('statSaldo').textContent    = fmt(saldo);
+  document.getElementById('statCount').textContent    = tx.length;
+  document.getElementById('statSaldo').className      = `stat-value ${saldo >= 0 ? 'green' : 'red'}`;
+  document.getElementById('dateRangeLabel').textContent = periodLabel(period);
+
+  // Insight
+  const topCat = getTopCat(tx.filter(t => t.tipo === 'despesa'));
+  const insight = document.getElementById('insightDesc');
+  if (tx.length === 0) {
+    insight.textContent = 'Nenhuma transação no período selecionado.';
+  } else {
+    insight.innerHTML = topCat
+      ? `Principal categoria de gasto: <strong style="color:#fff">${esc(topCat.name)}</strong> com <strong style="color:#C8FF00">${fmt(topCat.total)}</strong> — ${((topCat.total/despesas)*100).toFixed(0)}% das suas despesas no período.`
+      : `${tx.length} transações no período. Receita: <strong style="color:#C8FF00">${fmt(receita)}</strong> · Despesas: <strong style="color:#fff">${fmt(despesas)}</strong>.`;
+  }
+
+  renderTopTx(tx);
+  renderDonut(tx.filter(t => t.tipo === 'despesa'), despesas);
+}
+
+function getTopCat(txDespesas) {
+  const map = {};
+  txDespesas.forEach(t => {
+    const k = (t.categoria || 'outros').toLowerCase();
+    map[k] = (map[k] || 0) + (+t.valor || 0);
+  });
+  const sorted = Object.entries(map).sort((a,b) => b[1]-a[1]);
+  if (!sorted.length) return null;
+  return { name: sorted[0][0], total: sorted[0][1] };
+}
+
+function renderTopTx(tx) {
+  const tbody = document.getElementById('topTxTbody');
+  const top = [...tx].sort((a,b) => (+b.valor||0) - (+a.valor||0)).slice(0, 8);
+  if (top.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:30px;color:#555">Nenhuma transação no período</td></tr>`;
+    return;
+  }
+  const cat2icon = { receita:'💰', alimentacao:'🍔', moradia:'🏠', transporte:'🚗', saude:'💊', lazer:'🎉', educacao:'📚', investimento:'📈', outros:'💳' };
+  tbody.innerHTML = top.map(t => {
+    const isRec = t.tipo === 'receita';
+    const cat = (t.categoria || 'outros').toLowerCase();
+    const icon = cat2icon[cat] || '💳';
+    const bg  = isRec ? 'var(--lime-dim)' : 'var(--danger-dim)';
+    return `<tr>
+      <td>
+        <div class="td-cat">
+          <div class="td-cat-icon" style="background:${bg}">${icon}</div>
+          <div><div class="td-name">${esc(t.descricao || t.categoria || '–')}</div><div class="td-sub">${esc(t.categoria || '')}</div></div>
+        </div>
+      </td>
+      <td><span class="td-badge ${isRec ? 'income' : ''}">${isRec ? 'Receita' : esc(t.categoria || 'Despesa')}</span></td>
+      <td>${fmtD(t.data || t.created_at?.slice(0,10) || '')}</td>
+      <td style="text-align:right"><span class="td-amount ${isRec ? 'pos' : 'neg'}">${isRec ? '+' : '-'} ${fmt(t.valor)}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderDonut(txDespesas, totalDespesas) {
+  const map = {};
+  txDespesas.forEach(t => {
+    const k = (t.categoria || 'outros').toLowerCase();
+    map[k] = (map[k] || 0) + (+t.valor || 0);
+  });
+  const sorted = Object.entries(map).sort((a,b) => b[1]-a[1]).slice(0, 6);
+  const wrap = document.getElementById('donutWrap');
+  if (!sorted.length || !totalDespesas) {
+    wrap.innerHTML = `<div style="padding:40px;text-align:center;color:#555;font-size:13px;">Sem despesas no período</div>`;
+    return;
+  }
+
+  const CIRC = 2 * Math.PI * 40; // 251.33
+  let offset = 0;
+  const circles = sorted.map(([cat, val]) => {
+    const pct = val / totalDespesas;
+    const dash = pct * CIRC;
+    const color = catColor(cat);
+    const c = `<circle cx="55" cy="55" r="40" fill="none" stroke="${color}" stroke-width="18"
+      stroke-dasharray="${dash.toFixed(1)} ${(CIRC - dash).toFixed(1)}"
+      stroke-dashoffset="${-offset.toFixed(1)}" transform="rotate(-90 55 55)"/>`;
+    offset += dash;
+    return c;
+  }).join('');
+
+  const topPct = Math.round((sorted[0][1] / totalDespesas) * 100);
+  const topCatName = sorted[0][0].charAt(0).toUpperCase() + sorted[0][0].slice(1);
+
+  const labels = sorted.map(([cat, val]) => {
+    const pct = Math.round((val / totalDespesas) * 100);
+    const color = catColor(cat);
+    const name  = cat.charAt(0).toUpperCase() + cat.slice(1);
+    return `<div class="donut-item">
+        <div class="donut-item-left"><div class="donut-dot" style="background:${color}"></div><div class="donut-cat">${esc(name)}</div></div>
+        <div class="donut-pct">${pct}%</div>
+      </div>
+      <div class="donut-bar-bg"><div class="donut-bar-fill" style="width:${pct}%;background:${color}"></div></div>`;
+  }).join('');
+
+  wrap.innerHTML = `
+    <div style="position:relative; flex-shrink:0;">
+      <svg class="donut-svg" width="110" height="110" viewBox="0 0 110 110">
+        ${circles}
+        <text x="55" y="51" text-anchor="middle" fill="#fff" font-size="15" font-weight="700" font-family="Space Grotesk">${topPct}%</text>
+        <text x="55" y="63" text-anchor="middle" fill="#666" font-size="9" font-family="Inter">${esc(topCatName)}</text>
+      </svg>
+    </div>
+    <div class="donut-labels">${labels}</div>`;
+}
+
+/* ─── PERIOD TABS ─── */
+window.setPeriod = function(el, key) {
   document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('dateRangeLabel').textContent = periodLabels[key] || '';
-}
-function setChartMode(el) {
+  _activePeriod = key;
+  renderReport(key);
+};
+window.setChartMode = function(el) {
   el.closest('.chart-actions').querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
-}
-function setBarMode(el) {
-  el.closest('.chart-actions').querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-}
-function exportReport(fmt) {
-  const fmtNames = { pdf: 'PDF', xlsx: 'Excel', csv: 'CSV' };
-  const toast = document.createElement('div');
-  toast.style.cssText = `
-    position:fixed; bottom:28px; right:28px; z-index:9999;
-    background:#161616; border:1px solid rgba(200,255,0,0.3);
-    color:#fff; padding:13px 20px; border-radius:12px;
-    font-family:Inter,sans-serif; font-size:13px; font-weight:500;
-    display:flex; align-items:center; gap:10px;
-    box-shadow:0 8px 32px rgba(0,0,0,0.5);
-    animation: slideIn .3s ease;
-  `;
-  toast.innerHTML = `<span style="color:#C8FF00;font-size:16px">✓</span> Relatório ${fmtNames[fmt]} preparado para download!`;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-}
-function scheduledReport() {
-  const toast = document.createElement('div');
-  toast.style.cssText = `
-    position:fixed; bottom:28px; right:28px; z-index:9999;
-    background:#161616; border:1px solid rgba(77,166,255,0.3);
-    color:#fff; padding:13px 20px; border-radius:12px;
-    font-family:Inter,sans-serif; font-size:13px; font-weight:500;
-    display:flex; align-items:center; gap:10px;
-    box-shadow:0 8px 32px rgba(0,0,0,0.5);
-  `;
-  toast.innerHTML = `<span style="color:#4DA6FF;font-size:16px">🕐</span> Agendar relatórios via <strong style="color:#C8FF00">Alertas →</strong>`;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3500);
-}
-function toggleCompare() {
-  const toast = document.createElement('div');
-  toast.style.cssText = `
-    position:fixed; bottom:28px; right:28px; z-index:9999;
-    background:#161616; border:1px solid rgba(255,255,255,0.1);
-    color:#fff; padding:13px 20px; border-radius:12px;
-    font-family:Inter,sans-serif; font-size:13px;
-    box-shadow:0 8px 32px rgba(0,0,0,0.5);
-  `;
-  toast.textContent = 'Modo de comparação — em breve!';
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 2500);
-}
+};
+window.setBarMode = window.setChartMode;
 
-window.setPeriod = setPeriod;
-window.setChartMode = setChartMode;
-window.setBarMode = setBarMode;
-window.exportReport = exportReport;
-window.scheduledReport = scheduledReport;
-window.toggleCompare = toggleCompare;
+/* ─── EXPORT / MISC ─── */
+function toast(msg, borderColor) {
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:28px;right:28px;z-index:9999;background:#161616;border:1px solid ${borderColor};color:#fff;padding:13px 20px;border-radius:12px;font-family:Inter,sans-serif;font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.5)`;
+  t.innerHTML = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+window.exportReport   = (fmt) => toast(`<span style="color:#C8FF00;font-size:16px">✓</span> Exportação ${fmt.toUpperCase()} — em breve!`, 'rgba(200,255,0,0.3)');
+window.scheduledReport= () => toast(`<span style="color:#4DA6FF;font-size:16px">🕐</span> Agendar relatórios via <strong style="color:#C8FF00">Alertas →</strong>`, 'rgba(77,166,255,0.3)');
+window.toggleCompare  = () => toast('Modo de comparação — em breve!', 'rgba(255,255,255,0.1)');
+window.doSignOut      = () => signOut();
+
+/* ─── INIT ─── */
+(async () => {
+  const session = await requireAuth('auth.html?mode=login');
+  if (!session) return;
+
+  const u = session.user;
+  const name = u.user_metadata?.full_name || u.email.split('@')[0];
+  const initials = name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  document.getElementById('sbUserName').textContent = name;
+  document.getElementById('sbAvatar').textContent = initials;
+
+  _allTx = await getTransactions();
+  renderReport('30d');
+})();
 </script>
 </body>
 </html>
